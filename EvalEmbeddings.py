@@ -96,6 +96,7 @@ def cli_main():
     parser.add_argument("--val_split", default = 0.2, type = float, help = "amount of data to use for validation as a decimal")
     parser.add_argument("--image_type", default="tif", type=str, help="extension of image for PIL to open and parse - i.e. jpeg, gif, tif, etc. Only put the extension name, not the dot (.)")
     parser.add_argument("--image_embedding_size", default=128, type=int, help="size of image representation of SIMCLR")
+    parser.add_argument("--image_size", default = 128, type=int, help="height of square image to pass through model")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
 
     args = parser.parse_args()
