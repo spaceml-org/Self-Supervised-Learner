@@ -122,7 +122,9 @@ def cli_main():
     print('Training Data Loaded...')
     val_dataset = FolderDataset(URL, validation = True,
                                 val_split = val_split,
-                                transform = SimCLREvalDataTransform(image_size))
+                                transform = SimCLREvalDataTransform(image_size),
+                                image_type = image_type
+                               )
     
     val_loader = torch.utils.data.DataLoader(val_dataset,
                                               batch_size=batch_size,
