@@ -4,7 +4,7 @@ A tool to help scientists using satellite imagery of specific phenomena to find 
 Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
 
 To run it with your own data, please put your data in the following folder structure:
-
+```
 \Dataset
   --- \Class 1
   --------Image1.png
@@ -12,3 +12,4 @@ To run it with your own data, please put your data in the following folder struc
       \Class 2
    -------Image3.png
    -------Image4.png
+```
