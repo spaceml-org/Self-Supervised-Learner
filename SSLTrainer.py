@@ -157,7 +157,7 @@ def cli_main():
     print('Model Initialized')
     trainer.fit(model, data_loader, val_loader)
     
-    Path(f"./models/SSL/SIMCLR_SSL_{version}).mkdir(parents=True, exist_ok=True)
+    Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
     torch.save(model.state_dict(), f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.pt")
 
     
