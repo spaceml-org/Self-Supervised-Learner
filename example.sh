@@ -4,7 +4,6 @@ sleep 3
 echo 'just kidding, going to install pytorch lightning and scann'
 pip install -q git+https://github.com/PytorchLightning/pytorch-lightning-bolts.git@master --upgrade
 pip install -q scann
-git clone https://github.com/RudyVenguswamy/SpaceForce-DataSearch.git
 echo 'Installed Libraries'
 #download data
 echo 'Downloading UC Merced Data'
