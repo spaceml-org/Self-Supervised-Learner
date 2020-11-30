@@ -194,7 +194,6 @@ def cli_main():
     lr = args.lr
     patience = args.patience
     val_split = args.val_split
-    pretrain = args.pretrain_encoder
     withold_train_percent = args.withold_train_percent
     version = args.version
     model_checkpoint = args.MODEL_PATH
