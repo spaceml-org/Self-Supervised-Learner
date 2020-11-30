@@ -163,7 +163,7 @@ def cli_main():
     Path(save_path).mkdir(parents=True, exist_ok=True)
     eval_embeddings(model, val_dataset, save_path)
     print('Validation Data Evaluation Complete.')
-    print(f'Please check {MODEL_PATH}/Evaluation/NearestNeighbor for your results')
+    print(f'Please check {MODEL_PATH[:-3]}/Evaluation/NearestNeighbor for your results')
 
 if __name__ == '__main__':
     cli_main()
