@@ -180,6 +180,7 @@ def cli_main():
     parser.add_argument("--withold_train_percent", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold during finetuning")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--eval", default=True, type=bool, help="Eval Mode will train and evaluate the finetuned model's performance")
+    parser.add_argument("--imagenet_weights", default=False, type=bool, help="Use weights from a non-SSL")
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
     
     args = parser.parse_args()
@@ -200,6 +201,7 @@ def cli_main():
     gpus = args.gpus
     eval_model = args.eval
     version = args.version
+    imagenet_weights = args.imagenet_weights
 
     # #testing
     # batch_size = 128
@@ -250,11 +252,15 @@ def cli_main():
 
     num_samples = len(finetune_dataset)
     model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = num_samples, gpus = gpus, dataset = 'None', max_epochs = epochs, learning_rate = lr) #
-    model.encoder = resnet18(pretrained=False, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
+    model.encoder = resnet18(pretrained=True, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
     model.projection = Projection(input_dim = 512, hidden_dim = 256, output_dim = embedding_size) #overrides
-    model.load_state_dict(torch.load(model_checkpoint))
-    print('Successfully loaded your checkpoint. Keep in mind that this does not preserve the previous trainer states, only the model weights')
-
+    
+    if not imagenet_weights:  
+        model.load_state_dict(torch.load(model_checkpoint))
+        print('Successfully loaded your checkpoint. Keep in mind that this does not preserve the previous trainer states, only the model weights')
+    else:
+        print('Using imagenet weights instead of a pretrained SSL model')
+        
     num_classes = len(set(finetune_dataset.labels))
     print('Finetuning to classify ', num_classes, ' Classes')
 
