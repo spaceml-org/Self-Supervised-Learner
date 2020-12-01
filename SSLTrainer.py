@@ -14,7 +14,6 @@ import gc
 from tqdm import tqdm 
 import time
 import random
-import scann
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import seaborn as sn
