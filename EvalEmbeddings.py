@@ -1,3 +1,4 @@
+import scann
 from argparse import ArgumentParser
 from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.resnets import resnet18
@@ -5,7 +6,7 @@ from pl_bolts.models.self_supervised.simclr.transforms import SimCLREvalDataTran
 from pathlib import Path
 import torch
 import os
-import scann
+
 import time
 import random
 import matplotlib.pyplot as plt
