@@ -16,6 +16,7 @@ import h5py
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from sklearn.metrics import f1_score
 
 #imports from internal
 from CustomDataset import FolderDataset
