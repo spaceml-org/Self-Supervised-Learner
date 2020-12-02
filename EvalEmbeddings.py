@@ -85,6 +85,29 @@ def eval_embeddings(model, dataset, save_path):
   plt.ylabel('Percent in Reference Image Class')
   plt.title('SimCLR (All Data) Similarity Searching')
   plt.savefig(f'{save_path}/NN_acc_by_rank.png', dpi=400)
+  
+  plt.clf()
+  plt.cla()
+  
+  def accs_list(g):
+    f1s = []
+    for col in g.columns[1:]:
+      f1s.append(f1_score(g['neighbor_0'], g[col], average = 'weighted'))
+    return f1s
+    
+  labels_df = pd.DataFrame(result_array, columns = ['neighbor_'+ str(x) for x in range(50)])
+  gp = labels_df.groupby('neighbor_0', group_keys = True)  
+  k = list(gp.groups.keys())
+
+  for i, arr in enumerate(gp.apply(accs_list)):
+    
+    plt.plot(range(1,50), arr, label = k[i])
+    
+  plt.legend()
+  plt.xlabel('Nearest Neighbor Rank')
+  plt.ylabel('Percent in Reference Image Class')
+  plt.savefig(f'{save_path}/NN_acc_by_class_and_rank.png', dpi=400)
+
 
   if os.path.exists('data.h5'):
       os.remove('data.h5')
