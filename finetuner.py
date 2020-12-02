@@ -202,7 +202,7 @@ def cli_main():
     eval_model = args.eval
     version = args.version
     imagenet_weights = args.imagenet_weights
-
+    
     # #testing
     # batch_size = 128
     # image_type = 'tif'
@@ -249,17 +249,20 @@ def cli_main():
                                               drop_last = True
                                             )
     print('Validation Data Loaded...')
-
+    
     num_samples = len(finetune_dataset)
     model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = num_samples, gpus = gpus, dataset = 'None', max_epochs = epochs, learning_rate = lr) #
-    model.encoder = resnet18(pretrained=True, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
+    model.encoder = resnet18(pretrained= imagenet_weights, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
     model.projection = Projection(input_dim = 512, hidden_dim = 256, output_dim = embedding_size) #overrides
     
-    if not imagenet_weights:  
+    if model_checkpoint is not None:  
         model.load_state_dict(torch.load(model_checkpoint))
         print('Successfully loaded your checkpoint. Keep in mind that this does not preserve the previous trainer states, only the model weights')
     else:
-        print('Using imagenet weights instead of a pretrained SSL model')
+        if imagenet_weights:   
+            print('Using imagenet weights instead of a pretrained SSL model')
+        else:
+            print('Using random initialization of encoder')
         
     num_classes = len(set(finetune_dataset.labels))
     print('Finetuning to classify ', num_classes, ' Classes')
