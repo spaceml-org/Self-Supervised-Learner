@@ -74,6 +74,7 @@ class FolderDataset(Dataset):
 
     def __getitem__(self, idx):
         im = PIL.Image.open(self.dirs[idx])
+        im = im.convert('RGB')
         sample = self.transform(im)
         #doing the PIL.image.open and transform stuff here is quite slow
         return (sample, self.labels[idx]) # we dont need ylabel except for validating our unsupervised learning.
