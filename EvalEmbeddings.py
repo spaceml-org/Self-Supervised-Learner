@@ -96,14 +96,14 @@ def eval_embeddings(model, dataset, save_path, rank_to):
       f1s.append(accuracy_score(g['neighbor_0'], g[col]))
     return f1s
     
-  labels_df = pd.DataFrame(result_array, columns = ['neighbor_'+ str(x) for x in range(rank_to)])
+  labels_df = pd.DataFrame(result_array, columns = ['neighbor_'+ str(x) for x in range(ncols)])
   gp = labels_df.groupby('neighbor_0', group_keys = True)  
   k = list(gp.groups.keys())
   inv_map = {v: k for k, v in dataset.mydict.items()}
   
   for i, arr in enumerate(gp.apply(accs_list)):
     
-    plt.plot(range(1,rank_to), arr, label = inv_map[k[i]+1])
+    plt.plot(range(1,ncols), arr, label = inv_map[k[i]+1])
     
   plt.legend()
   plt.xlabel('Nearest Neighbor Rank')
