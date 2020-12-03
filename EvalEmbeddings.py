@@ -99,10 +99,11 @@ def eval_embeddings(model, dataset, save_path):
   labels_df = pd.DataFrame(result_array, columns = ['neighbor_'+ str(x) for x in range(50)])
   gp = labels_df.groupby('neighbor_0', group_keys = True)  
   k = list(gp.groups.keys())
-
+  inv_map = {v: k for k, v in train_dataset.mydict.items()}
+  
   for i, arr in enumerate(gp.apply(accs_list)):
     
-    plt.plot(range(1,50), arr, label = k[i])
+    plt.plot(range(1,50), arr, label = inv_map[k[i]+1])
     
   plt.legend()
   plt.xlabel('Nearest Neighbor Rank')
