@@ -16,7 +16,7 @@ import h5py
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, accuracy_score
 
 #imports from internal
 from CustomDataset import FolderDataset
@@ -93,7 +93,7 @@ def eval_embeddings(model, dataset, save_path):
   def accs_list(g):
     f1s = []
     for col in g.columns[1:]:
-      f1s.append(f1_score(g['neighbor_0'], g[col], average = 'weighted'))
+      f1s.append(accuracy_score(g['neighbor_0'], g[col]))
     return f1s
     
   labels_df = pd.DataFrame(result_array, columns = ['neighbor_'+ str(x) for x in range(50)])
