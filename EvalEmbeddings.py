@@ -156,7 +156,7 @@ def cli_main():
     parser.add_argument("--image_size", default = 128, type=int, help="height of square image to pass through model")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--rank", default=50, type=int, help="number of neighbors to search for")
-    parser.add_argument("--filter_same_group", type=bool, help="custom arg for hurricane data to filter same hurricanes out")
+    parser.add_argument("--filter_same_group", default= False, type=bool, help="custom arg for hurricane data to filter same hurricanes out")
     
     args = parser.parse_args()
     MODEL_PATH = args.MODEL_PATH
