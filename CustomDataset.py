@@ -68,6 +68,8 @@ class FolderDataset(Dataset):
 
         self.dirs = temp_dirs
         self.labels = temp_labels
+        print('DICTIONARY FOR LABELS: ')
+        print(self.mydict)
           
     def __len__(self):
         return len(self.dirs)
