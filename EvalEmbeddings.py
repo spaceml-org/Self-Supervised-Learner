@@ -213,17 +213,19 @@ def cli_main():
 
     model.cuda()
     print('Successfully loaded your model for evaluation.')
-
-    #running eval on training data
-    save_path = f"{MODEL_PATH[:-3]}/Evaluation/trainingMetrics"
-    Path(save_path).mkdir(parents=True, exist_ok=True)
-    eval_embeddings(model, train_dataset, save_path, rank_to, filter_hur)
-    print('Training Data Evaluation Complete.')
+    
     #running eval on validation data
     save_path = f"{MODEL_PATH[:-3]}/Evaluation/validationMetrics"
     Path(save_path).mkdir(parents=True, exist_ok=True)
     eval_embeddings(model, val_dataset, save_path, rank_to, filter_hur)
     print('Validation Data Evaluation Complete.')
+    
+    #running eval on training data
+    save_path = f"{MODEL_PATH[:-3]}/Evaluation/trainingMetrics"
+    Path(save_path).mkdir(parents=True, exist_ok=True)
+    eval_embeddings(model, train_dataset, save_path, rank_to, filter_hur)
+    print('Training Data Evaluation Complete.')
+   
     print(f'Please check {MODEL_PATH[:-3]}/Evaluation/ for your results')
 
 if __name__ == '__main__':
