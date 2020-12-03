@@ -23,7 +23,7 @@ from CustomDataset import FolderDataset
 from SSLTrainer import Projection
 
 
-def eval_embeddings(model, dataset, save_path):
+def eval_embeddings(model, dataset, save_path, rank_to):
   model.eval()
   embeddings_matrix = torch.empty((0, 512)).cuda()
   for batch in tqdm(dataset):
@@ -45,7 +45,7 @@ def eval_embeddings(model, dataset, save_path):
   f.create_dataset("embeddings", data=embeddings_test)
   dataset_scann = f['embeddings']
   normalized_dataset = dataset_scann / np.linalg.norm(dataset_scann, axis=1)[:, np.newaxis]
-  searcher = scann.scann_ops_pybind.builder(normalized_dataset, 50, "dot_product").tree(num_leaves = int(np.sqrt(len(dataset_scann))), num_leaves_to_search = 10).score_brute_force().build() 
+  searcher = scann.scann_ops_pybind.builder(normalized_dataset, rank_to, "dot_product").tree(num_leaves = int(np.sqrt(len(dataset_scann))), num_leaves_to_search = 10).score_brute_force().build() 
   neighbors, distances = searcher.search_batched(normalized_dataset)
 
   #gets label for each image by index
@@ -96,14 +96,14 @@ def eval_embeddings(model, dataset, save_path):
       f1s.append(accuracy_score(g['neighbor_0'], g[col]))
     return f1s
     
-  labels_df = pd.DataFrame(result_array, columns = ['neighbor_'+ str(x) for x in range(50)])
+  labels_df = pd.DataFrame(result_array, columns = ['neighbor_'+ str(x) for x in range(rank_to)])
   gp = labels_df.groupby('neighbor_0', group_keys = True)  
   k = list(gp.groups.keys())
-  inv_map = {v: k for k, v in train_dataset.mydict.items()}
+  inv_map = {v: k for k, v in dataset.mydict.items()}
   
   for i, arr in enumerate(gp.apply(accs_list)):
     
-    plt.plot(range(1,50), arr, label = inv_map[k[i]+1])
+    plt.plot(range(1,rank_to), arr, label = inv_map[k[i]+1])
     
   plt.legend()
   plt.xlabel('Nearest Neighbor Rank')
@@ -124,7 +124,8 @@ def cli_main():
     parser.add_argument("--image_embedding_size", default=128, type=int, help="size of image representation of SIMCLR")
     parser.add_argument("--image_size", default = 128, type=int, help="height of square image to pass through model")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
-
+    parser.add_argument("--rank", default=50, type=int, help="number of neighbors to search for")
+    
     args = parser.parse_args()
     MODEL_PATH = args.MODEL_PATH
     DATA_PATH = args.DATA_PATH
@@ -133,7 +134,8 @@ def cli_main():
     embedding_size = args.image_embedding_size
     val_split = args.val_split
     gpus = args.gpus
-
+    rank_to = args.rank
+    
     #testing
     # MODEL_PATH = '/content/models/SSL/SIMCLR_SSL_0.pt'
     # DATA_PATH = '/content/UCMerced_LandUse/Images'
@@ -182,12 +184,12 @@ def cli_main():
     #running eval on training data
     save_path = f"{MODEL_PATH[:-3]}/Evaluation/trainingMetrics"
     Path(save_path).mkdir(parents=True, exist_ok=True)
-    eval_embeddings(model, train_dataset, save_path)
+    eval_embeddings(model, train_dataset, save_path, rank_to)
     print('Training Data Evaluation Complete.')
     #running eval on validation data
     save_path = f"{MODEL_PATH[:-3]}/Evaluation/validationMetrics"
     Path(save_path).mkdir(parents=True, exist_ok=True)
-    eval_embeddings(model, val_dataset, save_path)
+    eval_embeddings(model, val_dataset, save_path, rank_to)
     print('Validation Data Evaluation Complete.')
     print(f'Please check {MODEL_PATH[:-3]}/Evaluation/ for your results')
 
