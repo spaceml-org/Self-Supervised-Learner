@@ -23,7 +23,10 @@ from CustomDataset import FolderDataset
 from SSLTrainer import Projection
 
 
-def eval_embeddings(model, dataset, save_path, rank_to):
+def eval_embeddings(model, dataset, save_path, rank_to, filter_hur):
+  if filter_hur:
+    rank_to = rank_to*4
+    
   model.eval()
   embeddings_matrix = torch.empty((0, 512)).cuda()
   for batch in tqdm(dataset):
@@ -54,7 +57,35 @@ def eval_embeddings(model, dataset, save_path, rank_to):
 
   lookup = np.vectorize(labelLookup)
   result_array = lookup(neighbors)
+  ###
+  
+  def same_hurricane(reference_idx, neighbor_idx):
+    hur = dataset.dirs[reference_idx].split('/')[-1].split('_')[0]
+    hur2 = dataset.dirs[neighbor_idx].split('/')[-1].split('_')[0]
+    return hur == hur2 
 
+  if filter_hur:
+    mask = np.empty((0, neighbors.shape[1]))
+    same_hur = np.vectorize(same_hurricane)
+
+    for row in neighbors:
+      mask = np.vstack((mask, same_hur(row, row[0])))
+    mask = mask.astype(bool)
+
+    temp_res = np.empty((0, int(rank_to/4)))
+    #goes through each row
+    for i in range(result_array.shape[0]):
+      row = result_array[i]
+      msk = mask[i]
+      row_slice = row[~msk]
+      row_slice = np.insert(row_slice, 0, row[0])
+      if len(row_slice) < rank_to/4:
+        row_slice = np.append(row_slice, np.full((int(rank_to/4) - len(row_slice)), -1))
+      else:
+        row_slice = row_slice[:int(rank_to/4)]
+      temp_res = np.vstack((temp_res, row_slice))
+    result_array = temp_res
+    
   neighbor_rank = 1
 
   array = confusion_matrix(result_array[:,0], result_array[:,neighbor_rank], normalize='true')
@@ -125,6 +156,7 @@ def cli_main():
     parser.add_argument("--image_size", default = 128, type=int, help="height of square image to pass through model")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--rank", default=50, type=int, help="number of neighbors to search for")
+    parser.add_argument("--filter_same_group", type=bool, help="custom arg for hurricane data to filter same hurricanes out")
     
     args = parser.parse_args()
     MODEL_PATH = args.MODEL_PATH
@@ -135,6 +167,7 @@ def cli_main():
     val_split = args.val_split
     gpus = args.gpus
     rank_to = args.rank
+    filter_hur = args.filter_same_group
     
     #testing
     # MODEL_PATH = '/content/models/SSL/SIMCLR_SSL_0.pt'
@@ -184,12 +217,12 @@ def cli_main():
     #running eval on training data
     save_path = f"{MODEL_PATH[:-3]}/Evaluation/trainingMetrics"
     Path(save_path).mkdir(parents=True, exist_ok=True)
-    eval_embeddings(model, train_dataset, save_path, rank_to)
+    eval_embeddings(model, train_dataset, save_path, rank_to, filter_hur)
     print('Training Data Evaluation Complete.')
     #running eval on validation data
     save_path = f"{MODEL_PATH[:-3]}/Evaluation/validationMetrics"
     Path(save_path).mkdir(parents=True, exist_ok=True)
-    eval_embeddings(model, val_dataset, save_path, rank_to)
+    eval_embeddings(model, val_dataset, save_path, rank_to, filter_hur)
     print('Validation Data Evaluation Complete.')
     print(f'Please check {MODEL_PATH[:-3]}/Evaluation/ for your results')
 
