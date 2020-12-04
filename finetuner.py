@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import seaborn as sn
 import os
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, accuracy_score
 import numpy as np
 import pandas as pd
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -158,6 +158,7 @@ def eval_finetune(tuner, kind, loader, save_path):
     sn.heatmap(df_cm, annot=True, annot_kws={"size": 6}) # font size
     f1 =  f1_score(y_true, y_preds, average = 'weighted')
     print(f'F1 score - {kind}: ', f1)
+    print('ACCURACY: ', accuracy_score(y_true, y_preds))
     plt.title(f'Confusion matrix for finetuned classifier - {kind}')
     plt.savefig(f'{save_path}/ConfusionMatrix.png', dpi=400)
     print('Confusion Matrix can be found here: ', f'{save_path}/ConfusionMatrix.png')
