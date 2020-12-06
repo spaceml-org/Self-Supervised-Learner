@@ -1,35 +1,4 @@
-Skip to content
-Search or jump to…
 
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@RudyVenguswamy 
-RudyVenguswamy
-/
-SpaceForce-DataSearch
-1
-0
-0
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-Settings
-SpaceForce-DataSearch/SSLTrainer.py /
-@RudyVenguswamy
-RudyVenguswamy Update SSLTrainer.py
-Latest commit e1dfae0 6 days ago
- History
- 1 contributor
-167 lines (137 sloc)  7.06 KB
-  
 import string
 import cv2
 import random
