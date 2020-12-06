@@ -108,7 +108,7 @@ def cli_main():
     dm.setup()
 
     #init model with batch size, num_samples (len of data), epochs to train, and autofinds learning rate
-    model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = dm.num_classes, gpus = gpus, dataset = 'None', max_epochs = epochs, learning_rate = lr) #
+    model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = dm.num_samples, gpus = gpus, dataset = 'None', max_epochs = epochs, learning_rate = lr) #
     
     model.encoder = resnet18(pretrained=pretrain, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
     model.projection = Projection(input_dim = 512, hidden_dim = 256, output_dim = embedding_size) #overrides
