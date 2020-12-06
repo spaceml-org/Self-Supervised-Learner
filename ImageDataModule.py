@@ -21,6 +21,7 @@ class ImageDataModule(pl.LightningDataModule):
             self.train = ImageFolder(f'{self.PATH}/train', transform = self.transform)
             self.val = ImageFolder(f'{self.PATH}/validation', transform = self.transform)
         self.num_classes = len(self.train.classes)
+        self.num_samples = len(self.train)
         print('We have the following classes: ', self.train.classes)
         
 
