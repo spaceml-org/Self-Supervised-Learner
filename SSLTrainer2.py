@@ -126,7 +126,7 @@ def cli_main():
     model.cuda()
 
     print('Model Initialized')
-    trainer.fit(model, data_loader, val_loader)
+    trainer.fit(model, dm)
     
     Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
     torch.save(model.state_dict(), f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.pt")
