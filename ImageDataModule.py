@@ -16,7 +16,7 @@ class ImageDataModule(pl.LightningDataModule):
         if not (path.isdir(f"{self.PATH}/train") and path.isdir(f"{self.PATH}/validation")): 
             splitfolders.ratio(self.PATH, output=f"split_data", ratio=(.8, .2), seed = 10)
             self.train = ImageFolder('split_data/train', transform = self.transform)
-            self.val = ImageFolder('/split_data/val', transform = self.transform)
+            self.val = ImageFolder('split_data/val', transform = self.transform)
         else:
             self.train = ImageFolder(f'{self.PATH}/train', transform = self.transform)
             self.val = ImageFolder(f'{self.PATH}/validation', transform = self.transform)
