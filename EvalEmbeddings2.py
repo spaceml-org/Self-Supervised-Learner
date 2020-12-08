@@ -128,6 +128,7 @@ def cli_main():
     parser.add_argument("--image_size", default = 128, type=int, help="height of square image to pass through model")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--rank", default=50, type=int, help="number of neighbors to search for")
+    parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     
     args = parser.parse_args()
     MODEL_PATH = args.MODEL_PATH
@@ -137,6 +138,7 @@ def cli_main():
     val_split = args.val_split
     gpus = args.gpus
     rank_to = args.rank
+    batch_size = args.batch_size
     
     train_transform = SimCLRTrainDataTransform(256)
     val_transform = SimCLREvalDataTransform(256)
@@ -144,7 +146,7 @@ def cli_main():
     dm.setup()
 
     #init model with batch size, num_samples (len of data), epochs to train, and autofinds learning rate
-    model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = dm.num_samples, gpus = gpus, dataset = 'None', max_epochs = epochs, learning_rate = lr) #
+    model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = dm.num_samples, gpus = gpus, dataset = 'None') #
     
     model.encoder = resnet18(pretrained=pretrain, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
     model.projection = Projection(input_dim = 512, hidden_dim = 256, output_dim = embedding_size) #overrides
