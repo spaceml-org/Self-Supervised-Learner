@@ -33,4 +33,7 @@ class ImageDataModule(pl.LightningDataModule):
         return DataLoader(self.train, batch_size=self.batch_size, drop_last = True)
 
     def val_dataloader(self):
-        return DataLoader(self.val, batch_size=self.batch_size, drop_last = True)
+        try:
+            return DataLoader(self.val, batch_size=self.batch_size, drop_last = True)
+        except:
+            return None
