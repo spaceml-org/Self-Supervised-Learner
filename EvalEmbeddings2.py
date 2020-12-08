@@ -128,7 +128,9 @@ def cli_main():
     parser.add_argument("--image_size", default = 128, type=int, help="height of square image to pass through model")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--rank", default=50, type=int, help="number of neighbors to search for")
-    parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
+    parser.add_argument("--batch_size", default=128, type=int, help="batch size for Evaluation")
+    parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Will be ignored if MODL_PATH is specified.")
+    
     
     args = parser.parse_args()
     MODEL_PATH = args.MODEL_PATH
@@ -139,6 +141,7 @@ def cli_main():
     gpus = args.gpus
     rank_to = args.rank
     batch_size = args.batch_size
+    pretrain = args.pretrain_encoder
     
     train_transform = SimCLRTrainDataTransform(256)
     val_transform = SimCLREvalDataTransform(256)
