@@ -199,7 +199,7 @@ def cli_main():
     parser.add_argument("--fix_backbone", default=True, type=bool, help="Fix backbone during finetuning")
     
     args = parser.parse_args()
-    DATA_PATH = args.DATA_PATH
+    URL = args.DATA_PATH
     batch_size = args.batch_size
     image_size = args.image_size
     image_type = args.image_type
