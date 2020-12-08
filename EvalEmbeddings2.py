@@ -131,7 +131,7 @@ def cli_main():
     
     args = parser.parse_args()
     MODEL_PATH = args.MODEL_PATH
-    DATA_PATH = args.DATA_PATH
+    URL = args.DATA_PATH
     image_size = args.image_size
     embedding_size = args.image_embedding_size
     val_split = args.val_split
@@ -140,7 +140,7 @@ def cli_main():
     
     train_transform = SimCLRTrainDataTransform(256)
     val_transform = SimCLREvalDataTransform(256)
-    dm = ImageDataModule(URL, train_transform = transform, val_transform = val_transform)
+    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform)
     dm.setup()
 
     #init model with batch size, num_samples (len of data), epochs to train, and autofinds learning rate
