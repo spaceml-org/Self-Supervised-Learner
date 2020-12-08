@@ -6,17 +6,18 @@ from torch.utils.data import DataLoader
 
 class ImageDataModule(pl.LightningDataModule):
 
-    def __init__(self, data_dir, batch_size = 64, train_transform = None, val_transform = None):
+    def __init__(self, data_dir, batch_size = 64, train_transform = None, val_transform = None, val_split = 0.2):
         super().__init__()
         self.batch_size = batch_size
         self.PATH = data_dir
         self.train_transform = train_transform
         self.val_transform = val_transform
+        self.val_split = val_split
         
     def setup(self, stage=None):
         shutil.rmtree('/content/split_data', ignore_errors=True)
         if not (path.isdir(f"{self.PATH}/train") and path.isdir(f"{self.PATH}/validation")): 
-            splitfolders.ratio(self.PATH, output=f"split_data", ratio=(.8, .2), seed = 10)
+            splitfolders.ratio(self.PATH, output=f"split_data", ratio=(1-val_split, val_split), seed = 10)
             self.train = ImageFolder('split_data/train', transform = self.train_transform)
             self.val = ImageFolder('split_data/val', transform = self.val_transform)
         else:
