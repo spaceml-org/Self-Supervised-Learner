@@ -160,8 +160,9 @@ def cli_main():
     #running eval on validation data
     save_path = f"{MODEL_PATH[:-3]}/Evaluation/validationMetrics"
     Path(save_path).mkdir(parents=True, exist_ok=True)
-    eval_embeddings(model, dm.val_dataloader(), save_path, rank_to)
-    print('Validation Data Evaluation Complete.')
+    if dm.val_dataloader() is not None:
+        eval_embeddings(model, dm.val_dataloader(), save_path, rank_to)
+        print('Validation Data Evaluation Complete.')
     
     #running eval on training data
     save_path = f"{MODEL_PATH[:-3]}/Evaluation/trainingMetrics"
