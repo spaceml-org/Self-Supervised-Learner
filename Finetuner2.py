@@ -193,7 +193,7 @@ def cli_main():
     parser.add_argument("--withold_train_percent", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold during finetuning")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--eval", default=True, type=bool, help="Eval Mode will train and evaluate the finetuned model's performance")
-    parser.add_argument("--imagenet_weights", default=False, type=bool, help="Use weights from a non-SSL")
+    parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
     parser.add_argument("--fix_backbone", default=True, type=bool, help="Fix backbone during finetuning")
     
@@ -214,7 +214,7 @@ def cli_main():
     gpus = args.gpus
     eval_model = args.eval
     version = args.version
-    imagenet_weights = args.imagenet_weights
+    pretrain= args.pretrain_encoder
     fix_backbone = args.fix_backbone
 
     train_transform = SimCLRFinetuneTransform(256, eval_transform=False)
@@ -232,7 +232,7 @@ def cli_main():
         model.load_state_dict(torch.load(model_checkpoint))
         print('Successfully loaded your checkpoint. Keep in mind that this does not preserve the previous trainer states, only the model weights')
     else:
-        if imagenet_weights:   
+        if pretrain:   
             print('Using imagenet weights instead of a pretrained SSL model')
         else:
             print('Using random initialization of encoder')
