@@ -16,14 +16,16 @@ class ImageDataModule(pl.LightningDataModule):
         self.val_split = val_split
         
     def setup(self, stage=None):
-        shutil.rmtree('/content/split_data', ignore_errors=True)
+        shutil.rmtree('split_data', ignore_errors=True)
         if not (path.isdir(f"{self.PATH}/train") and path.isdir(f"{self.PATH}/validation")): 
             splitfolders.ratio(self.PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
             self.train = ImageFolder('split_data/train', transform = self.train_transform)
-            self.val = ImageFolder('split_data/val', transform = self.val_transform)
+            if self.val_split > 0:
+                self.val = ImageFolder('split_data/val', transform = self.val_transform)
         else:
             self.train = ImageFolder(f'{self.PATH}/train', transform = self.train_transform)
-            self.val = ImageFolder(f'{self.PATH}/validation', transform = self.val_transform)
+            if self.val_split > 0:
+                self.val = ImageFolder(f'{self.PATH}/validation', transform = self.val_transform)
         self.num_classes = len(self.train.classes)
         self.num_samples = len(self.train)
         print('We have the following classes: ', self.train.classes)
