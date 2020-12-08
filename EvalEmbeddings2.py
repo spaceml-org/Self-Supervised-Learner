@@ -124,7 +124,6 @@ def cli_main():
     parser.add_argument("--MODEL_PATH", type=str, help="path to .pt file containing SSL-trained SimCLR Resnet18 Model")
     parser.add_argument("--DATA_PATH", type = str, help = "path to data. If folder already contains validation data only, set val_split to 0")
     parser.add_argument("--val_split", default = 0.2, type = float, help = "amount of data to use for validation as a decimal")
-    parser.add_argument("--image_type", default="tif", type=str, help="extension of image for PIL to open and parse - i.e. jpeg, gif, tif, etc. Only put the extension name, not the dot (.)")
     parser.add_argument("--image_embedding_size", default=128, type=int, help="size of image representation of SIMCLR")
     parser.add_argument("--image_size", default = 128, type=int, help="height of square image to pass through model")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
@@ -134,7 +133,6 @@ def cli_main():
     MODEL_PATH = args.MODEL_PATH
     DATA_PATH = args.DATA_PATH
     image_size = args.image_size
-    image_type = args.image_type
     embedding_size = args.image_embedding_size
     val_split = args.val_split
     gpus = args.gpus
