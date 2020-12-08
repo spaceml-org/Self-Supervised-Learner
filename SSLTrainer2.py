@@ -83,27 +83,10 @@ def cli_main():
     version = args.version
     model_checkpoint = args.MODEL_PATH
     gpus = args.gpus
-
-    # #testing
-    # batch_size = 128
-    # image_type = 'tif'
-    # image_size = 256
-    # num_workers = 4
-    # URL ='/content/UCMerced_LandUse/Images'
-    # embedding_size = 128
-    # epochs = 2
-    # lr = 1e-3
-    # patience = 1
-    # val_split = 0.2
-    # pretrain = False
-    # withold_train_percent = 0.2
-    # version = "1"
-    # model_checkpoint = '/content/models/SSL/SIMCLR_SSL_0.pt'
-    # gpus = 1
      
     train_transform = SimCLRTrainDataTransform(256)
     val_transform = SimCLREvalDataTransform(256)
-    dm = ImageDataModule(URL, train_transform = transform, val_transform = val_transform)
+    dm = ImageDataModule(URL, train_transform = transform, val_transform = val_transform, val_split = val_split)
     dm.setup()
 
     #init model with batch size, num_samples (len of data), epochs to train, and autofinds learning rate
