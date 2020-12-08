@@ -103,8 +103,9 @@ def cli_main():
     # model_checkpoint = '/content/models/SSL/SIMCLR_SSL_0.pt'
     # gpus = 1
      
-    transform = SimCLRTrainDataTransform(256)
-    dm = ImageDataModule(URL, transforms = transform)
+    train_transform = SimCLRTrainDataTransform(256)
+    val_transform = SimCLREvalDataTransform(256)
+    dm = ImageDataModule(URL, train_transform = transform, val_transform = val_transform)
     dm.setup()
 
     #init model with batch size, num_samples (len of data), epochs to train, and autofinds learning rate
