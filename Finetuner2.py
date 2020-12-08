@@ -247,19 +247,23 @@ def cli_main():
     else:
       trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
     tuner.cuda()
-    trainer.fit(tuner, train_dataloader= finetune_loader, val_dataloaders=finetune_val_loader)
+    trainer.fit(tuner, dm)
 
     Path(f"./models/Finetune/SIMCLR_Finetune_{version}").mkdir(parents=True, exist_ok=True)
     
-    if eval_model:
+    if eval_model:  
       print('Evaluating Model...')
-      save_path = f"./models/Finetune/SIMCLR_Finetune_{version}/Evaluation/trainingMetrics"
-      Path(save_path).mkdir(parents=True, exist_ok=True)
-      eval_finetune(tuner, 'training', finetune_loader, save_path)
-
       save_path = f"./models/Finetune/SIMCLR_Finetune_{version}/Evaluation/validationMetrics"
       Path(save_path).mkdir(parents=True, exist_ok=True)
-      eval_finetune(tuner, 'validation', finetune_val_loader, save_path)
+    
+      if dm.val_dataloader() is not None:
+        eval_finetune(tuner, 'validation', dm.val_dataloader(), save_path)
+        
+      save_path = f"./models/Finetune/SIMCLR_Finetune_{version}/Evaluation/trainingMetrics"
+      Path(save_path).mkdir(parents=True, exist_ok=True)
+      eval_finetune(tuner, 'training', dm.train_dataloader(), save_path)
+
+
     
     print('Saving model...')
     
