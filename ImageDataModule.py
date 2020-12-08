@@ -6,20 +6,22 @@ from torch.utils.data import DataLoader
 
 class ImageDataModule(pl.LightningDataModule):
 
-    def __init__(self, data_dir, batch_size = 64, transforms = None):
+    def __init__(self, data_dir, batch_size = 64, train_transform = None, val_transform = None):
         super().__init__()
         self.batch_size = batch_size
         self.PATH = data_dir
-        self.transform = transforms
+        self.train_transform = train_transform
+        self.val_transform = val_transform
         
     def setup(self, stage=None):
+        shutil.rmtree('/content/split_data', ignore_errors=True)
         if not (path.isdir(f"{self.PATH}/train") and path.isdir(f"{self.PATH}/validation")): 
             splitfolders.ratio(self.PATH, output=f"split_data", ratio=(.8, .2), seed = 10)
-            self.train = ImageFolder('split_data/train', transform = self.transform)
-            self.val = ImageFolder('split_data/val', transform = self.transform)
+            self.train = ImageFolder('split_data/train', transform = self.train_transform)
+            self.val = ImageFolder('split_data/val', transform = self.val_transform)
         else:
-            self.train = ImageFolder(f'{self.PATH}/train', transform = self.transform)
-            self.val = ImageFolder(f'{self.PATH}/validation', transform = self.transform)
+            self.train = ImageFolder(f'{self.PATH}/train', transform = self.train_transform)
+            self.val = ImageFolder(f'{self.PATH}/validation', transform = self.val_transform)
         self.num_classes = len(self.train.classes)
         self.num_samples = len(self.train)
         print('We have the following classes: ', self.train.classes)
