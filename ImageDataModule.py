@@ -3,6 +3,7 @@ import splitfolders
 from torchvision.datasets import ImageFolder
 from os import path
 from torch.utils.data import DataLoader
+import shutil
 
 class ImageDataModule(pl.LightningDataModule):
 
