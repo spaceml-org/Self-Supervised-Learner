@@ -105,7 +105,7 @@ def eval_embeddings(model, loader, save_path, rank_to):
   labels_df = pd.DataFrame(result_array, columns = ['neighbor_'+ str(x) for x in range(ncols)])
   gp = labels_df.groupby('neighbor_0', group_keys = True)  
   k = list(gp.groups.keys())
-  inv_map = {v: k for k, v in loader.dataset.class_to_idx}
+  inv_map = {v: k for k, v in loader.dataset.class_to_idx.items()}
   
   for i, arr in enumerate(gp.apply(accs_list)):
     plt.plot(range(1,ncols), arr, label = inv_map[k[i]])
