@@ -86,7 +86,7 @@ def cli_main():
      
     train_transform = SimCLRTrainDataTransform(256)
     val_transform = SimCLREvalDataTransform(256)
-    dm = ImageDataModule(URL, train_transform = transform, val_transform = val_transform, val_split = val_split)
+    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split)
     dm.setup()
 
     #init model with batch size, num_samples (len of data), epochs to train, and autofinds learning rate
