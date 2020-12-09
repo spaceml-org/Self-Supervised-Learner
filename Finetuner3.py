@@ -96,6 +96,11 @@ def cli_main():
     pretrain= args.pretrain_encoder
     fix_backbone = args.fix_backbone
     
+    train_transform = SimCLRFinetuneTransform(256, eval_transform=False)
+    val_transform = SimCLRFinetuneTransform(256, eval_transform=True)
+    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split)
+    dm.setup()
+    
     model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = dm.num_samples, gpus = 1, dataset = 'None', max_epochs = 100, learning_rate = 1e-3) #
     model.projection = Projection(input_dim = 512, hidden_dim = 256, output_dim = 128) #overrides
     model.encoder =  resnet18(pretrained=pretrain, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
@@ -110,10 +115,7 @@ def cli_main():
         
     print('Finetuning to classify ', num_classes, ' Classes')
     
-    train_transform = SimCLRFinetuneTransform(256, eval_transform=False)
-    val_transform = SimCLRFinetuneTransform(256, eval_transform=True)
-    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split)
-    dm.setup()
+
     
     tuner = SSLFineTuner(
       model,
