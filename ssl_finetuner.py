@@ -127,7 +127,7 @@ class SSLFineTuner(pl.LightningModule):
         return loss, logits, y
 
     def configure_optimizers(self):
-        if fix_backbone:
+        if self.fix_backbone:
             params = self.linear_layer.parameters()
         else:
             params = list(self.linear_layer.parameters()) + list(self.backbone.parameters())
