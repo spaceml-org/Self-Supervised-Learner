@@ -66,7 +66,7 @@ def cli_main():
     parser.add_argument("--image_embedding_size", default=128, type=int, help="size of image representation of SIMCLR")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
     parser.add_argument("--epochs", default=200, type=int, help="number of epochs to train model")
-    parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for training model")
+    parser.add_argument("--lr", default=0.3, type=float, help="learning rate for training model")
     parser.add_argument("--patience", default=-1, type=int, help="automatically cuts off training if validation does not drop for (patience) epochs. Leave blank to have no validation based early stopping.")
     parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data")
     parser.add_argument("--withold_train_percent", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold during finetuning")
@@ -101,7 +101,7 @@ def cli_main():
     dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split)
     dm.setup()
     
-    model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = dm.num_samples, gpus = 1, dataset = 'None', max_epochs = 100, learning_rate = 1e-3) #
+    model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = dm.num_samples, gpus = 1, dataset = 'None', max_epochs = 100, learning_rate = lr) #
     model.projection = Projection(input_dim = 512, hidden_dim = 256, output_dim = 128) #overrides
     model.encoder =  resnet18(pretrained=pretrain, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
     if model_checkpoint is not None:
@@ -122,9 +122,9 @@ def cli_main():
       in_features=512,
       num_classes=dm.num_classes,
       epochs=epochs,
-      hidden_dim=None,
+      hidden_dim=hidden_dims,
       dropout=0,
-      learning_rate=0.3,
+      learning_rate=lr,
       weight_decay=1e-6,
       nesterov=False,
       scheduler_type='cosine',
