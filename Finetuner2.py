@@ -23,7 +23,7 @@ from tqdm import tqdm
 #imports from internal
 from ImageDataModule import ImageDataModule
 from SSLTrainer import Projection
-from _ import SSLFineTuner
+from ssl_finetuner import SSLFineTuner
 
 def eval_finetune(tuner, kind, loader, save_path):
     y_preds = torch.empty(0)
