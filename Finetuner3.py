@@ -113,7 +113,7 @@ def cli_main():
         else:
             print('Using random initialization of encoder')
         
-    print('Finetuning to classify ', num_classes, ' Classes')
+    print('Finetuning to classify ', dm.num_classes, ' Classes')
     
 
     
