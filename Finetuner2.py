@@ -23,132 +23,7 @@ from tqdm import tqdm
 #imports from internal
 from ImageDataModule import ImageDataModule
 from SSLTrainer import Projection
-
-class SSLFineTuner(pl.LightningModule):
-
-    def __init__(
-        self,
-        backbone: torch.nn.Module,
-        in_features: int = 2048,
-        num_classes: int = 1000,
-        epochs: int = 100,
-        hidden_dim: Optional[int] = None,
-        dropout: float = 0.1,
-        learning_rate: float = 1e-3,
-        weight_decay: float = 1e-6,
-        nesterov: bool = False,
-        scheduler_type: str = 'cosine',
-        decay_epochs: List = [60, 80],
-        gamma: float = 0.1,
-        final_lr: float = 0.,
-        fix_backbone = True
-    ):
-        """
-        Args:
-            backbone: a pretrained model
-            in_features: feature dim of backbone outputs
-            num_classes: classes of the dataset
-            hidden_dim: dim of the MLP (1024 default used in self-supervised literature)
-        """
-        super().__init__()
-
-        self.learning_rate = learning_rate
-        self.nesterov = nesterov
-        self.weight_decay = weight_decay
-
-        self.scheduler_type = scheduler_type
-        self.decay_epochs = decay_epochs
-        self.gamma = gamma
-        self.epochs = epochs
-        self.final_lr = final_lr
-
-        self.backbone = backbone
-        self.fix_backbone = fix_backbone
-        self.linear_layer = SSLEvaluator(
-            n_input=in_features,
-            n_classes=num_classes,
-            p=dropout,
-            n_hidden=hidden_dim
-        )
-
-        # metrics
-        self.train_acc = Accuracy()
-        self.val_acc = Accuracy(compute_on_step=False)
-        self.test_acc = Accuracy(compute_on_step=False)
-
-    def on_train_epoch_start(self) -> None:
-        self.backbone.train()
-
-    def training_step(self, batch, batch_idx):
-        loss, logits, y = self.shared_step(batch)
-        acc = self.train_acc(logits, y)
-
-        self.log('train_loss', loss, prog_bar=True)
-        self.log('train_acc_step', acc, prog_bar=True)
-        self.log('train_acc_epoch', self.train_acc)
-
-        return loss
-
-    def validation_step(self, batch, batch_idx):
-        loss, logits, y = self.shared_step(batch)
-        acc = self.val_acc(logits, y)
-
-        self.log('val_loss', loss, prog_bar=True, sync_dist=True)
-        self.log('val_acc', self.val_acc)
-
-        return loss
-
-    def test_step(self, batch, batch_idx):
-        loss, logits, y = self.shared_step(batch)
-        acc = self.test_acc(logits, y)
-
-        self.log('test_loss', loss, sync_dist=True)
-        self.log('test_acc', self.test_acc)
-
-        return loss
-
-    def shared_step(self, batch):
-        x, y = batch
-
-        with torch.no_grad():
-            feats = self.backbone(x)
-
-        feats = feats.view(feats.size(0), -1)
-        logits = self.linear_layer(feats)
-        loss = F.cross_entropy(logits, y)
-
-        return loss, logits, y
-    def configure_optimizers(self):
-        if self.fix_backbone:
-            optimizer = torch.optim.SGD(
-                self.linear_layer.parameters(),
-                lr=self.learning_rate,
-                nesterov=self.nesterov,
-                momentum=0.9,
-                weight_decay=self.weight_decay,
-            )
-        
-        
-        else:
-            optimizer = torch.optim.SGD(
-                list(self.backbone.parameters()) + list(self.linear_layer.parameters()),
-                lr=self.learning_rate,
-                nesterov=self.nesterov,
-                momentum=0.9,
-                weight_decay=self.weight_decay,
-            )
-
-        # set scheduler
-        if self.scheduler_type == "step":
-            scheduler = torch.optim.lr_scheduler.MultiStepLR(
-                optimizer, self.decay_epochs, gamma=self.gamma
-            )
-        elif self.scheduler_type == "cosine":
-            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-                optimizer, self.epochs, eta_min=self.final_lr  # total epochs to run
-            )
-
-        return [optimizer], [scheduler]
+from _ import SSLFineTuner
 
 def eval_finetune(tuner, kind, loader, save_path):
     y_preds = torch.empty(0)
@@ -237,16 +112,45 @@ def cli_main():
         else:
             print('Using random initialization of encoder')
         
-    num_classes = dm.num_classes
     print('Finetuning to classify ', num_classes, ' Classes')
 
-    tuner = SSLFineTuner(model, in_features=512, num_classes=num_classes, hidden_dim=hidden_dims, learning_rate=lr, fix_backbone = fix_backbone)
+        tuner = SSLFineTuner(
+        backbone,
+        in_features=512,
+        num_classes=dm.num_classes,
+        epochs=epochs,
+        hidden_dim=None,
+        dropout=0,
+        learning_rate=0.3,
+        weight_decay=1e-6,
+        nesterov=False,
+        scheduler_type='cosine',
+        gamma=0.1,
+        final_lr=0.,
+        fix_backbone = fix_backbone
+    )
+
     if patience > 0:
       cb = EarlyStopping('val_loss', patience = patience)
-      trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
+      trainer = Trainer(
+        gpus=gpus,
+        num_nodes=1,
+        precision=16,
+        max_epochs=epochs,
+        distributed_backend='ddp',
+        sync_batchnorm=True if gpus > 1 else False,
+        callbacks = [cb]
+    )
     else:
-      trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
-    tuner.cuda()
+      trainer = Trainer(
+        gpus=gpus,
+        num_nodes=1,
+        precision=16,
+        max_epochs=epochs,
+        distributed_backend='ddp',
+        sync_batchnorm=True if gpus > 1 else False,
+    )
+    
     trainer.fit(tuner, dm)
 
     Path(f"./models/Finetune/SIMCLR_Finetune_{version}").mkdir(parents=True, exist_ok=True)
@@ -262,8 +166,6 @@ def cli_main():
       save_path = f"./models/Finetune/SIMCLR_Finetune_{version}/Evaluation/trainingMetrics"
       Path(save_path).mkdir(parents=True, exist_ok=True)
       eval_finetune(tuner, 'training', dm.train_dataloader(), save_path)
-
-
     
     print('Saving model...')
     
