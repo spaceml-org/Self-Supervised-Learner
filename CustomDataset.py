@@ -180,8 +180,8 @@ class FolderDataset2(pl.LightningDataModule):
         if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
             splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
         
-        self.finetune_dataset = DatasetFolder(f"split_data/train/", transform = self.train_transform, ext = '.tif')
-        self.finetune_val_dataset = DatasetFolder(f"split_data/val/", transform = self.val_transform,  ext = '.tif')
+        self.finetune_dataset = DatasetFolder(f"split_data/train/", transform = self.train_transform, extensions = '.tif')
+        self.finetune_val_dataset = DatasetFolder(f"split_data/val/", transform = self.val_transform,  extensions = '.tif')
         print(f'Loaded {len(self.finetune_dataset)} images for training..')
 #         FolderDataset_helper(self.DATA_PATH, validation = False, 
 #                               val_split = self.val_split, 
