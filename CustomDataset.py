@@ -82,7 +82,7 @@ class FolderDataset(Dataset):
         return (sample, self.labels[idx]) # we dont need ylabel except for validating our unsupervised learning.
     
     
-class FolderDataset2(Dataset):
+class FolderDataset_helper(Dataset):
 
 
     def __init__(self, DATA_PATH, validation = False, val_split = 0.2, transform=None, withold_train_percent = 0, image_type = 'tif'):
@@ -155,4 +155,40 @@ class FolderDataset2(Dataset):
         sample = self.transform(im)
         #doing the PIL.image.open and transform stuff here is quite slow
         return (sample, self.labels[idx]) # we dont need ylabel except for validating our unsupervised learning.
+    
+class FolderDataset2(pl.LightningDataModule):
+    
+    def __init__(self, DATA_PATH, val_split, train_transform = None, val_transform = None):
+        self.DATA_PATH = DATA_PATH
+        self.val_split = val_split
+        self.train_transform = train_transform
+        self.val_transform = val_transform
+        
+        self.num_workers = 2
+        self.batch_size = 64
+        
+    def setup(self):
+        self.finetune_dataset = FolderDataset_helper(DATA_PATH, validation = False, 
+                              val_split = self.val_split, 
+                              withold_train_percent = 0, 
+                              transform = self.train_transform, 
+                              image_type = 'tif'
+                              ) 
+        self.finetune_val_dataset = FolderDataset_helper(DATA_PATH, validation = True, 
+                              val_split = self.val_split, 
+                              withold_train_percent = 0, 
+                              transform = self.val_transform, 
+                              image_type = 'tif'
+                              )
+        self.num_samples = len(finetune_dataset)
+        self.num_classes = len(set(finetune_dataset.labels))
+     
+    def train_dataloader(self):
+        return DataLoader(self.finetune_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
+
+    def val_dataloader(self):
+        try:
+            return DataLoader(self.finetune_val_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
+        except:
+            return None
 
