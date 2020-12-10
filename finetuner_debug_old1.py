@@ -137,7 +137,7 @@ def cli_main():
     else:
       trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
     tuner.cuda()
-    trainer.fit(tuner, train_dataloader= finetune_loader, val_dataloaders=finetune_val_loader)
+    trainer.fit(tuner, dm)
 
     Path(f"./models/Finetune/SIMCLR_Finetune_{version}").mkdir(parents=True, exist_ok=True)
     
