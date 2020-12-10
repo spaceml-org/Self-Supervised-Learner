@@ -175,7 +175,7 @@ class FolderDataset2(pl.LightningDataModule):
         self.batch_size = 64
         
     def setup(self):
-        self.finetune_dataset = FolderDataset_helper(DATA_PATH, validation = False, 
+        self.finetune_dataset = FolderDataset_helper(self.DATA_PATH, validation = False, 
                               val_split = self.val_split, 
                               withold_train_percent = 0, 
                               transform = self.train_transform, 
