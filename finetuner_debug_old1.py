@@ -106,8 +106,8 @@ def cli_main():
     imagenet_weights = args.imagenet_weights
 
     #gets dataset. We can't combine since validation data has different transform needed
-    finetune_dataset = ImageFolder(DATA_PATH, validation = False, 
-                                  transform = SimCLRFinetuneTransform(image_size), 
+    finetune_dataset = ImageFolder(DATA_PATH,
+                                  transform = SimCLRFinetuneTransform(image_size)
                                   ) 
     
     finetune_loader = torch.utils.data.DataLoader(finetune_dataset,
@@ -118,8 +118,8 @@ def cli_main():
     
 
     print('Training Data Loaded...')
-    finetune_val_dataset = ImageFolder(DATA_PATH, validation = False, 
-                                  transform = SimCLRFinetuneTransform(image_size), 
+    finetune_val_dataset = ImageFolder(DATA_PATH,
+                                  transform = SimCLRFinetuneTransform(image_size) 
                                   ) 
     
     finetune_val_loader = torch.utils.data.DataLoader(finetune_val_dataset,
