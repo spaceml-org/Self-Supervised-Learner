@@ -166,6 +166,7 @@ class FolderDataset_helper(Dataset):
 class FolderDataset2(pl.LightningDataModule):
     
     def __init__(self, DATA_PATH, val_split, train_transform = None, val_transform = None):
+        super().__init__()
         self.DATA_PATH = DATA_PATH
         self.val_split = val_split
         self.train_transform = train_transform
