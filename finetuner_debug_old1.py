@@ -106,8 +106,11 @@ def cli_main():
     imagenet_weights = args.imagenet_weights
 
     #gets dataset. We can't combine since validation data has different transform needed
-    finetune_dataset = ImageFolder(DATA_PATH,
-                                  transform = SimCLRFinetuneTransform(image_size)
+    finetune_dataset = FolderDataset(DATA_PATH, validation = False, 
+                                  val_split = val_split, 
+                                  withold_train_percent = withold_train_percent, 
+                                  transform = SimCLRFinetuneTransform(image_size), 
+                                  image_type = image_type
                                   ) 
     
     finetune_loader = torch.utils.data.DataLoader(finetune_dataset,
@@ -118,9 +121,11 @@ def cli_main():
     
 
     print('Training Data Loaded...')
-    finetune_val_dataset = ImageFolder(DATA_PATH,
-                                  transform = SimCLRFinetuneTransform(image_size) 
-                                  ) 
+    finetune_val_dataset = FolderDataset(DATA_PATH, validation = True,
+                                val_split = val_split,
+                                transform =SimCLRFinetuneTransform(image_size),
+                                image_type = image_type
+                               )
     
     finetune_val_loader = torch.utils.data.DataLoader(finetune_val_dataset,
                                               batch_size=batch_size,
@@ -143,7 +148,7 @@ def cli_main():
         else:
             print('Using random initialization of encoder')
         
-    num_classes = len(set(finetune_dataset.classes))
+    num_classes = len(set(finetune_dataset.labels))
     print('Finetuning to classify ', num_classes, ' Classes')
 
     tuner = SSLFineTuner(model, in_features=512, num_classes=num_classes, hidden_dim=hidden_dims, learning_rate=lr)
@@ -156,6 +161,20 @@ def cli_main():
     trainer.fit(tuner, train_dataloader= finetune_loader, val_dataloaders=finetune_val_loader)
 
     Path(f"./models/Finetune/SIMCLR_Finetune_{version}").mkdir(parents=True, exist_ok=True)
+    
+    if eval_model:
+      print('Evaluating Model...')
+      save_path = f"./models/Finetune/SIMCLR_Finetune_{version}/Evaluation/trainingMetrics"
+      Path(save_path).mkdir(parents=True, exist_ok=True)
+      eval_finetune(tuner, 'training', finetune_loader, save_path)
+
+      save_path = f"./models/Finetune/SIMCLR_Finetune_{version}/Evaluation/validationMetrics"
+      Path(save_path).mkdir(parents=True, exist_ok=True)
+      eval_finetune(tuner, 'validation', finetune_val_loader, save_path)
+    
+    print('Saving model...')
+    
+    torch.save(tuner.state_dict(), f"./models/Finetune/SIMCLR_Finetune_{version}/SIMCLR_FINETUNE_{version}.pt")
     
     if eval_model:
       print('Evaluating Model...')
