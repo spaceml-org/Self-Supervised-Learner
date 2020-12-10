@@ -62,7 +62,6 @@ def cli_main():
     parser.add_argument("--MODEL_PATH", default=None , type=str, help="path to model checkpoint")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--image_size", default=256, type=int, help="image size for SSL")
-    parser.add_argument("--num_workers", default=1, type=int, help="number of CPU cores to use for data processing")
     parser.add_argument("--image_embedding_size", default=128, type=int, help="size of image representation of SIMCLR")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
     parser.add_argument("--epochs", default=200, type=int, help="number of epochs to train model")
@@ -81,7 +80,6 @@ def cli_main():
     URL = args.DATA_PATH
     batch_size = args.batch_size
     image_size = args.image_size
-    num_workers = args.num_workers
     embedding_size = args.image_embedding_size
     hidden_dims = args.hidden_dims
     epochs = args.epochs
