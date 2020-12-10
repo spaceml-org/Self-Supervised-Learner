@@ -137,8 +137,7 @@ def cli_main():
             print('Using imagenet weights instead of a pretrained SSL model')
         else:
             print('Using random initialization of encoder')
-        
-    num_classes = len(set(finetune_dataset.labels))
+
     print('Finetuning to classify ', num_classes, ' Classes')
 
     tuner = SSLFineTuner(model, in_features=512, num_classes=num_classes, hidden_dim=hidden_dims, learning_rate=lr)
