@@ -187,8 +187,8 @@ class FolderDataset2(pl.LightningDataModule):
                               transform = self.val_transform, 
                               image_type = 'tif'
                               )
-        self.num_samples = len(finetune_dataset)
-        self.num_classes = len(set(finetune_dataset.labels))
+        self.num_samples = len(self.finetune_dataset)
+        self.num_classes = len(set(self.finetune_dataset.labels))
      
     def train_dataloader(self):
         return DataLoader(self.finetune_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
