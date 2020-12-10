@@ -179,24 +179,20 @@ class FolderDataset2(pl.LightningDataModule):
         shutil.rmtree('split_data', ignore_errors=True)
         if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
             splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
-        def loader(data_path):
-            return PIL.Image.open(data_path).convert('RGB')
+
+        FolderDataset_helper(self.DATA_PATH, validation = False, 
+                              val_split = self.val_split, 
+                              withold_train_percent = 0, 
+                              transform = self.train_transform, 
+                              image_type = 'tif'
+                              ) 
+        self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
+                              val_split = self.val_split, 
+                              withold_train_percent = 0, 
+                              transform = self.val_transform, 
+                              image_type = 'tif'
+                              )
         
-        self.finetune_dataset = DatasetFolder(f"split_data/train/", transform = self.train_transform, extensions = '.tif', loader = loader)
-        self.finetune_val_dataset = DatasetFolder(f"split_data/val/", transform = self.val_transform,  extensions = '.tif', loader = loader)
-        print(f'Loaded {len(self.finetune_dataset)} images for training..')
-#         FolderDataset_helper(self.DATA_PATH, validation = False, 
-#                               val_split = self.val_split, 
-#                               withold_train_percent = 0, 
-#                               transform = self.train_transform, 
-#                               image_type = 'tif'
-#                               ) 
-#         self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
-#                               val_split = self.val_split, 
-#                               withold_train_percent = 0, 
-#                               transform = self.val_transform, 
-#                               image_type = 'tif'
-#                               )
         self.num_samples = len(self.finetune_dataset)
         self.num_classes = len(self.finetune_dataset.classes)
      
