@@ -26,7 +26,7 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 
 from torchvision.datasets import ImageFolder
-from CustomDataset import FolderDataset
+from CustomDataset import FolderDataset2
 from SSLTrainer2 import Projection
 from ssl_finetuner import SSLFineTuner
 
@@ -106,7 +106,7 @@ def cli_main():
     imagenet_weights = args.imagenet_weights
 
     #gets dataset. We can't combine since validation data has different transform needed
-    finetune_dataset = FolderDataset(DATA_PATH, validation = False, 
+    finetune_dataset = FolderDataset2(DATA_PATH, validation = False, 
                                   val_split = val_split, 
                                   withold_train_percent = withold_train_percent, 
                                   transform = SimCLRFinetuneTransform(image_size), 
@@ -121,7 +121,7 @@ def cli_main():
     
 
     print('Training Data Loaded...')
-    finetune_val_dataset = FolderDataset(DATA_PATH, validation = True,
+    finetune_val_dataset = FolderDataset2(DATA_PATH, validation = True,
                                 val_split = val_split,
                                 transform =SimCLRFinetuneTransform(image_size),
                                 image_type = image_type
