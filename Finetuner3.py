@@ -75,6 +75,7 @@ def cli_main():
     parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
     parser.add_argument("--fix_backbone", default=True, type=bool, help="Fix backbone during finetuning")
+    parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
     
     args = parser.parse_args()
     URL = args.DATA_PATH
@@ -95,10 +96,11 @@ def cli_main():
     version = args.version
     pretrain= args.pretrain_encoder
     fix_backbone = args.fix_backbone
+    num_workers = args.num_workers
     
     train_transform = SimCLRFinetuneTransform(256, eval_transform=False)
     val_transform = SimCLRFinetuneTransform(256, eval_transform=True)
-    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split)
+    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split, num_workers = num_workers)
     dm.setup()
     
     model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = dm.num_samples, gpus = 1, dataset = 'None', max_epochs = 100, learning_rate = lr) #
