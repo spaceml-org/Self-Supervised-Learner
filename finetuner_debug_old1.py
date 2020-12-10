@@ -143,7 +143,7 @@ def cli_main():
         else:
             print('Using random initialization of encoder')
         
-    num_classes = len(set(finetune_dataset.labels))
+    num_classes = len(set(finetune_dataset.classes))
     print('Finetuning to classify ', num_classes, ' Classes')
 
     tuner = SSLFineTuner(model, in_features=512, num_classes=num_classes, hidden_dim=hidden_dims, learning_rate=lr)
