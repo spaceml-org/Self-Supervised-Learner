@@ -177,8 +177,8 @@ class FolderDataset2(pl.LightningDataModule):
         
     def setup(self):
         shutil.rmtree('split_data', ignore_errors=True)
-        if not (path.isdir(f"{self.PATH}/train") and path.isdir(f"{self.PATH}/validation")): 
-            splitfolders.ratio(self.PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
+        if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/validation")): 
+            splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
             
         self.finetune_dataset = FolderDataset_helper(self.DATA_PATH, validation = False, 
                               val_split = self.val_split, 
