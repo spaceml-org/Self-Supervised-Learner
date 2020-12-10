@@ -106,35 +106,14 @@ def cli_main():
     imagenet_weights = args.imagenet_weights
 
     #gets dataset. We can't combine since validation data has different transform needed
-    finetune_dataset = FolderDataset2(DATA_PATH, validation = False, 
-                                  val_split = val_split, 
-                                  withold_train_percent = withold_train_percent, 
-                                  transform = SimCLRFinetuneTransform(image_size), 
-                                  image_type = image_type
-                                  ) 
-    
-    finetune_loader = torch.utils.data.DataLoader(finetune_dataset,
-                                              batch_size=batch_size,
-                                              num_workers=num_workers,
-                                              drop_last = True
-                                              )
-    
 
-    print('Training Data Loaded...')
-    finetune_val_dataset = FolderDataset2(DATA_PATH, validation = True,
-                                val_split = val_split,
-                                transform =SimCLRFinetuneTransform(image_size),
-                                image_type = image_type
-                               )
-    
-    finetune_val_loader = torch.utils.data.DataLoader(finetune_val_dataset,
-                                              batch_size=batch_size,
-                                              num_workers=num_workers,
-                                              drop_last = True
-                                            )
+    dm = FolderDataset2(DATA_PATH, val_split = val_split, train_transform = SimCLRFinetuneTransform(image_size), val_transform = SimCLRFinetuneTransform(image_size))
+    dm.setup()
+
     print('Validation Data Loaded...')
     
-    num_samples = len(finetune_dataset)
+    
+    num_samples = dm.num_samples
     model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = num_samples, gpus = gpus, dataset = 'None', max_epochs = epochs, learning_rate = lr) #
     model.encoder = resnet18(pretrained= imagenet_weights, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
     model.projection = Projection(input_dim = 512, hidden_dim = 256, output_dim = embedding_size) #overrides
@@ -148,7 +127,7 @@ def cli_main():
         else:
             print('Using random initialization of encoder')
         
-    num_classes = len(set(finetune_dataset.labels))
+    num_classes = dm.num_classes
     print('Finetuning to classify ', num_classes, ' Classes')
 
     tuner = SSLFineTuner(model, in_features=512, num_classes=num_classes, hidden_dim=hidden_dims, learning_rate=lr)
