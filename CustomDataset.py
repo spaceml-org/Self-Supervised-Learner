@@ -181,7 +181,7 @@ class FolderDataset2(pl.LightningDataModule):
                               transform = self.train_transform, 
                               image_type = 'tif'
                               ) 
-        self.finetune_val_dataset = FolderDataset_helper(DATA_PATH, validation = True, 
+        self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
                               val_split = self.val_split, 
                               withold_train_percent = 0, 
                               transform = self.val_transform, 
