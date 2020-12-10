@@ -191,7 +191,7 @@ class FolderDataset2(pl.LightningDataModule):
                               ) 
         print(self.finetune_dataset[0][0].shape)
         for i in range(100):
-            print(self.finetune_dataset[i][1]
+            print(self.finetune_dataset[i][1])
         
         self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
                               val_split = self.val_split, 
