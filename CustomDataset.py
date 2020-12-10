@@ -181,7 +181,7 @@ class FolderDataset2(pl.LightningDataModule):
             splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
             
         temp = ImageFolder(self.DATA_PATH, transform = self.train_transform)
-        print(temp[0])
+        print(temp[0][0].shape)
             
         self.finetune_dataset = FolderDataset_helper(self.DATA_PATH, validation = False, 
                               val_split = self.val_split, 
@@ -189,7 +189,9 @@ class FolderDataset2(pl.LightningDataModule):
                               transform = self.train_transform, 
                               image_type = 'tif'
                               ) 
-        print(self.finetune_dataset[0])
+        print(self.finetune_dataset[0][0].shape)
+        for i in range(100):
+            print(self.finetune_dataset[i][1]
         
         self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
                               val_split = self.val_split, 
