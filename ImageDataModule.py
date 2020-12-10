@@ -7,13 +7,14 @@ import shutil
 
 class ImageDataModule(pl.LightningDataModule):
 
-    def __init__(self, data_dir, batch_size = 64, train_transform = None, val_transform = None, val_split = 0.2):
+    def __init__(self, data_dir, batch_size = 64, train_transform = None, val_transform = None, val_split = 0.2, num_workers = 0):
         super().__init__()
         self.batch_size = batch_size
         self.PATH = data_dir
         self.train_transform = train_transform
         self.val_transform = val_transform
         self.val_split = val_split
+        self.num_workers = num_workers
         
     def setup(self, stage=None):
         shutil.rmtree('split_data', ignore_errors=True)
@@ -32,10 +33,10 @@ class ImageDataModule(pl.LightningDataModule):
         
 
     def train_dataloader(self):
-        return DataLoader(self.train, batch_size=self.batch_size, drop_last = True)
+        return DataLoader(self.train, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
 
     def val_dataloader(self):
         try:
-            return DataLoader(self.val, batch_size=self.batch_size, drop_last = True)
+            return DataLoader(self.val, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
         except:
             return None
