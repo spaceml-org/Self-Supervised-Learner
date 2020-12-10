@@ -182,7 +182,7 @@ class FolderDataset2(pl.LightningDataModule):
         
         self.finetune_dataset = ImageFolder(f"split_data/train/", transform = self.train_transform)
         self.finetune_val_dataset = ImageFolder(f"split_data/val/", transform = self.val_transform)
-        print(f'Loaded {len(finetune_dataset)} images for training..')
+        print(f'Loaded {len(self.finetune_dataset)} images for training..')
 #         FolderDataset_helper(self.DATA_PATH, validation = False, 
 #                               val_split = self.val_split, 
 #                               withold_train_percent = 0, 
