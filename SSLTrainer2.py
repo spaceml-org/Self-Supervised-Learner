@@ -67,7 +67,8 @@ def cli_main():
     parser.add_argument("--withold_train_percent", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold during SSL training")
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
-
+    parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
+    
     args = parser.parse_args()
     URL = args.DATA_PATH
     batch_size = args.batch_size
@@ -83,10 +84,11 @@ def cli_main():
     version = args.version
     model_checkpoint = args.MODEL_PATH
     gpus = args.gpus
-     
+    num_workers = args.num_workers
+    
     train_transform = SimCLRTrainDataTransform(256)
     val_transform = SimCLREvalDataTransform(256)
-    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split)
+    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split, num_workers = num_workers)
     dm.setup()
 
     #init model with batch size, num_samples (len of data), epochs to train, and autofinds learning rate
