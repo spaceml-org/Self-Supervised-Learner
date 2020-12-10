@@ -194,7 +194,7 @@ class FolderDataset2(pl.LightningDataModule):
                               )
         
         self.num_samples = len(self.finetune_dataset)
-        self.num_classes = len(self.finetune_dataset.classes)
+        self.num_classes = len(set(self.finetune_dataset.labels))
      
     def train_dataloader(self):
         return DataLoader(self.finetune_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
