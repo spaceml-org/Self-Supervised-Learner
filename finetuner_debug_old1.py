@@ -26,6 +26,7 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 
 from torchvision.datasets import ImageFolder
+from CustomDataset import FolderDataset
 from SSLTrainer2 import Projection
 from ssl_finetuner import SSLFineTuner
 
