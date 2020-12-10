@@ -177,21 +177,23 @@ class FolderDataset2(pl.LightningDataModule):
         
     def setup(self):
         shutil.rmtree('split_data', ignore_errors=True)
-        if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/validation")): 
+        if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
             splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
-            
-        self.finetune_dataset = FolderDataset_helper(self.DATA_PATH, validation = False, 
-                              val_split = self.val_split, 
-                              withold_train_percent = 0, 
-                              transform = self.train_transform, 
-                              image_type = 'tif'
-                              ) 
-        self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
-                              val_split = self.val_split, 
-                              withold_train_percent = 0, 
-                              transform = self.val_transform, 
-                              image_type = 'tif'
-                              )
+        
+        self.finetune_dataset = ImageFolder(f"{self.DATA_PATH}/train/", transform = self.train_transform)
+        self.finetune_val_dataset = ImageFolder(f"{self.DATA_PATH}/val/", transform = self.val_transform)
+#         FolderDataset_helper(self.DATA_PATH, validation = False, 
+#                               val_split = self.val_split, 
+#                               withold_train_percent = 0, 
+#                               transform = self.train_transform, 
+#                               image_type = 'tif'
+#                               ) 
+#         self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
+#                               val_split = self.val_split, 
+#                               withold_train_percent = 0, 
+#                               transform = self.val_transform, 
+#                               image_type = 'tif'
+#                               )
         self.num_samples = len(self.finetune_dataset)
         self.num_classes = len(set(self.finetune_dataset.labels))
      
