@@ -25,9 +25,18 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 
-from CustomDataset import FolderDataset
+from torchvision.datasets import ImageFolder
 from SSLTrainer2 import Projection
 from ssl_finetuner import SSLFineTuner
+
+  
+import pytorch_lightning as pl
+import splitfolders
+from torchvision.datasets import ImageFolder
+from os import path
+from torch.utils.data import DataLoader
+import shutil
+
 
 def eval_finetune(tuner, kind, loader, save_path):
     y_preds = torch.empty(0)
@@ -96,35 +105,26 @@ def cli_main():
     imagenet_weights = args.imagenet_weights
 
     #gets dataset. We can't combine since validation data has different transform needed
-    finetune_dataset = FolderDataset(DATA_PATH, validation = False, 
-                                  val_split = val_split, 
-                                  withold_train_percent = withold_train_percent, 
-                                  transform = SimCLRFinetuneTransform(image_size), 
-                                  image_type = image_type
-                                  ) 
+    shutil.rmtree('split_data', ignore_errors=True)
+    if not (path.isdir(f"{DATA_PATH}/train") and path.isdir(f"{DATA_PATH}/validation")): 
+        print('making folders')
+        splitfolders.ratio(DATA_PATH, output=f"split_data", ratio=(1-val_split, val_split), seed = 10)
+        train = ImageFolder('split_data/train', transform = SimCLRFinetuneTransform(256, eval_transform=False))
+        if val_split > 0:
+           val = ImageFolder('split_data/val', transform = SimCLRFinetuneTransform(256, eval_transform=True))
+    else:
+        train = ImageFolder(f'{DATA_PATH}/train', transform = SimCLRFinetuneTransform(256, eval_transform=False))
+        if val_split > 0:
+            val = ImageFolder(f'{DATA_PATH}/validation', transform = SimCLRFinetuneTransform(256, eval_transform=True))
+            
+    finetune_loader = DataLoader(train, batch_size=batch_size, drop_last = True, num_workers=2)
+    finetune_val_loader = DataLoader(val, batch_size=batch_size, drop_last = True, num_workers=2)
     
-    finetune_loader = torch.utils.data.DataLoader(finetune_dataset,
-                                              batch_size=batch_size,
-                                              num_workers=num_workers,
-                                              drop_last = True
-                                              )
-    
-
-    print('Training Data Loaded...')
-    finetune_val_dataset = FolderDataset(DATA_PATH, validation = True,
-                                val_split = val_split,
-                                transform =SimCLRFinetuneTransform(image_size),
-                                image_type = image_type
-                               )
-    
-    finetune_val_loader = torch.utils.data.DataLoader(finetune_val_dataset,
-                                              batch_size=batch_size,
-                                              num_workers=num_workers,
-                                              drop_last = True
-                                            )
+    num_classes = len(train.classes)
+    num_samples = len(train)
+    print('We have the following classes: ', train.classes)
     print('Validation Data Loaded...')
     
-    num_samples = len(finetune_dataset)
     model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = num_samples, gpus = gpus, dataset = 'None', max_epochs = epochs, learning_rate = lr) #
     model.encoder = resnet18(pretrained= imagenet_weights, first_conv=model.first_conv, maxpool1=model.maxpool1, return_all_feature_maps=False)
     model.projection = Projection(input_dim = 512, hidden_dim = 256, output_dim = embedding_size) #overrides
