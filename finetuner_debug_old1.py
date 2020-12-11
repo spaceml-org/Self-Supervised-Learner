@@ -147,11 +147,11 @@ def cli_main():
       print('Evaluating Model...')
       save_path = f"./models/Finetune/SIMCLR_Finetune_{version}/Evaluation/trainingMetrics"
       Path(save_path).mkdir(parents=True, exist_ok=True)
-      eval_finetune(tuner, 'training', finetune_loader, save_path)
+      eval_finetune(tuner, 'training', dm.train_dataloader(), save_path)
 
       save_path = f"./models/Finetune/SIMCLR_Finetune_{version}/Evaluation/validationMetrics"
       Path(save_path).mkdir(parents=True, exist_ok=True)
-      eval_finetune(tuner, 'validation', finetune_val_loader, save_path)
+      eval_finetune(tuner, 'validation', dm.val_dataloader(), save_path)
     
     print('Saving model...')
     
