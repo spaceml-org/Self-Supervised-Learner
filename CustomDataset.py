@@ -181,7 +181,7 @@ class FolderDataset2(pl.LightningDataModule):
             splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
             
         temp = ImageFolder(self.DATA_PATH, transform = self.train_transform)
-        plt.imshow(np.swapaxes(np.array(temp[0][0]), 0,2))
+        plt.imshow(np.swapaxes(np.array(temp[8][0]), 0,2))
         plt.savefig('a.png')
         plt.clf()
         plt.close()
