@@ -25,8 +25,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 
-from torchvision.datasets import ImageFolder
-from CustomDataset import FolderDataset2
+from CustomDataset import ImageModule
 from SSLTrainer2 import Projection
 from ssl_finetuner import SSLFineTuner
 
@@ -72,7 +71,7 @@ def cli_main():
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--image_size", default=256, type=int, help="image size for SSL")
     parser.add_argument("--image_type", default="tif", type=str, help="extension of image for PIL to open and parse - i.e. jpeg, gif, tif, etc. Only put the extension name, not the dot (.)")
-    parser.add_argument("--num_workers", default=1, type=int, help="number of CPU cores to use for data processing")
+    parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
     parser.add_argument("--image_embedding_size", default=128, type=int, help="size of image representation of SIMCLR")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
     parser.add_argument("--epochs", default=200, type=int, help="number of epochs to train model")
@@ -82,8 +81,9 @@ def cli_main():
     parser.add_argument("--withold_train_percent", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold during finetuning")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--eval", default=True, type=bool, help="Eval Mode will train and evaluate the finetuned model's performance")
-    parser.add_argument("--imagenet_weights", default=False, type=bool, help="Use weights from a non-SSL")
+    parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
+    parser.add_argument("--fix_backbone", default=True, type=bool, help="Fix backbone during finetuning")
     
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH
@@ -103,11 +103,13 @@ def cli_main():
     gpus = args.gpus
     eval_model = args.eval
     version = args.version
-    imagenet_weights = args.imagenet_weights
+    imagenet_weights = args.pretrain_encoder
+    num_workers = args.num_workers
+    fix_backbone = args.fix_backbone
 
     #gets dataset. We can't combine since validation data has different transform needed
 
-    dm = FolderDataset2(DATA_PATH, val_split = val_split, train_transform = SimCLRFinetuneTransform(image_size), val_transform = SimCLRFinetuneTransform(image_size))
+    dm = ImageModule(DATA_PATH, val_split = val_split, train_transform = SimCLRFinetuneTransform(image_size), val_transform = SimCLRFinetuneTransform(image_size), num_workers = num_workers)
     dm.setup()
 
     print('Validation Data Loaded...')
@@ -130,7 +132,7 @@ def cli_main():
     num_classes = dm.num_classes
     print('Finetuning to classify ', num_classes, ' Classes')
 
-    tuner = SSLFineTuner(model, in_features=512, num_classes=num_classes, hidden_dim=hidden_dims, learning_rate=lr)
+    tuner = SSLFineTuner(model, in_features=512, num_classes=num_classes, hidden_dim=hidden_dims, learning_rate=lr, fix_backbone = fix_backbone)
     if patience > 0:
       cb = EarlyStopping('val_loss', patience = patience)
       trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
