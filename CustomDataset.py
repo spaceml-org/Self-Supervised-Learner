@@ -13,6 +13,7 @@ from torchvision.datasets import ImageFolder, DatasetFolder
 from os import path
 from torch.utils.data import DataLoader
 import shutil
+impor torch
 
 class FolderDataset(Dataset):
 
@@ -180,39 +181,40 @@ class FolderDataset2(pl.LightningDataModule):
         if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
             splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
             
-        temp = ImageFolder(self.DATA_PATH, transform = self.train_transform)
-        plt.imshow(np.swapaxes(np.array(temp[8][0]), 0,2))
-        plt.savefig('a.png')
-        plt.clf()
-        plt.close()
-        plt.cla()
-        
-        self.finetune_dataset = FolderDataset_helper(self.DATA_PATH, validation = False, 
-                              val_split = self.val_split, 
-                              withold_train_percent = 0, 
-                              transform = self.train_transform, 
-                              image_type = 'tif'
-                              ) 
-        plt.imshow(np.swapaxes(np.array(self.finetune_dataset[0][0]), 0,2))
-        plt.savefig('b.png')
+        self.finetune_dataset = ImageFolder(split_data/train, transform = self.train_transform)
+        self.finetune_val_dataset = ImageFolder(split_data/val, transform = self.val_transform)
+#         plt.imshow(np.swapaxes(np.array(temp[8][0]), 0,2))
+#         plt.savefig('a.png')
+#         plt.clf()
+#         plt.close()
+#         plt.cla()
+        torch.manual_seed(0)
+#         self.finetune_dataset = FolderDataset_helper(self.DATA_PATH, validation = False, 
+#                               val_split = self.val_split, 
+#                               withold_train_percent = 0, 
+#                               transform = self.train_transform, 
+#                               image_type = 'tif'
+#                               ) 
+#         plt.imshow(np.swapaxes(np.array(self.finetune_dataset[0][0]), 0,2))
+#         plt.savefig('b.png')
 
         
-        self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
-                              val_split = self.val_split, 
-                              withold_train_percent = 0, 
-                              transform = self.val_transform, 
-                              image_type = 'tif'
-                              )
+#         self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
+#                               val_split = self.val_split, 
+#                               withold_train_percent = 0, 
+#                               transform = self.val_transform, 
+#                               image_type = 'tif'
+#                               )
         
         self.num_samples = len(self.finetune_dataset)
         self.num_classes = len(set(self.finetune_dataset.labels))
      
     def train_dataloader(self):
-        return DataLoader(self.finetune_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
+        return DataLoader(self.finetune_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers, shuffle = True)
 
     def val_dataloader(self):
         try:
-            return DataLoader(self.finetune_val_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
+            return DataLoader(self.finetune_val_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers, shuffle = True)
         except:
             return None
 
