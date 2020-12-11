@@ -117,7 +117,7 @@ class ImageModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         try:
-            return DataLoader(self.finetune_val_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers, shuffle = True)
+            return DataLoader(self.finetune_val_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
         except:
             return None
 
