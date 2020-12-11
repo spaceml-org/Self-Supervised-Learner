@@ -68,7 +68,7 @@ def cli_main():
     parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
     
     args = parser.parse_args()
-    URL = args.DATA_PATH
+    DATA_PATH = args.DATA_PATH
     batch_size = args.batch_size
     image_size = args.image_size
     num_workers = args.num_workers
