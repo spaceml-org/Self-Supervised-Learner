@@ -33,7 +33,7 @@ class ImageDataModule(pl.LightningDataModule):
         
 
     def train_dataloader(self):
-        return DataLoader(self.train, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
+        return DataLoader(self.train, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers, shuffle = True)
 
     def val_dataloader(self):
         try:
