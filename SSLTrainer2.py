@@ -27,7 +27,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 #imports from internal
-from ImageDataModule import ImageDataModule
+from CustomDataset import ImageModule
 
 from pathlib import Path
 
@@ -86,9 +86,7 @@ def cli_main():
     gpus = args.gpus
     num_workers = args.num_workers
     
-    train_transform = SimCLRTrainDataTransform(256)
-    val_transform = SimCLREvalDataTransform(256)
-    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split, num_workers = num_workers)
+    dm = ImageModule(DATA_PATH, val_split = val_split, train_transform = SimCLRTrainDataTransform(image_size), val_transform = SimCLREvalDataTransform(image_size), num_workers = num_workers)
     dm.setup()
 
     #init model with batch size, num_samples (len of data), epochs to train, and autofinds learning rate
