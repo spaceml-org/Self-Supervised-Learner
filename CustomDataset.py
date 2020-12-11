@@ -6,7 +6,7 @@ import PIL
 import os
 from fnmatch import fnmatch
 import numpy as np
-
+import matplotlib.pyplot as plt
 import pytorch_lightning as pl
 import splitfolders
 from torchvision.datasets import ImageFolder, DatasetFolder
