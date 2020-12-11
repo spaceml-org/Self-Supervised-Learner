@@ -57,14 +57,13 @@ def cli_main():
     parser.add_argument("--MODEL_PATH", default=None , type=str, help="path to model checkpoint")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--image_size", default=256, type=int, help="image size for SSL")
-    parser.add_argument("--num_workers", default=1, type=int, help="number of CPU cores to use for data processing")
+    parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
     parser.add_argument("--image_embedding_size", default=128, type=int, help="size of image representation of SIMCLR")
     parser.add_argument("--epochs", default=200, type=int, help="number of epochs to train model")
     parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for training model")
     parser.add_argument("--patience", default=-1, type=int, help="automatically cuts off training if validation does not drop for (patience) epochs. Leave blank to have no validation based early stopping.")
     parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data")
     parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Cannot be true if passing previous SSL model checkpoint.")
-    parser.add_argument("--withold_train_percent", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold during SSL training")
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
@@ -80,7 +79,6 @@ def cli_main():
     patience = args.patience
     val_split = args.val_split
     pretrain = args.pretrain_encoder
-    withold_train_percent = args.withold_train_percent
     version = args.version
     model_checkpoint = args.MODEL_PATH
     gpus = args.gpus
