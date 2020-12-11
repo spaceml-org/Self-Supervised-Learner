@@ -181,8 +181,8 @@ class FolderDataset2(pl.LightningDataModule):
         if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
             splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
             
-        self.finetune_dataset = ImageFolder(split_data/train, transform = self.train_transform)
-        self.finetune_val_dataset = ImageFolder(split_data/val, transform = self.val_transform)
+        self.finetune_dataset = ImageFolder('split_data/train', transform = self.train_transform)
+        self.finetune_val_dataset = ImageFolder('split_data/val', transform = self.val_transform)
 #         plt.imshow(np.swapaxes(np.array(temp[8][0]), 0,2))
 #         plt.savefig('a.png')
 #         plt.clf()
