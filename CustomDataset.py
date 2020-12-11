@@ -13,7 +13,7 @@ from torchvision.datasets import ImageFolder, DatasetFolder
 from os import path
 from torch.utils.data import DataLoader
 import shutil
-impor torch
+import torch
 
 class FolderDataset(Dataset):
 
