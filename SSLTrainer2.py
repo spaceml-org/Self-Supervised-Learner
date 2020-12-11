@@ -102,8 +102,6 @@ def cli_main():
       model.load_state_dict(torch.load(model_checkpoint))
       print('Successfully loaded your checkpoint. Keep in mind that this does not preserve the previous trainer states, only the model weights')
 
-    model.cuda()
-
     print('Model Initialized')
     trainer.fit(model, dm)
     
