@@ -28,6 +28,7 @@ import pytorch_lightning as pl
 from ImageDataModule import ImageDataModule
 from SSLTrainer2 import Projection
 from ssl_finetuner import SSLFineTuner
+from CustomDataset import FolderDataset2
 
 def eval_finetune(tuner, kind, loader, save_path):
     y_preds = torch.empty(0)
@@ -96,9 +97,7 @@ def cli_main():
     fix_backbone = args.fix_backbone
     num_workers = args.num_workers
     
-    train_transform = SimCLRFinetuneTransform(256, eval_transform=False)
-    val_transform = SimCLRFinetuneTransform(256, eval_transform=True)
-    dm = ImageDataModule(URL, train_transform = train_transform, val_transform = val_transform, val_split = val_split, num_workers = num_workers)
+    dm = FolderDataset2(URL, val_split = val_split, train_transform = SimCLRFinetuneTransform(image_size), val_transform = SimCLRFinetuneTransform(image_size))
     dm.setup()
     
     model = SimCLR(arch = 'resnet18', batch_size = batch_size, num_samples = dm.num_samples, gpus = 1, dataset = 'None', max_epochs = 100, learning_rate = lr) #
