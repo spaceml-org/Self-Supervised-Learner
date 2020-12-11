@@ -182,8 +182,11 @@ class FolderDataset2(pl.LightningDataModule):
             
         temp = ImageFolder(self.DATA_PATH, transform = self.train_transform)
         plt.imshow(np.swapaxes(np.array(temp[0][0]), 0,2))
-        plt.show()
-            
+        plt.savefig('a.png')
+        plt.clf()
+        plt.close()
+        plt.cla()
+        
         self.finetune_dataset = FolderDataset_helper(self.DATA_PATH, validation = False, 
                               val_split = self.val_split, 
                               withold_train_percent = 0, 
@@ -191,7 +194,7 @@ class FolderDataset2(pl.LightningDataModule):
                               image_type = 'tif'
                               ) 
         plt.imshow(np.swapaxes(np.array(self.finetune_dataset[0][0]), 0,2))
-        plt.show()
+        plt.savefig('b.png')
 
         
         self.finetune_val_dataset = FolderDataset_helper(self.DATA_PATH, validation = True, 
