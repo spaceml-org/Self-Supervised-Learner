@@ -57,7 +57,6 @@ def cli_main():
     parser.add_argument("--MODEL_PATH", default=None , type=str, help="path to model checkpoint")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--image_size", default=256, type=int, help="image size for SSL")
-    parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
     parser.add_argument("--image_embedding_size", default=128, type=int, help="size of image representation of SIMCLR")
     parser.add_argument("--epochs", default=200, type=int, help="number of epochs to train model")
     parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for training model")
