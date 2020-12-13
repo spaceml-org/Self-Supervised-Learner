@@ -25,7 +25,7 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 
 from CustomDataset import DaliModule
-from DaliTransforms import SimCLRFinetuneTrainDataTransform
+from DALITransforms import SimCLRFinetuneTrainDataTransform
 
 from SSLTrainer2 import Projection
 from ssl_finetuner import SSLFineTuner
