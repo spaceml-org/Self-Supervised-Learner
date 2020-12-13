@@ -15,6 +15,7 @@ from torch.utils.data import DataLoader
 import shutil
 import torch
 from nvidia.dali.plugin.pytorch import DALIGenericIterator
+from nvidia.dali.plugin.base_iterator import LastBatchPolicy
 
 class FolderDataset(Dataset):
 
