@@ -110,7 +110,7 @@ def cli_main():
 
     #gets dataset. We can't combine since validation data has different transform needed
 
-    dm = ImageModule(DATA_PATH, val_split = 0.2, input_height = 256, batch_size = batch_size, train_transform= SimCLRFinetuneTrainDataTransform, val_transform=SimCLRFinetuneTrainDataTransform)
+    dm = DaliModule(DATA_PATH, val_split = 0.2, input_height = 256, batch_size = batch_size, train_transform= SimCLRFinetuneTrainDataTransform, val_transform=SimCLRFinetuneTrainDataTransform)
     dm.setup()
 
     print('Validation Data Loaded...')
