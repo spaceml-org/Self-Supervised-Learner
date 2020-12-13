@@ -14,6 +14,7 @@ from os import path
 from torch.utils.data import DataLoader
 import shutil
 import torch
+from nvidia.dali.plugin.pytorch import DALIGenericIterator
 
 class FolderDataset(Dataset):
 
@@ -118,6 +119,79 @@ class ImageModule(pl.LightningDataModule):
     def val_dataloader(self):
         try:
             return DataLoader(self.finetune_val_dataset, batch_size=self.batch_size, drop_last = True, num_workers=self.num_workers)
+        except:
+            return None
+        
+class DaliModule(pl.LightningDataModule):
+    
+    def __init__(self, DATA_PATH, val_split, input_height, batch_size, train_transform, val_transform):
+        super().__init__()
+        self.DATA_PATH = DATA_PATH
+        self.val_split = val_split
+        self.batch_size = batch_size
+        self.input_height = input_height
+        self.train_transform = train_transform
+        self.val_transform = val_transform
+
+    def setup(self):
+        shutil.rmtree('split_data', ignore_errors=True)
+        if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
+            splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
+            self.DATA_PATH = 'split_data'
+
+        print('Working from data directory: ', self.DATA_PATH)
+
+        self.train_pipe = self.train_transform(f'{self.DATA_PATH}/train', batch_size = self.batch_size, input_height = self.input_height, num_threads = 4, device_id = 0)
+        self.val_pipe = self.val_transform(f'{self.DATA_PATH}/val', batch_size = self.batch_size, input_height = self.input_height, num_threads = 4, device_id = 0)
+
+        #We have this wrapper to allow for modification if the transform is different than expected and to return the proper length for the dataset for the pl.Trainer, which is an iterable with default length 0
+        class LightningSSLWrapper(DALIGenericIterator):
+            def __init__(self, num_samples, *kargs, **kvargs):
+                super().__init__(*kargs, **kvargs)
+                self.num_samples = num_samples
+
+            def __next__(self):
+                out = super().__next__()
+                out = out[0]
+                return [out[k] for k in self.output_map[:-1]], out['label']
+
+            def __len__(self):
+              return self.num_samples//self.batch_size
+
+        class LightningFTWrapper(LightningSSLWrapper):
+            def __init__(self, *kargs, **kvargs):
+                super().__init__(*kargs, **kvargs)
+
+            def __next__(self):
+                out, label = super().__next__()
+                label = torch.squeeze(label)
+                return out[0], label.long()
+
+        train_labels = [f'im{i}' for i in range(1,self.train_pipe.COPIES+1)]
+        train_labels.append('label')
+
+        val_labels = [f'im{i}' for i in range(1,self.val_pipe.COPIES+1)]
+        val_labels.append('label')
+
+        size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+        size_val =  sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/val')])
+
+        if self.train_pipe.COPIES > 1:
+            self.train_loader = LightningSSLWrapper(size_train, self.train_pipe, train_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.DROP)
+            self.val_loader = LightningSSLWrapper(size_val, self.val_pipe, val_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.DROP)
+        else:
+            self.train_loader = LightningFTWrapper(size_train, self.train_pipe, train_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.DROP)
+            self.val_loader = LightningFTWrapper(size_val, self.val_pipe, val_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.DROP)
+
+        self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+        self.num_classes = len([i for i in os.listdir(f'{self.DATA_PATH}/train') if os.path.isdir(f'{self.DATA_PATH}/train/{i}')])
+
+    def train_dataloader(self):
+        return self.train_loader
+
+    def val_dataloader(self):
+        try:
+            return self.val_loader 
         except:
             return None
 
