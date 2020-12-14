@@ -25,6 +25,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
+
 #internal imports
 from transforms import SimCLRFinetuneTrainDataTransform
 from encoders import load_encoder
