@@ -1,6 +1,8 @@
 import torch
 from torch.nn import functional as F
 from torch import nn
+from pytorch_lightning.metrics import Accuracy
+from pl_bolts.models.self_supervised.resnets import resnet18, resnet50
 
 class miniCNN(nn.Module):
 
@@ -18,7 +20,6 @@ class miniCNN(nn.Module):
     self.train_acc = Accuracy()
     self.val_acc = Accuracy(compute_on_step=False)
     self.test_acc = Accuracy(compute_on_step=False)
-
 
   def forward(self, x):
       # print(x.shape)
@@ -40,3 +41,19 @@ class miniCNN(nn.Module):
       # print(x.shape)
 
       return [x]
+
+
+
+def load_encoder(encoder_name, **kwargs):
+    if encoder_name == 'minicnn':
+        model, embedding_size = miniCNN(), 576
+    elif encoder_name == 'resnet18':
+        model, embedding_size = resnet18(pretrained=kwargs['pretrained'], first_conv=True, maxpool1=True, return_all_feature_maps=False), 512
+    else:
+        raise Exception('Encoder specified is not supported')
+
+    if 'MODEL_PATH' in kwargs:
+        print('Loading Model from save path')
+        model.load_state_dict(torch.load(kwargs['MODEL_PATH']))
+
+    return model, embedding_size
