@@ -165,3 +165,6 @@ def cli_main():
         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
 
     trainer.fit(model)
+    
+if __name__ == '__main__':
+    cli_main()
