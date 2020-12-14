@@ -25,7 +25,7 @@ from tqdm import tqdm
 
 #internal imports
 from transforms import SimCLRFinetuneTrainDataTransform
-
+from encoders import load_encoder
 
 class finetuneSIMCLR(pl.LightningModule):
 
