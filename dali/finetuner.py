@@ -4,9 +4,11 @@ from pytorch_lightning import Trainer
 from torch.optim import Adam
 import pytorch_lightning as pl
 import shutil
+import os
 from os import path
 import splitfolders
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+
 
 from typing import List, Optional
 from pytorch_lightning.metrics import Accuracy
