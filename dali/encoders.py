@@ -52,7 +52,7 @@ def load_encoder(encoder_name, kwargs):
     else:
         raise Exception('Encoder specified is not supported')
 
-    if 'MODEL_PATH' in kwargs:
+    if 'MODEL_PATH' in kwargs and kwargs['MODEL_PATH'] is not None:
         print('Loading Model from save path')
         model.load_state_dict(torch.load(kwargs['MODEL_PATH']))
 
