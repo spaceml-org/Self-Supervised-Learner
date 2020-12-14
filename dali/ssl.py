@@ -157,7 +157,8 @@ def cli_main():
     encoder = args.encoder
     
     
-    sslSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
+    model = sslSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
+    
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
         trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
