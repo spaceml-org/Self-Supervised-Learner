@@ -28,7 +28,7 @@ from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIt
 from pl_bolts.models.self_supervised import SimCLR
 
 #internal imports
-from transforms import SimCLRFinetuneTrainDataTransform
+from transforms import SimCLRTrainDataTransform
 from encoders import load_encoder
 
 
