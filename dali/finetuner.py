@@ -124,7 +124,7 @@ def cli_main():
     parser = ArgumentParser()
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
     parser.add_argument("--MODEL_PATH", default=None, type=str, help="path to model checkpoint.")
-    parser.add_argument("--encoder, default=None , type=str, help="encoder for model found in encoders.py")
+    parser.add_argument("--encoder", default=None , type=str, help="encoder for model found in encoders.py")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
