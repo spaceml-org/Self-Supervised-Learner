@@ -154,7 +154,7 @@ def cli_main():
     eval_model = args.eval
     version = args.version
     pretrain = args.pretrain_encoder
-    encoder = args.arch
+    encoder = args.encoder
     
     
     model = finetuneSIMCLR(encoder = encoder, pretrained = pretrained, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
