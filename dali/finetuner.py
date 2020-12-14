@@ -27,7 +27,7 @@ from transforms import SimCLRFinetuneTrainDataTransform
 
 class finetuneSIMCLR(pl.LightningModule):
 
-  def __init__(self, encoder, DATA_PATH, batch_size, val_split, hidden_dims, train_transform, val_transform, **kwargs):
+  def __init__(self, encoder, DATA_PATH, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
       super().__init__()
 
       self.DATA_PATH = DATA_PATH
