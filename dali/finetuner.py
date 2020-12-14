@@ -36,6 +36,7 @@ class finetuneSIMCLR(pl.LightningModule):
       self.hidden_dims = hidden_dims
       self.train_transform = train_transform
       self.val_transform = val_transform
+      self.num_workers = num_workers
       
       #data stuff
       shutil.rmtree('split_data', ignore_errors=True)
@@ -96,9 +97,9 @@ class finetuneSIMCLR(pl.LightningModule):
   
   def prepare_data(self):
 
-      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = 4, device_id = 0)
+      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = 0)
       print(f"{self.DATA_PATH}/train")
-      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = 4, device_id = 0)
+      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = 0)
 
       class LightningWrapper(DALIClassificationIterator):
           def __init__(self, *kargs, **kvargs):
@@ -156,7 +157,7 @@ def cli_main():
     encoder = args.arch
     
     
-    model = finetuneSIMCLR(encoder = encoder, pretrained = pretrained, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform)
+    model = finetuneSIMCLR(encoder = encoder, pretrained = pretrained, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
         trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
