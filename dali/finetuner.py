@@ -157,3 +157,10 @@ def cli_main():
     
     
     model = finetuneSIMCLR(encoder = encoder, pretrained = pretrained, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform)
+    if patience > 0:
+        cb = EarlyStopping('val_loss', patience = patience)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
+    else:
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
+
+    trainer.fit(model)
