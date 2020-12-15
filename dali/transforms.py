@@ -41,11 +41,11 @@ class SimCLRTrainDataTransform(Pipeline):
 
         im1 = self.transform(jpegs)
         im2 = self.transform(jpegs)
-        im3 = self.transform(jpegs)
+        #im3 = self.transform(jpegs)
         
         labels = labels.gpu()
         labels = self.to_int64(labels)
-        return (im1, im2, im3, labels)
+        return (im1, im2, im2, labels)
 
 class SimCLRFinetuneTrainDataTransform(Pipeline):
     def __init__(self, DATA_PATH, input_height, batch_size, num_threads, device_id):
