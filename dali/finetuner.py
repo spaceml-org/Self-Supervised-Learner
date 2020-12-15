@@ -81,9 +81,9 @@ class finetuneSIMCLR(pl.LightningModule):
   def training_step(self, batch, batch_idx):
       loss, logits, y = self.shared_step(batch)
       acc = self.eval_acc(logits, y)
-      self.log('train_loss', loss, prog_bar=True)
-      self.log('train_acc_step', acc)
-      self.log('train_acc_epoch', self.eval_acc, prog_bar=True)
+      #self.log('train_loss', loss, prog_bar=True)
+      #self.log('train_acc_step', acc)
+      #self.log('train_acc_epoch', self.eval_acc, prog_bar=True)
 
       return loss
 
@@ -91,9 +91,9 @@ class finetuneSIMCLR(pl.LightningModule):
       with torch.no_grad():
           loss, logits, y = self.shared_step(batch)
           acc = self.eval_acc(logits, y)
-      self.log('val_loss', loss, prog_bar=True)
-      self.log('val_acc_step', acc)
-      self.log('val_acc_epoch', self.eval_acc, prog_bar=True)
+      #self.log('val_loss', loss, prog_bar=True)
+      #self.log('val_acc_step', acc)
+      #self.log('val_acc_epoch', self.eval_acc, prog_bar=True)
 
       return loss
 
