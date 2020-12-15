@@ -1,7 +1,5 @@
 #internal imports
-import sys
-print(sys.path)
-from pytorch_lightning.loggers import CometLogger
+
 from transforms_dali import SimCLRFinetuneTrainDataTransform
 from encoders_dali import load_encoder
 
@@ -85,8 +83,8 @@ class finetuneSIMCLR(pl.LightningModule):
       loss, logits, y = self.shared_step(batch)
       acc = self.eval_acc(logits, y)
       self.log('train_loss', loss, prog_bar=True)
-      #self.log('train_acc_step', acc)
-      #self.log('train_acc_epoch', self.eval_acc, prog_bar=True)
+      self.log('train_acc_step', acc)
+      self.log('train_acc_epoch', self.eval_acc, prog_bar=True)
 
       return loss
 
@@ -94,9 +92,9 @@ class finetuneSIMCLR(pl.LightningModule):
       with torch.no_grad():
           loss, logits, y = self.shared_step(batch)
           acc = self.eval_acc(logits, y)
-      #self.log('val_loss', loss, prog_bar=True)
+      self.log('val_loss', loss, prog_bar=True)
       #self.log('val_acc_step', acc)
-      #self.log('val_acc_epoch', self.eval_acc, prog_bar=True)
+      self.log('val_acc_epoch', self.eval_acc, prog_bar=True)
 
       return loss
 
@@ -170,19 +168,19 @@ def cli_main():
     encoder = args.encoder
     
     
-#     model = finetuneSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
-#     if patience > 0:
-#         cb = EarlyStopping('val_loss', patience = patience)
-#         trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
-#     else:
-#         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
+    model = finetuneSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
+    if patience > 0:
+        cb = EarlyStopping('val_loss', patience = patience)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
+    else:
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
 
-#     trainer.fit(model)
-    comet_logger = CometLogger(save_dir='logs/')
-    print('INIT LOGGER HERE ABOVE__________________________')
-    model = finetuneSIMCLR(encoder = 'resnet18', pretrained = True, DATA_PATH  = DATA_PATH, batch_size = 64, val_split = 0.2, hidden_dims = 128, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = 4)
-    trainer = Trainer(gpus=1, distributed_backend="ddp", max_epochs=5, logger=comet_logger )
     trainer.fit(model)
+#     comet_logger = CometLogger(save_dir='logs/')
+#     print('INIT LOGGER HERE ABOVE__________________________')
+#     model = finetuneSIMCLR(encoder = 'resnet18', pretrained = True, DATA_PATH  = DATA_PATH, batch_size = 64, val_split = 0.2, hidden_dims = 128, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = 4)
+#     trainer = Trainer(gpus=1, distributed_backend="ddp", max_epochs=5, logger=comet_logger )
+#     trainer.fit(model)
     
 if __name__ == '__main__':
     cli_main()
