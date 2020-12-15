@@ -82,7 +82,7 @@ class finetuneSIMCLR(pl.LightningModule):
   def training_step(self, batch, batch_idx):
       loss, logits, y = self.shared_step(batch)
       acc = self.eval_acc(logits, y)
-      #self.log('train_loss', loss, prog_bar=True)
+      self.log('train_loss', loss, prog_bar=True)
       #self.log('train_acc_step', acc)
       #self.log('train_acc_epoch', self.eval_acc, prog_bar=True)
 
@@ -176,8 +176,9 @@ def cli_main():
 #         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
 
 #     trainer.fit(model)
+    comet_logger = pl_loggers.CometLogger(save_dir='logs/')
     model = finetuneSIMCLR(encoder = 'resnet18', pretrained = True, DATA_PATH  = '/content/UCMerced_LandUse/Images', batch_size = 64, val_split = 0.2, hidden_dims = 128, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = 4)
-    trainer = Trainer(gpus=1, distributed_backend="ddp", max_epochs=5)
+    trainer = Trainer(gpus=1, distributed_backend="ddp", max_epochs=5, logger=comet_logger )
     trainer.fit(model)
     
 if __name__ == '__main__':
