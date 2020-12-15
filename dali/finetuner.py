@@ -1,15 +1,16 @@
-
+#internal imports
+from transforms import SimCLRFinetuneTrainDataTransform
+from encoders import load_encoder
 
 from pytorch_lightning.core.lightning import LightningModule
 from pytorch_lightning import Trainer
-from torch.optim import Adam
+
 import pytorch_lightning as pl
 import shutil
 import os
 from os import path
 import splitfolders
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-
 
 from typing import List, Optional
 from pytorch_lightning.metrics import Accuracy
@@ -27,13 +28,12 @@ from tqdm import tqdm
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
 
 
-#internal imports
-from transforms import SimCLRFinetuneTrainDataTransform
-from encoders import load_encoder
+
 
 import torch
 from torch.nn import functional as F
 from torch import nn
+from torch.optim import Adam
 
 class finetuneSIMCLR(pl.LightningModule):
 
