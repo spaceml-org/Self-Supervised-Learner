@@ -1,6 +1,5 @@
 
-from torch.nn import functional as F
-from torch import nn
+
 from pytorch_lightning.core.lightning import LightningModule
 from pytorch_lightning import Trainer
 from torch.optim import Adam
@@ -26,11 +25,15 @@ import pandas as pd
 from tqdm import tqdm
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
-import torch
+
 
 #internal imports
 from transforms import SimCLRFinetuneTrainDataTransform
 from encoders import load_encoder
+
+import torch
+from torch.nn import functional as F
+from torch import nn
 
 class finetuneSIMCLR(pl.LightningModule):
 
