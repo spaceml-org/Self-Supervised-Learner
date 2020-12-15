@@ -177,6 +177,7 @@ def cli_main():
 
 #     trainer.fit(model)
     comet_logger = CometLogger(save_dir='logs/')
+    print('INIT LOGGER HERE ABOVE__________________________')
     model = finetuneSIMCLR(encoder = 'resnet18', pretrained = True, DATA_PATH  = '/content/UCMerced_LandUse/Images', batch_size = 64, val_split = 0.2, hidden_dims = 128, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = 4)
     trainer = Trainer(gpus=1, distributed_backend="ddp", max_epochs=5, logger=comet_logger )
     trainer.fit(model)
