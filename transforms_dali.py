@@ -20,7 +20,7 @@ class SimCLRTrainDataTransform(Pipeline):
         self.crop = ops.RandomResizedCrop(size = self.input_height, device = "gpu")
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
-        self.blur = ops.GaussianBlur(window_size = int(0.1*self.input_height), device = "gpu")
+        self.blur = ops.GaussianBlur(window_size = int(0.1*self.input_height), device = "gpu", dtype = types.FLOAT)
         self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu")
         
         self.to_int64 = ops.Cast(dtype=types.INT64, device="gpu")
