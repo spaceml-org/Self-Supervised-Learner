@@ -1,4 +1,4 @@
-import torch
+
 from torch.nn import functional as F
 from torch import nn
 from pytorch_lightning.core.lightning import LightningModule
@@ -26,6 +26,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
+import torch
 
 #internal imports
 from transforms import SimCLRFinetuneTrainDataTransform
