@@ -163,13 +163,16 @@ def cli_main():
     encoder = args.encoder
     
     
-    model = finetuneSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
-    if patience > 0:
-        cb = EarlyStopping('val_loss', patience = patience)
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
-    else:
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
+#     model = finetuneSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
+#     if patience > 0:
+#         cb = EarlyStopping('val_loss', patience = patience)
+#         trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
+#     else:
+#         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
 
+#     trainer.fit(model)
+    model = finetuneSIMCLR(encoder = 'resnet18', pretrained = True, DATA_PATH  = '/content/UCMerced_LandUse/Images', batch_size = 64, val_split = 0.2, hidden_dims = 128, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = 4)
+    trainer = Trainer(gpus=1, max_epochs = 10, progress_bar_refresh_rate=5)
     trainer.fit(model)
     
 if __name__ == '__main__':
