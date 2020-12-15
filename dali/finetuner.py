@@ -1,5 +1,5 @@
 #internal imports
-from pytorch_lightning import loggers as pl_loggers
+from pytorch_lightning.loggers import CometLogger
 from transforms import SimCLRFinetuneTrainDataTransform
 from encoders import load_encoder
 
@@ -176,7 +176,7 @@ def cli_main():
 #         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
 
 #     trainer.fit(model)
-    comet_logger = pl_loggers.CometLogger(save_dir='logs/')
+    comet_logger = CometLogger(save_dir='logs/')
     model = finetuneSIMCLR(encoder = 'resnet18', pretrained = True, DATA_PATH  = '/content/UCMerced_LandUse/Images', batch_size = 64, val_split = 0.2, hidden_dims = 128, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = 4)
     trainer = Trainer(gpus=1, distributed_backend="ddp", max_epochs=5, logger=comet_logger )
     trainer.fit(model)
