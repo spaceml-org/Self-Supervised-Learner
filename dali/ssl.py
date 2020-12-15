@@ -42,7 +42,7 @@ class sslSIMCLR(SimCLR):
       self.hidden_dims = hidden_dims
       self.train_transform = train_transform
       self.val_transform = val_transform
-      self.num_workers = num_workers
+      #self.num_workers = num_workers
       
       shutil.rmtree('split_data', ignore_errors=True)
       if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
@@ -79,9 +79,9 @@ class sslSIMCLR(SimCLR):
 
   def prepare_data(self):
 
-      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = 0)
+      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = 4, device_id = 0)
       print(f"{self.DATA_PATH}/train")
-      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = 0)
+      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = 4, device_id = 0)
 
       num_samples = self.num_samples
 
