@@ -1,4 +1,6 @@
 #internal imports
+import sys
+print(sys.path)
 from pytorch_lightning.loggers import CometLogger
 from transforms import SimCLRFinetuneTrainDataTransform
 from encoders import load_encoder
