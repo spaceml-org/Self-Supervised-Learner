@@ -35,7 +35,7 @@ from encoders_dali import load_encoder
 
 class sslSIMCLR(SimCLR):
 
-  def __init__(self, encoder, DATA_PATH, withold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
+  def __init__(self, encoder, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
       #data stuff
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
