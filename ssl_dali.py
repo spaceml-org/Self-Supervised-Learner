@@ -9,6 +9,7 @@ import shutil
 import os
 from os import path
 import splitfolders
+from pathlib import Path
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from typing import List, Optional
@@ -166,6 +167,8 @@ def cli_main():
         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
 
     trainer.fit(model)
+    Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
+    torch.save(model.encoder.state_dict(), f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.pt")
     
 if __name__ == '__main__':
     cli_main()
