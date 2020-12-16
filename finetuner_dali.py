@@ -179,5 +179,7 @@ def cli_main():
 
     trainer.fit(model)
     
+    torch.save(model.state_dict(), f"./models/Finetune/SIMCLR_Finetune_{version}/SIMCLR_FINETUNE_{version}.pt")
+    
 if __name__ == '__main__':
     cli_main()
