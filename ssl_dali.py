@@ -35,7 +35,7 @@ from encoders_dali import load_encoder
 
 class sslSIMCLR(SimCLR):
 
-  def __init__(self, encoder, DATA_PATH, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
+  def __init__(self, encoder, DATA_PATH, withold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
       #data stuff
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
@@ -43,11 +43,12 @@ class sslSIMCLR(SimCLR):
       self.hidden_dims = hidden_dims
       self.train_transform = train_transform
       self.val_transform = val_transform
+      self.withold = withold
       #self.num_workers = num_workers
       
       shutil.rmtree('split_data', ignore_errors=True)
       if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
-          splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
+          splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split-self.withold, self.val_split, self.withold), seed = 10)
           self.DATA_PATH = 'split_data'
           print('automatically splitting data into train and validation data')
 
@@ -148,7 +149,7 @@ def cli_main():
     lr = args.lr
     patience = args.patience
     val_split = args.val_split
-    withold_train_percent = args.withold_train_percent
+    withold = args.withold_train_percent
     version = args.version
     MODEL_PATH = args.MODEL_PATH
     gpus = args.gpus
@@ -158,7 +159,7 @@ def cli_main():
     encoder = args.encoder
     
     
-    model = sslSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
+    model = sslSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, withold = withold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
     
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
