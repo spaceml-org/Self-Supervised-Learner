@@ -60,6 +60,7 @@ class finetuneSIMCLR(pl.LightningModule):
 
       #model stuff    
       self.eval_acc = Accuracy()
+      print('KWARGS:', kwargs)
       self.encoder, self.embedding_size = load_encoder(encoder, kwargs)
       self.fc1 = nn.Linear(self.embedding_size, self.hidden_dims)
       self.fc2 = nn.Linear(self.hidden_dims, self.num_classes)
