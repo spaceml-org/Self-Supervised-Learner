@@ -38,7 +38,7 @@ from torch.optim import Adam
 
 class finetuneSIMCLR(pl.LightningModule):
 
-  def __init__(self, encoder, DATA_PATH, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
+  def __init__(self, encoder, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
       super().__init__()
 
       self.DATA_PATH = DATA_PATH
@@ -48,13 +48,14 @@ class finetuneSIMCLR(pl.LightningModule):
       self.train_transform = train_transform
       self.val_transform = val_transform
       self.num_workers = num_workers
+      self.withhold = withhold
       
       #data stuff
       shutil.rmtree('split_data', ignore_errors=True)
       if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
-          splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split, self.val_split), seed = 10)
+          splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split-self.withhold, self.val_split, self.withhold), seed = 10)
           self.DATA_PATH = 'split_data'
-          print('automatically splitting data into train and validation data')
+          print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
 
       self.num_classes = len(os.listdir(f'{self.DATA_PATH}/train'))
 
@@ -144,7 +145,7 @@ def cli_main():
     parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for training model")
     parser.add_argument("--patience", default=-1, type=int, help="automatically cuts off training if validation does not drop for (patience) epochs. Leave blank to have no validation based early stopping.")
     parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data")
-    parser.add_argument("--withold_train_percent", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold during finetuning")
+    parser.add_argument("--withhold_split", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold from either training or validation")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--eval", default=True, type=bool, help="Eval Mode will train and evaluate the finetuned model's performance")
     parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
@@ -159,7 +160,7 @@ def cli_main():
     lr = args.lr
     patience = args.patience
     val_split = args.val_split
-    withold_train_percent = args.withold_train_percent
+    withhold = args.withhold_split
     version = args.version
     MODEL_PATH = args.MODEL_PATH
     gpus = args.gpus
@@ -169,7 +170,7 @@ def cli_main():
     encoder = args.encoder
     
     
-    model = finetuneSIMCLR(encoder = encoder, MODEL_PATH = MODEL_PATH, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
+    model = finetuneSIMCLR(encoder = encoder, MODEL_PATH = MODEL_PATH, withhold = withhold, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
         trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
@@ -177,11 +178,6 @@ def cli_main():
         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
 
     trainer.fit(model)
-#     comet_logger = CometLogger(save_dir='logs/')
-#     print('INIT LOGGER HERE ABOVE__________________________')
-#     model = finetuneSIMCLR(encoder = 'resnet18', pretrained = True, DATA_PATH  = DATA_PATH, batch_size = 64, val_split = 0.2, hidden_dims = 128, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = 4)
-#     trainer = Trainer(gpus=1, distributed_backend="ddp", max_epochs=5, logger=comet_logger )
-#     trainer.fit(model)
     
 if __name__ == '__main__':
     cli_main()
