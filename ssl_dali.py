@@ -35,7 +35,7 @@ from encoders_dali import load_encoder
 
 class sslSIMCLR(SimCLR):
 
-  def __init__(self, encoder, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
+  def __init__(self, encoder, epochs, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
       #data stuff
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
@@ -44,6 +44,7 @@ class sslSIMCLR(SimCLR):
       self.train_transform = train_transform
       self.val_transform = val_transform
       self.withhold = withhold
+      self.epochs = epochs
       #self.num_workers = num_workers
       
       shutil.rmtree('split_data', ignore_errors=True)
@@ -56,7 +57,7 @@ class sslSIMCLR(SimCLR):
 
 
       #model stuff    
-      super().__init__(gpus = 1, num_samples = self.num_samples, batch_size = batch_size, dataset = 'None')
+      super().__init__(gpus = 1, num_samples = self.num_samples, batch_size = batch_size, dataset = 'None', max_epochs = epochs)
       self.encoder, self.embedding_size = load_encoder(encoder, kwargs)
       
       class Projection(nn.Module):
@@ -158,8 +159,7 @@ def cli_main():
     pretrain = args.pretrain_encoder
     encoder = args.encoder
     
-    
-    model = sslSIMCLR(encoder = encoder, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
+    model = sslSIMCLR(encoder = encoder, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
     
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
