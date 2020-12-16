@@ -2,7 +2,7 @@ import nvidia.dali.ops as ops
 import nvidia.dali.types as types
 from nvidia.dali.pipeline import Pipeline
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
-from nvidia.dali.plugin.base_iterator import LastBatchPolicy
+#from nvidia.dali.plugin.base_iterator import LastBatchPolicy
 
 class SimCLRFinetuneTrainDataTransform(Pipeline):
     def __init__(self, DATA_PATH, input_height, batch_size, num_threads, device_id):
