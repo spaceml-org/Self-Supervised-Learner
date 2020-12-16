@@ -178,7 +178,7 @@ def cli_main():
         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
 
     trainer.fit(model)
-    Path(f"./models/Finetune/SIMCLR_Finetune_{version}/SIMCLR_FINETUNE_{version}.pt").mkdir(parents=True, exist_ok=True)
+    Path(f"./models/Finetune/SIMCLR_Finetune_{version}").mkdir(parents=True, exist_ok=True)
     torch.save(model.state_dict(), f"./models/Finetune/SIMCLR_Finetune_{version}/SIMCLR_FINETUNE_{version}.pt")
     
 if __name__ == '__main__':
