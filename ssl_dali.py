@@ -43,14 +43,14 @@ class sslSIMCLR(SimCLR):
       self.hidden_dims = hidden_dims
       self.train_transform = train_transform
       self.val_transform = val_transform
-      self.withold = withold
+      self.withhold = withhold
       #self.num_workers = num_workers
       
       shutil.rmtree('split_data', ignore_errors=True)
       if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
-          splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split-self.withold, self.val_split, self.withold), seed = 10)
+          splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split-self.withhold, self.val_split, self.withhold), seed = 10)
           self.DATA_PATH = 'split_data'
-          print('automatically splitting data into train and validation data')
+          print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
 
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
 
@@ -134,7 +134,7 @@ def cli_main():
     parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for training model")
     parser.add_argument("--patience", default=-1, type=int, help="automatically cuts off training if validation does not drop for (patience) epochs. Leave blank to have no validation based early stopping.")
     parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data")
-    parser.add_argument("--withold_train_percent", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold during finetuning")
+    parser.add_argument("--withhold_split", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold from either training or validation")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--eval", default=True, type=bool, help="Eval Mode will train and evaluate the finetuned model's performance")
     parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
@@ -149,7 +149,7 @@ def cli_main():
     lr = args.lr
     patience = args.patience
     val_split = args.val_split
-    withold = args.withold_train_percent
+    withhold = args.withold_train_percent
     version = args.version
     MODEL_PATH = args.MODEL_PATH
     gpus = args.gpus
@@ -159,7 +159,7 @@ def cli_main():
     encoder = args.encoder
     
     
-    model = sslSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, withold = withold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
+    model = sslSIMCLR(encoder = encoder, pretrained = pretrain, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
     
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
