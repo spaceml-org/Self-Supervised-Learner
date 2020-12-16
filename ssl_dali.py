@@ -149,7 +149,7 @@ def cli_main():
     lr = args.lr
     patience = args.patience
     val_split = args.val_split
-    withhold = args.withold_train_percent
+    withhold = args.withhold_split
     version = args.version
     MODEL_PATH = args.MODEL_PATH
     gpus = args.gpus
