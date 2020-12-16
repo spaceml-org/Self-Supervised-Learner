@@ -49,6 +49,8 @@ def load_encoder(encoder_name, kwargs):
         model, embedding_size = miniCNN(), 576
     elif encoder_name == 'resnet18':
         model, embedding_size = resnet18(pretrained=kwargs['pretrained'], first_conv=True, maxpool1=True, return_all_feature_maps=False), 512
+    elif encoder_name == 'resnet50':
+        model, embedding_size = resnet50(pretrained=kwargs['pretrained'], first_conv=True, maxpool1=True, return_all_feature_maps=False), 2048
     else:
         raise Exception('Encoder specified is not supported')
 
