@@ -48,14 +48,16 @@ class sslSIMCLR(SimCLR):
       self.num_workers = num_workers
       self.gpus = gpus
       
+
+  def prepare_data(self):
       shutil.rmtree('split_data', ignore_errors=True)
       if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
           splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split-self.withhold, self.val_split, self.withhold), seed = 10)
           self.DATA_PATH = 'split_data'
           print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
-
+  
+  def setup():
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
-
 
       #model stuff    
       super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = batch_size, dataset = 'None', max_epochs = epochs)
@@ -79,14 +81,11 @@ class sslSIMCLR(SimCLR):
               return F.normalize(x, dim=1)
 
       self.projection = Projection(input_dim = self.embedding_size)
-
-
-  def prepare_data(self):
-
+      
       train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = 0)
       print(f"{self.DATA_PATH}/train")
       val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = 0)
-
+  
       num_samples = self.num_samples
 
       class LightningWrapper(DALIGenericIterator):
@@ -113,10 +112,6 @@ class sslSIMCLR(SimCLR):
 
       self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
       self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
-
-      # self.train_loader = LightningWrapper(train_pipeline, fill_last_batch=False, auto_reset=True, reader_name = "Reader")
-      # self.val_loader = LightningWrapper(val_pipeline, fill_last_batch=False, auto_reset=True, reader_name = "Reader")
-
 
   def train_dataloader(self):
        return self.train_loader
