@@ -56,7 +56,7 @@ class sslSIMCLR(SimCLR):
           self.DATA_PATH = 'split_data'
           print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
   
-  def setup():
+  def setup(self, stage = None):
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
 
       #model stuff    
