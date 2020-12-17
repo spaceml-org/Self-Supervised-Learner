@@ -61,6 +61,7 @@ class finetuneSIMCLR(pl.LightningModule):
 
       #model stuff    
       self.eval_acc = Accuracy()
+      self.val_acc = Accuracy(compute_on_step=False)
       print('KWARGS:', kwargs)
       self.encoder, self.embedding_size = load_encoder(encoder, kwargs)
       self.fc1 = nn.Linear(self.embedding_size, self.hidden_dims)
@@ -84,19 +85,19 @@ class finetuneSIMCLR(pl.LightningModule):
   def training_step(self, batch, batch_idx):
       loss, logits, y = self.shared_step(batch)
       acc = self.eval_acc(logits, y)
-      self.log('train_loss', loss, prog_bar=True)
-      self.log('train_acc_step', acc)
-      self.log('train_acc_epoch', self.eval_acc, prog_bar=True)
+      vacc = self.val_acc(logits, y)
+      self.log('t_loss', loss, prog_bar=True)
+      self.log('tastep', acc, prog_bar=True)
+      self.log('taepoch', vacc, prog_bar=True)
 
       return loss
 
   def validation_step(self, batch, batch_idx):
       with torch.no_grad():
           loss, logits, y = self.shared_step(batch)
-          acc = self.eval_acc(logits, y)
-      self.log('val_loss', loss, prog_bar=True)
-      #self.log('val_acc_step', acc)
-      self.log('val_acc_epoch', self.eval_acc, prog_bar=True)
+          acc = self.val_acc(logits, y)
+      self.log('vloss', loss, prog_bar=True)
+      self.log('vaepoch', acc, on_step=False, on_epoch=True)
 
       return loss
 
