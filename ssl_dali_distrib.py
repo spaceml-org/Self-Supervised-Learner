@@ -47,7 +47,7 @@ class sslSIMCLR(SimCLR):
       self.epochs = epochs
       self.num_workers = num_workers
       self.gpus = gpus
-      self.encoder = encoder
+      self.encoder_name = encoder
       self.kwargs = kwargs
       
 
@@ -63,7 +63,8 @@ class sslSIMCLR(SimCLR):
 
       #model stuff    
       super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
-      self.encoder, self.embedding_size = load_encoder(self.encoder, self.kwargs)
+      print(self.encoder_name)
+      self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
       
       class Projection(nn.Module):
           def __init__(self, input_dim, hidden_dim=2048, output_dim=128):
