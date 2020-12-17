@@ -47,6 +47,8 @@ class sslSIMCLR(SimCLR):
       self.epochs = epochs
       self.num_workers = num_workers
       self.gpus = gpus
+      self.encoder = encoder
+      self.kwargs = kwargs
       
 
   def prepare_data(self):
@@ -60,8 +62,8 @@ class sslSIMCLR(SimCLR):
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
 
       #model stuff    
-      super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = batch_size, dataset = 'None', max_epochs = epochs)
-      self.encoder, self.embedding_size = load_encoder(encoder, kwargs)
+      super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
+      self.encoder, self.embedding_size = load_encoder(self.encoder, self.kwargs)
       
       class Projection(nn.Module):
           def __init__(self, input_dim, hidden_dim=2048, output_dim=128):
