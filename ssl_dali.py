@@ -77,7 +77,7 @@ class sslSIMCLR(SimCLR):
               x = self.l(x)
               return F.normalize(x, dim=1)
 
-      self.projection = Projection(input_dim = self.embedding_size, hidden_dims = self.hidden_dims)
+      self.projection = Projection(input_dim = self.embedding_size, hidden_dim = self.hidden_dims)
 
 
   def prepare_data(self):
