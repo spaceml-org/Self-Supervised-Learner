@@ -25,6 +25,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
+
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
 from pl_bolts.models.self_supervised import SimCLR
 
@@ -161,11 +163,19 @@ def cli_main():
     
     model = sslSIMCLR(encoder = encoder, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
     
+    online_evaluator = SSLOnlineEvaluator(
+      drop_p=0.,
+      hidden_dim=None,
+      z_dim=128,
+      num_classes=4,
+      dataset='None'
+    )
+    
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb, online_evaluator], progress_bar_refresh_rate=5)
     else:
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks = [online_evaluator], progress_bar_refresh_rate=5)
 
     trainer.fit(model)
     Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
