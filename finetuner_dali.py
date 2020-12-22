@@ -104,6 +104,7 @@ class finetuneSIMCLR(pl.LightningModule):
       acc = self.val_acc(logits, y)
       self.log('vloss', loss, prog_bar=True, sync_dist=True)
       self.log('val_acc_epoch', self.val_acc, prog_bar=True)
+      print(self.val_acc)
 
 
       return loss
