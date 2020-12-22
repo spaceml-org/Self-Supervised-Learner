@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
+
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
 from pl_bolts.models.self_supervised import SimCLR
@@ -33,7 +33,7 @@ from pl_bolts.models.self_supervised import SimCLR
 #internal imports
 from transforms_dali import SimCLRTrainDataTransform
 from encoders_dali import load_encoder
-
+from ssl_online import SSLOnlineEvaluator
 
 class sslSIMCLR(SimCLR):
 
