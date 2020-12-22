@@ -81,7 +81,7 @@ class finetuneSIMCLR(pl.LightningModule):
 
   def shared_step(self, batch):
       x, y = batch
-      feats = self.encoder(x)
+      feats = self.encoder(x)[-1]
       feats = feats.view(feats.size(0), -1)
       logits = self.linear_layer(feats)
       loss = self.loss_fn(logits, y)
