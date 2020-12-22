@@ -12,6 +12,7 @@ import os
 from os import path
 import splitfolders
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from pl_bolts.models.self_supervised.evaluator import SSLEvaluator
 
 from typing import List, Optional
 from pytorch_lightning.metrics import Accuracy
@@ -34,7 +35,7 @@ from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIt
 import torch
 from torch.nn import functional as F
 from torch import nn
-from torch.optim import Adam
+from torch.optim import SGD
 
 class finetuneSIMCLR(pl.LightningModule):
 
@@ -64,21 +65,25 @@ class finetuneSIMCLR(pl.LightningModule):
       self.val_acc = Accuracy(compute_on_step=False)
       print('KWARGS:', kwargs)
       self.encoder, self.embedding_size = load_encoder(encoder, kwargs)
-      self.fc1 = nn.Linear(self.embedding_size, self.hidden_dims)
-      self.fc2 = nn.Linear(self.hidden_dims, self.num_classes)
+      
+      self.linear_layer = SSLEvaluator(
+            n_input=self.embedding_size,
+            n_classes=self.num_classes,
+            p=0.1,
+            n_hidden=self.hidden_dims
+       )
 
 
-  def process_batch(self, batch):
-      return batch
-
-  def forward(self, x):
-      x = self.encoder(x)[0]
-      x = F.log_softmax(self.fc1(x), dim = 1)
-      return x
+#   def forward(self, x):
+#       x = self.encoder(x)[0]
+#       x = F.log_softmax(self.fc1(x), dim = 1)
+#       return x
 
   def shared_step(self, batch):
-      x, y = self.process_batch(batch)
-      logits = self(x)
+      x, y = batch
+      feats = self.encoder(x)
+      feats = feats.view(feats.size(0), -1)
+      logits = self.linear_layer(feats)
       loss = self.loss_fn(logits, y)
       return loss, logits, y
 
@@ -107,8 +112,12 @@ class finetuneSIMCLR(pl.LightningModule):
       return F.cross_entropy(logits, labels)
 
   def configure_optimizers(self):
-      params = list(self.encoder.parameters()) + list(self.parameters())
-      return Adam(params, lr=1e-3)
+      opt = SGD([
+                {'params': self.encoder.parameters()},
+                {'params': self.linear_layer.parameters(), 'lr': 0.1}
+            ], lr=1e-4, momentum=0.9)
+      
+      return [opt]
   
   
   def prepare_data(self):
