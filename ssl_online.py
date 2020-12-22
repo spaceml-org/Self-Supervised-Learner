@@ -116,5 +116,5 @@ class SSLOnlineEvaluator(Callback):  # pragma: no-cover
 
         # log metrics
         val_acc = accuracy(mlp_preds, y)
-        pl_module.log('online_val_acc', val_acc, on_step=False, on_epoch=True, sync_dist=True)
+        pl_module.log('online_val_acc', val_acc, on_step=False, on_epoch=True, sync_dist=True, prog_bar = True)
         pl_module.log('online_val_loss', mlp_loss, on_step=False, on_epoch=True, sync_dist=True)
