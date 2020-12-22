@@ -167,7 +167,7 @@ def cli_main():
       drop_p=0.,
       hidden_dim=None,
       z_dim=model.embedding_size,
-      num_classes=4,
+      num_classes=26,
       dataset='None'
     )
     
