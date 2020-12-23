@@ -58,22 +58,17 @@ class sslSIMCLR(SimCLR):
           self.DATA_PATH = 'split_data'
           print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
           
-      self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
-      
-      super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
-      
-      self.register_buffer("DATA_PATH", self.DATA_PATH)
-      self.register_buffer("num_samples", self.num_samples)
+ 
       
   def setup(self, stage = None):
 
-
+      self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
       #model stuff    
       super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
       print(self.encoder_name)
       self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
       
-      
+      print(self.DATA_PATH)
       class Projection(nn.Module):
           def __init__(self, input_dim, hidden_dim=2048, output_dim=128):
               super().__init__()
