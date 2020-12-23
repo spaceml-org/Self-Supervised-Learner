@@ -167,9 +167,9 @@ def cli_main():
     
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5, distributed_backend='ddp' if args.gpus > 1 else None)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5, distributed_backend='ddp2' if args.gpus > 1 else None)
     else:
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, distributed_backend='ddp' if args.gpus > 1 else None)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, distributed_backend='ddp2' if args.gpus > 1 else None)
 
     trainer.fit(model)
     Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
