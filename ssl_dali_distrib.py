@@ -66,7 +66,7 @@ class sslSIMCLR(SimCLR):
       #model stuff    
       super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
       print(self.device, "_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
-      raise "Error" 
+      raise ValueError(f'{self.device}')
       self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
       
       print(self.DATA_PATH)
