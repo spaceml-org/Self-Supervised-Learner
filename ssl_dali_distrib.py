@@ -65,8 +65,8 @@ class sslSIMCLR(SimCLR):
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
       #model stuff    
       super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
-      print(self.device, "_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
-      raise ValueError(f'{self.device}')
+      print(self.global_rank, "_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
+
       self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
       
       print(self.DATA_PATH)
@@ -90,9 +90,9 @@ class sslSIMCLR(SimCLR):
       self.projection = Projection(input_dim = self.embedding_size)
       
       print('Making a pipeline on: ', self.device) 
-      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.device)
+      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
       print(f"{self.DATA_PATH}/train")
-      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.device)
+      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
   
       num_samples = self.num_samples
 
