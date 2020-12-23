@@ -57,7 +57,9 @@ class sslSIMCLR(SimCLR):
           splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split-self.withhold, self.val_split, self.withhold), seed = 10)
           self.DATA_PATH = 'split_data'
           print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
-  
+          
+      self.register_buffer("DATA_PATH", self.DATA_PATH)
+      
   def setup(self, stage = None):
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
 
@@ -65,6 +67,7 @@ class sslSIMCLR(SimCLR):
       super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
       print(self.encoder_name)
       self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
+      
       
       class Projection(nn.Module):
           def __init__(self, input_dim, hidden_dim=2048, output_dim=128):
@@ -85,9 +88,10 @@ class sslSIMCLR(SimCLR):
 
       self.projection = Projection(input_dim = self.embedding_size)
       
-      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = 0)
+      print('Making a pipeline on: ', self.device) 
+      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.device)
       print(f"{self.DATA_PATH}/train")
-      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = 0)
+      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.device)
   
       num_samples = self.num_samples
 
