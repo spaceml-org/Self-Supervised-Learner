@@ -29,10 +29,12 @@ from tqdm import tqdm
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
 from pl_bolts.models.self_supervised import SimCLR
+from ssl_online import SSLOnlineEvaluator
 
 #internal imports
 from transforms_dali import SimCLRTrainDataTransform
 from encoders_dali import load_encoder
+
 
 
 class sslSIMCLR(SimCLR):
@@ -67,7 +69,7 @@ class sslSIMCLR(SimCLR):
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
       #model stuff    
       super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
-      print(self.global_rank, "_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
+      print("_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
 
       self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
       
@@ -89,7 +91,7 @@ class sslSIMCLR(SimCLR):
               x = self.l(x)
               return F.normalize(x, dim=1)
 
-      self.projection = Projection(input_dim = self.embedding_size)
+      self.projection = Projection(input_dim = self.embedding_size, hidden_dim = self.hidden_dims)
       
       print('Making a pipeline on: ', self.device) 
       train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
@@ -170,11 +172,19 @@ def cli_main():
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     model = sslSIMCLR(encoder = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
     
+    online_evaluator = SSLOnlineEvaluator(
+      drop_p=0.,
+      hidden_dim=None,
+      z_dim=model.embedding_size,
+      num_classes=26,
+      dataset='None'
+    )
+      
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5, distributed_backend='dp' if args.gpus > 1 else None, logger = wandb_logger)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks=[cb, online_evaluator], distributed_backend='dp' if args.gpus > 1 else None, logger = wandb_logger)
     else:
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, distributed_backend='dp' if args.gpus > 1 else None, logger = wandb_logger)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = [online_evaluator], distributed_backend='dp' if args.gpus > 1 else None, logger = wandb_logger)
 
     trainer.fit(model)
     Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
