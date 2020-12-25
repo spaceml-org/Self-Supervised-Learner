@@ -204,8 +204,10 @@ def cli_main():
     trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
     
     print('USING BACKEND______________________________ ', backend)
+    trainer.fit(model)
+    
     Path(f"./models/Finetune/SIMCLR_Finetune_{version}").mkdir(parents=True, exist_ok=True)
-    #trainer.save_checkpoint(f"./models/Finetune/SIMCLR_Finetune_{version}/SIMCLR_FINETUNE_{version}.ckpt")
+    trainer.save_checkpoint(f"./models/Finetune/SIMCLR_Finetune_{version}/SIMCLR_FINETUNE_{version}.ckpt")
     #torch.save(combine.state_dict(), )
     
 if __name__ == '__main__':
