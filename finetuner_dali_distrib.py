@@ -13,6 +13,8 @@ from os import path
 import splitfolders
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
+from pytorch_lightning.loggers import WandbLogger
+
 from typing import List, Optional
 from pytorch_lightning.metrics import Accuracy
 from pathlib import Path
@@ -151,6 +153,7 @@ def cli_main():
     parser.add_argument("--eval", default=True, type=bool, help="Eval Mode will train and evaluate the finetuned model's performance")
     parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
+    parser.add_argument("--log_name", type=str, help="name of project to log on wandb")
     
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH
@@ -169,14 +172,16 @@ def cli_main():
     version = args.version
     pretrain = args.pretrain_encoder
     encoder = args.encoder
+    log_name = args.log_name
     
-    
+    wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     model = finetuneSIMCLR(encoder = encoder, gpus = gpus, MODEL_PATH = MODEL_PATH, withhold = withhold, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
+    
     if patience > 0:
         cb = EarlyStopping('val_acc_epoch', patience = patience, mode='max')
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5, distributed_backend='ddp' if args.gpus > 1 else None)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, callbacks=[cb], progress_bar_refresh_rate=5, distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger)
     else:
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, distributed_backend='ddp' if args.gpus > 1 else None)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger)
 
     trainer.fit(model)
     Path(f"./models/Finetune/SIMCLR_Finetune_{version}").mkdir(parents=True, exist_ok=True)
