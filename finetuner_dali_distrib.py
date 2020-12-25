@@ -14,6 +14,8 @@ import splitfolders
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pl_bolts.models.self_supervised.evaluator import SSLEvaluator
 
+from pytorch_lightning.loggers import WandbLogger
+
 from typing import List, Optional
 from pytorch_lightning.metrics import Accuracy
 from pathlib import Path
