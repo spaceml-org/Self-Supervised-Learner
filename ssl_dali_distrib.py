@@ -150,6 +150,7 @@ def cli_main():
     parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
     parser.add_argument("--log_name", type=str, help="name of project to log on wandb")
+    parser.add_argument("--online_eval", default=False, type=bool, help="Do finetuning on model if labels are provided as a sanity check")
     
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH
@@ -169,6 +170,7 @@ def cli_main():
     pretrain = args.pretrain_encoder
     encoder = args.encoder
     log_name = args.log_name
+    online_eval = args.online_eval
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     model = sslSIMCLR(encoder = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
@@ -180,19 +182,19 @@ def cli_main():
       num_classes=21,
       dataset='None'
     )
-      
+    cbs = []
+    backend = 'ddp'
+    
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks=[cb, online_evaluator], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
-    else:
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = [online_evaluator], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
+        cbs.append(cb)
     
-#     if patience > 0:
-#         cb = EarlyStopping('val_loss', patience = patience)
-#         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks=[cb], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
-#     else:
-#         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = [None], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
-
+    if online_eval:
+        cbs.append(online_evaluator)
+        backend = 'ddp'
+        
+    trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
+    
     trainer.fit(model)
     Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
     torch.save(model.encoder.state_dict(), f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.pt")
