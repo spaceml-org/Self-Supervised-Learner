@@ -33,7 +33,7 @@ from ssl_online import SSLOnlineEvaluator
 
 #internal imports
 from transforms_dali import SimCLRTrainDataTransform
-from encoders_dali import load_encoder
+from encoders_dali import load_encoder, get_size
 
 
 
@@ -53,7 +53,7 @@ class sslSIMCLR(SimCLR):
       self.gpus = gpus
       self.encoder_name = encoder
       self.kwargs = kwargs
-      
+      self.embedding_size = get_size(self.encoder_name, self.kwargs)
 
   def prepare_data(self):
       shutil.rmtree('split_data', ignore_errors=True)
