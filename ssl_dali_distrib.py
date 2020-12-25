@@ -176,7 +176,7 @@ def cli_main():
       drop_p=0.,
       hidden_dim=None,
       z_dim=576,
-      num_classes=4,
+      num_classes=21,
       dataset='None'
     )
       
