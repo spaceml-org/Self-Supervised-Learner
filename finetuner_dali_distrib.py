@@ -64,6 +64,7 @@ class finetuneSIMCLR(pl.LightningModule):
           
   def setup(self, stage = None):
       super().__init__()
+      self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
       self.num_classes = len(os.listdir(f'{self.DATA_PATH}/train'))
 
       #model stuff    
