@@ -82,18 +82,49 @@ class finetuneSIMCLR(pl.LightningModule):
       train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
       print(f"{self.DATA_PATH}/train")
       val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+  
+      num_samples = self.num_samples
 
-      class LightningWrapper(DALIClassificationIterator):
+      class LightningWrapper(DALIGenericIterator):
           def __init__(self, *kargs, **kvargs):
               super().__init__(*kargs, **kvargs)
 
           def __next__(self):
               out = super().__next__()
               out = out[0]
-              return [out[k] if k != "label" else torch.squeeze(out[k]) for k in self.output_map]
+              return tuple([out[k] for k in self.output_map[:-1]]), torch.squeeze(out[self.output_map[-1]])
 
-      self.train_loader = LightningWrapper(train_pipeline, fill_last_batch=False, auto_reset=True, reader_name = "Reader")
-      self.val_loader = LightningWrapper(val_pipeline, fill_last_batch=False, auto_reset=True, reader_name = "Reader")
+          def __len__(self):
+            return num_samples//self.batch_size
+
+
+      train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
+      train_labels.append('label')
+
+      val_labels = [f'im{i}' for i in range(1, val_pipeline.COPIES+1)]
+      val_labels.append('label')
+
+      size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+
+
+      self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
+      self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
+      
+#       train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+#       print(f"{self.DATA_PATH}/train")
+#       val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+
+#       class LightningWrapper(DALIClassificationIterator):
+#           def __init__(self, *kargs, **kvargs):
+#               super().__init__(*kargs, **kvargs)
+
+#           def __next__(self):
+#               out = super().__next__()
+#               out = out[0]
+#               return [out[k] if k != "label" else torch.squeeze(out[k]) for k in self.output_map]
+
+#       self.train_loader = LightningWrapper(train_pipeline, fill_last_batch=False, auto_reset=True, reader_name = "Reader")
+#       self.val_loader = LightningWrapper(val_pipeline, fill_last_batch=False, auto_reset=True, reader_name = "Reader")
 
 
 #   def forward(self, x):
