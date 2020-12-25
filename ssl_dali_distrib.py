@@ -93,7 +93,6 @@ class sslSIMCLR(SimCLR):
 
       self.projection = Projection(input_dim = self.embedding_size, hidden_dim = self.hidden_dims)
       
-      print('Making a pipeline on: ', self.device) 
       train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
       print(f"{self.DATA_PATH}/train")
       val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
