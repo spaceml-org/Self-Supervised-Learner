@@ -53,7 +53,7 @@ class sslSIMCLR(SimCLR):
       self.gpus = gpus
       self.encoder_name = encoder
       self.kwargs = kwargs
-      self.embedding_size = get_size(self.encoder_name, self.kwargs)
+      #self.embedding_size = get_size(self.encoder_name, self.kwargs)
 
   def prepare_data(self):
       shutil.rmtree('split_data', ignore_errors=True)
@@ -175,8 +175,8 @@ def cli_main():
     online_evaluator = SSLOnlineEvaluator(
       drop_p=0.,
       hidden_dim=None,
-      z_dim=model.embedding_size,
-      num_classes=26,
+      z_dim=576,
+      num_classes=4,
       dataset='None'
     )
       
