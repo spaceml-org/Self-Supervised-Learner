@@ -70,7 +70,7 @@ class sslSIMCLR(SimCLR):
       
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
       #model stuff    
-      super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
+      super().__init__(gpus = 1, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
       print("_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
 
       self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
