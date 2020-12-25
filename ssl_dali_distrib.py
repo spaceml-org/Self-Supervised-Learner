@@ -183,7 +183,7 @@ def cli_main():
       dataset='None'
     )
     cbs = []
-    backend = 'ddp'
+    backend = 'dp'
     
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
