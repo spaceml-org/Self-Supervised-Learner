@@ -171,19 +171,25 @@ def cli_main():
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     model = sslSIMCLR(encoder = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
     
-    online_evaluator = SSLOnlineEvaluator(
-      drop_p=0.,
-      hidden_dim=None,
-      z_dim=576,
-      num_classes=21,
-      dataset='None'
-    )
+#     online_evaluator = SSLOnlineEvaluator(
+#       drop_p=0.,
+#       hidden_dim=None,
+#       z_dim=576,
+#       num_classes=21,
+#       dataset='None'
+#     )
       
+#     if patience > 0:
+#         cb = EarlyStopping('val_loss', patience = patience)
+#         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks=[cb, online_evaluator], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
+#     else:
+#         trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = [online_evaluator], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
+    
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks=[cb, online_evaluator], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks=[cb], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
     else:
-        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = [online_evaluator], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
+        trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = [None], distributed_backend='ddp' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
 
     trainer.fit(model)
     Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
