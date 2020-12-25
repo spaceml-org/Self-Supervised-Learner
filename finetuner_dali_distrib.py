@@ -219,21 +219,16 @@ def cli_main():
     pretrain = args.pretrain_encoder
     encoder = args.encoder
     log_name = args.log_name
-    online_eval = args.online_eval
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     model = finetuneSIMCLR(encoder = encoder, MODEL_PATH = MODEL_PATH, withhold = withhold, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
     
     cbs = []
-    backend = 'dp'
+    backend = 'ddp'
     
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
         cbs.append(cb)
-    
-    if online_eval:
-        cbs.append(online_evaluator)
-        backend = 'ddp'
         
     trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
     
