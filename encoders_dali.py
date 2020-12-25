@@ -59,3 +59,13 @@ def load_encoder(encoder_name, kwargs):
         model.load_state_dict(torch.load(kwargs['MODEL_PATH']))
 
     return model, embedding_size
+  
+def get_size(encoder_name, kwargs):
+    if encoder_name == 'minicnn':
+        return 576
+    elif encoder_name == 'resnet18':
+        return 512
+    elif encoder_name == 'resnet50':
+        return 2048
+    else:
+        raise Exception('Encoder specified is not supported')
