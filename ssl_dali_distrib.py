@@ -29,7 +29,7 @@ from tqdm import tqdm
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
 from pl_bolts.models.self_supervised import SimCLR
-from ssl_online import SSLOnlineEvaluator
+from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 
 #internal imports
 from transforms_dali import SimCLRTrainDataTransform
