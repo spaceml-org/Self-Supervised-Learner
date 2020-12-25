@@ -52,6 +52,7 @@ class finetuneSIMCLR(pl.LightningModule):
       self.val_transform = val_transform
       self.num_workers = num_workers
       self.withhold = withhold
+      self.encoder_name = encoder
       self.kwargs = kwargs
       
       #data stuff
@@ -69,7 +70,7 @@ class finetuneSIMCLR(pl.LightningModule):
       self.train_acc = Accuracy()
       self.val_acc = Accuracy(compute_on_step=False)
       print('KWARGS:', self.kwargs)
-      self.encoder, self.embedding_size = load_encoder(encoder, self.kwargs)
+      self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
       
       self.linear_layer = SSLEvaluator(
             n_input=self.embedding_size,
