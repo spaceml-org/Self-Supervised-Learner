@@ -37,7 +37,7 @@ from encoders_dali import load_encoder
 
 class sslSIMCLR(SimCLR):
 
-  def __init__(self, encoder, epochs, gpus, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
+  def __init__(self, encoder_name, epochs, gpus, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
       #data stuff
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
@@ -49,7 +49,7 @@ class sslSIMCLR(SimCLR):
       self.epochs = epochs
       self.num_workers = num_workers
       self.gpus = gpus
-      self.encoder = encoder
+      self.encoder_name = encoder_name
       self.kwargs = kwargs
       
       shutil.rmtree('split_data', ignore_errors=True)
@@ -64,7 +64,7 @@ class sslSIMCLR(SimCLR):
       
       print("_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
       
-      self.encoder, self.embedding_size = load_encoder(encoder, self.kwargs)
+      self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
       
       class Projection(nn.Module):
           def __init__(self, input_dim, hidden_dim=2048, output_dim=128):
@@ -167,7 +167,7 @@ def cli_main():
     online_eval = args.online_eval
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
-    model = sslSIMCLR(encoder = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
+    model = sslSIMCLR(encoder_name = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
     
     if MODEL_PATH is not None:
         print('Resuming SSL Training from Model Checkpoint')
