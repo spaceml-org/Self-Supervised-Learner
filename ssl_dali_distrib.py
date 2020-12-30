@@ -163,7 +163,7 @@ def cli_main():
     version = args.version
     pretrain = args.pretrain_encoder
     encoder = args.encoder
-    log_name = args.log_name
+    log_name = args.version
     online_eval = args.online_eval
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
