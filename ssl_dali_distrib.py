@@ -150,7 +150,6 @@ def cli_main():
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
     parser.add_argument("--log_name", type=str, help="name of project to log on wandb")
     parser.add_argument("--online_eval", default=False, type=bool, help="Do finetuning on model if labels are provided as a sanity check")
-    parser.add_argument("--MODEL_PATH", default=None, type=str, help="path to model checkpoint.")
     
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH
@@ -171,7 +170,6 @@ def cli_main():
     encoder = args.encoder
     log_name = args.log_name
     online_eval = args.online_eval
-    MODEL_PATH = args.MODEL_PATH
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     model = sslSIMCLR(encoder = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
