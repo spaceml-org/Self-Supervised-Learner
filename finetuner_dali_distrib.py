@@ -1,5 +1,5 @@
 #internal imports
-
+from ssl_dali_distrib import SIMCLR
 from transforms_dali import SimCLRFinetuneTrainDataTransform
 from encoders_dali import load_encoder
 
@@ -31,19 +31,15 @@ from tqdm import tqdm
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
 
-
-
-
 import torch
 from torch.nn import functional as F
 from torch import nn
 from torch.optim import SGD
 
-class finetuneSIMCLR(pl.LightningModule):
+class finetuner(pl.LightningModule):
 
-  def __init__(self, encoder, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
+  def __init__(self, encoder_name, DATA_PATH, MODEL_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
       
-
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
       self.batch_size = batch_size
@@ -52,8 +48,9 @@ class finetuneSIMCLR(pl.LightningModule):
       self.val_transform = val_transform
       self.num_workers = num_workers
       self.withhold = withhold
-      self.encoder_name = encoder
       self.kwargs = kwargs
+      self.encoder_name = encoder_name
+      self.MODEL_PATH = MODEL_PATH
       
       #data stuff
       shutil.rmtree('split_data', ignore_errors=True)
@@ -62,16 +59,28 @@ class finetuneSIMCLR(pl.LightningModule):
           self.DATA_PATH = 'split_data'
           print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
           
-  def setup(self, stage = None):
       super().__init__()
+      self.save_hyperparameters()
+      
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
       self.num_classes = len(os.listdir(f'{self.DATA_PATH}/train'))
 
       #model stuff    
       self.train_acc = Accuracy()
       self.val_acc = Accuracy(compute_on_step=False)
-      print('KWARGS:', self.kwargs)
-      self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
+      
+      if self.MODEL_PATH is not None:
+          print('Using Model Checkpoint and will search for encoder object of type nn.Module inside pl.LightningModule object saved')
+          simclr = SIMCLR.load_from_checkpoint(checkpoint_path=MODEL_PATH)
+          self.encoder = model.encoder
+          self.embedding_size = model.embedding_size
+          
+          if self.kwargs['encoder_name'] is not None:
+              print('WARNING: You specified a model path to use as an encoder for finetuning but also specified an encoder_name. If a model path is specified, encoder_name, which inits the encoder from scratch is ignored.")
+          
+      else:
+          print('Initializing encoder from scratch')
+          self.encoder, self.embedding_size = load_encoder(self.kwargs['encoder_name'], self.kwargs)
       
       self.linear_layer = SSLEvaluator(
             n_input=self.embedding_size,
@@ -79,7 +88,10 @@ class finetuneSIMCLR(pl.LightningModule):
             p=0.1,
             n_hidden=self.hidden_dims
        )
-      
+          
+  def setup(self, stage = None):
+
+      #each gpu gets its own DALI loader
       train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
       print(f"{self.DATA_PATH}/train")
       val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
@@ -172,8 +184,6 @@ class finetuneSIMCLR(pl.LightningModule):
             ], lr=1e-4, momentum=0.9)
       
       return [opt]
-  
-
 
   def train_dataloader(self):
        return self.train_loader
@@ -215,13 +225,12 @@ def cli_main():
     MODEL_PATH = args.MODEL_PATH
     gpus = args.gpus
     eval_model = args.eval
-    version = args.version
     pretrain = args.pretrain_encoder
     encoder = args.encoder
-    log_name = args.log_name
+    log_name = 'FineTune_' + args.log_name + '.ckpt'
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
-    model = finetuneSIMCLR(encoder = encoder, MODEL_PATH = MODEL_PATH, withhold = withhold, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
+    model = finetuner(encoder = encoder, MODEL_PATH = MODEL_PATH, withhold = withhold, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
     
     cbs = []
     backend = 'ddp'
@@ -235,9 +244,8 @@ def cli_main():
     print('USING BACKEND______________________________ ', backend)
     trainer.fit(model)
     
-    Path(f"./models/Finetune/SIMCLR_Finetune_{version}").mkdir(parents=True, exist_ok=True)
-    trainer.save_checkpoint(f"./models/Finetune/SIMCLR_Finetune_{version}/SIMCLR_FINETUNE_{version}.ckpt")
-    #torch.save(combine.state_dict(), )
+    Path(f"./models/FineTune").mkdir(parents=True, exist_ok=True)
+    trainer.save_checkpoint(f"./models/FineTune/{log_name}")
     
 if __name__ == '__main__':
     cli_main()
