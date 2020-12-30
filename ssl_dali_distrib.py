@@ -35,7 +35,7 @@ from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 from transforms_dali import SimCLRTrainDataTransform
 from encoders_dali import load_encoder
 
-class sslSIMCLR(SimCLR):
+class SIMCLR(SimCLR):
 
   def __init__(self, encoder_name, epochs, gpus, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
       #data stuff
@@ -167,11 +167,13 @@ def cli_main():
     online_eval = args.online_eval
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
-    model = sslSIMCLR(encoder_name = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
+    
     
     if MODEL_PATH is not None:
         print('Resuming SSL Training from Model Checkpoint')
-        model = model.load_from_checkpoint(checkpoint_path=MODEL_PATH)
+        model = SIMCLR.load_from_checkpoint(checkpoint_path=MODEL_PATH)     
+    else:
+        model = SIMCLR(encoder_name = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
         
     online_evaluator = SSLOnlineEvaluator(
       drop_p=0.,
