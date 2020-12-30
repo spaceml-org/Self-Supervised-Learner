@@ -158,7 +158,6 @@ def cli_main():
     MODEL_PATH = args.MODEL_PATH
     gpus = args.gpus
     eval_model = args.eval
-    version = args.version
     pretrain = args.pretrain_encoder
     encoder = args.encoder
     log_name = 'SIMCLR_SSL_' + args.log_name + '.ckpt'
