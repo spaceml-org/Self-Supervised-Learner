@@ -198,7 +198,8 @@ def cli_main():
     print('USING BACKEND______________________________ ', backend)
     trainer.fit(model)
     Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
-    torch.save(model.encoder.state_dict(), f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.pt")
+    trainer.save_checkpoint(f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.ckpt")
+    #torch.save(model.encoder.state_dict(), f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.pt")
     
 if __name__ == '__main__':
     cli_main()
