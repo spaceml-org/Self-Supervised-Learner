@@ -142,8 +142,7 @@ def cli_main():
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--eval", default=True, type=bool, help="Eval Mode will train and evaluate the finetuned model's performance")
     parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
-    parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
-    parser.add_argument("--log_name", type=str, help="name of project to log on wandb")
+    parser.add_argument("--log_name", type=str, help="name of model to log on wandb and locally")
     parser.add_argument("--online_eval", default=False, type=bool, help="Do finetuning on model if labels are provided as a sanity check")
     
     args = parser.parse_args()
@@ -156,19 +155,17 @@ def cli_main():
     patience = args.patience
     val_split = args.val_split
     withhold = args.withhold_split
-    version = args.version
     MODEL_PATH = args.MODEL_PATH
     gpus = args.gpus
     eval_model = args.eval
     version = args.version
     pretrain = args.pretrain_encoder
     encoder = args.encoder
-    log_name = args.version
+    log_name = 'SIMCLR_SSL_' + args.log_name + '.ckpt'
     online_eval = args.online_eval
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
-    
-    
+        
     if MODEL_PATH is not None:
         print('Resuming SSL Training from Model Checkpoint')
         model = SIMCLR.load_from_checkpoint(checkpoint_path=MODEL_PATH)     
@@ -197,8 +194,8 @@ def cli_main():
     
     print('USING BACKEND______________________________ ', backend)
     trainer.fit(model)
-    Path(f"./models/SSL/SIMCLR_SSL_{version}").mkdir(parents=True, exist_ok=True)
-    trainer.save_checkpoint(f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.ckpt")
+    Path(f"./models/SSL").mkdir(parents=True, exist_ok=True)
+    trainer.save_checkpoint(f"./models/SSL/{log_name}")
     #torch.save(model.encoder.state_dict(), f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.pt")
     
 if __name__ == '__main__':
