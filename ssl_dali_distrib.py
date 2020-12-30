@@ -64,7 +64,7 @@ class sslSIMCLR(SimCLR):
       
       print("_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
       
-      self.encoder, self.embedding_size = load_encoder(self.encoder, self.kwargs)
+      self.encoder, self.embedding_size = load_encoder(encoder, self.kwargs)
       
       class Projection(nn.Module):
           def __init__(self, input_dim, hidden_dim=2048, output_dim=128):
