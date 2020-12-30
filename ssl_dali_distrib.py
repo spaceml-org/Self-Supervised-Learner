@@ -61,8 +61,6 @@ class sslSIMCLR(SimCLR):
           self.DATA_PATH = 'split_data'
           print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
 
-  #def prepare_data(self):
-
           
  
       
@@ -76,6 +74,7 @@ class sslSIMCLR(SimCLR):
       self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
       
       print(self.DATA_PATH)
+      
       class Projection(nn.Module):
           def __init__(self, input_dim, hidden_dim=2048, output_dim=128):
               super().__init__()
@@ -151,6 +150,7 @@ def cli_main():
     parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
     parser.add_argument("--log_name", type=str, help="name of project to log on wandb")
     parser.add_argument("--online_eval", default=False, type=bool, help="Do finetuning on model if labels are provided as a sanity check")
+    parser.add_argument("--MODEL_PATH", default=None, type=str, help="path to model checkpoint.")
     
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH
@@ -171,10 +171,15 @@ def cli_main():
     encoder = args.encoder
     log_name = args.log_name
     online_eval = args.online_eval
+    MODEL_PATH = args.MODEL_PATH
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     model = sslSIMCLR(encoder = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, MODEL_PATH = MODEL_PATH, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
     
+    if MODEL_PATH is not None:
+        print('Resuming SSL Training from Model Checkpoint')
+        model = model.load_from_checkpoint(checkpoint_path=MODEL_PATH)
+        
     online_evaluator = SSLOnlineEvaluator(
       drop_p=0.,
       hidden_dim=None,
