@@ -220,7 +220,7 @@ def cli_main():
             try:
                 simclr = SIMCLR.load_from_checkpoint(checkpoint_path=encoder)
                 encoder = simclr.encoder
-                embedding_size = model.embedding_size
+                embedding_size = simclr.embedding_size
                 model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr)
             except Exception as e:
                 print(e)
