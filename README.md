@@ -1,7 +1,7 @@
 # SpaceForce-DataSearch
 A tool to help scientists using satellite imagery of specific phenomena to find similar images to rapidly curate a dataset for scientific studies
 
-Requirements: GPU with CUDA 10+ enabled, requirements.txt
+__Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
 Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
 
