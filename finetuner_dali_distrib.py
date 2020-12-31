@@ -48,7 +48,6 @@ class finetuner(pl.LightningModule):
       self.val_transform = val_transform
       self.num_workers = num_workers
       self.withhold = withhold
-      self.kwargs = kwargs
       self.encoder = encoder
       self.embedding_size = embedding_size
       self.lr = lr
