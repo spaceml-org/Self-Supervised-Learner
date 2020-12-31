@@ -100,32 +100,8 @@ class finetuner(pl.LightningModule):
       val_labels.append('label')
 
       size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
-
-
       self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
       self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
-      
-#       train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-#       print(f"{self.DATA_PATH}/train")
-#       val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-
-#       class LightningWrapper(DALIClassificationIterator):
-#           def __init__(self, *kargs, **kvargs):
-#               super().__init__(*kargs, **kvargs)
-
-#           def __next__(self):
-#               out = super().__next__()
-#               out = out[0]
-#               return [out[k] if k != "label" else torch.squeeze(out[k]) for k in self.output_map]
-
-#       self.train_loader = LightningWrapper(train_pipeline, fill_last_batch=False, auto_reset=True, reader_name = "Reader")
-#       self.val_loader = LightningWrapper(val_pipeline, fill_last_batch=False, auto_reset=True, reader_name = "Reader")
-
-
-#   def forward(self, x):
-#       x = self.encoder(x)[0]
-#       x = F.log_softmax(self.fc1(x), dim = 1)
-#       return x
 
   def shared_step(self, batch):
       x, y = batch
@@ -152,8 +128,6 @@ class finetuner(pl.LightningModule):
       acc = self.val_acc(logits, y)
       self.log('val_loss', loss, prog_bar=True, sync_dist=True)
       self.log('val_acc_epoch', self.val_acc, prog_bar=True)
-
-
       return loss
 
   def loss_fn(self, logits, labels):
@@ -210,7 +184,6 @@ def cli_main():
         try:
             model = finetuner.load_from_checkpoint(checkpoint_path=encoder)
         except Exception as e:
-            print(e)
             print('Did not initialize as a finetuner. Trying to initializing model as an SSL checkpoint...')
             try:
                 simclr = SIMCLR.load_from_checkpoint(checkpoint_path=encoder)
