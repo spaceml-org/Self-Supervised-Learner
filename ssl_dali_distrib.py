@@ -161,11 +161,13 @@ def cli_main():
     checkpointed = '.ckpt' in encoder    
     if checkpointed:
         print('Resuming SSL Training from Model Checkpoint')
-        #try:
-        model = SIMCLR.load_from_checkpoint(checkpoint_path=encoder)
-        #except:
-        #    print('invalid checkpoint to initialize SIMCLR. This checkpoint needs to include the encoder and projection and is of the SIMCLR class from this library. Will try to initialize just the encoder')
-        #    checkpointed = False 
+        try:
+            model = SIMCLR.load_from_checkpoint(checkpoint_path=encoder)
+            embedding_size = model.embedding_size
+        except Exception as e:
+            print(e)
+            print('invalid checkpoint to initialize SIMCLR. This checkpoint needs to include the encoder and projection and is of the SIMCLR class from this library. Will try to initialize just the encoder')
+            checkpointed = False 
             
     elif not checkpointed:
         encoder, embedding_size = load_encoder(encoder)
