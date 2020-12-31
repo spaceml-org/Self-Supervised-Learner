@@ -214,7 +214,7 @@ def cli_main():
     if checkpointed:
         print('Trying to initializing model as a finetuner checkpoint...')
         try:
-            model = finetuner.loader_from_checkpoint(checkpoint_path=encoder)
+            model = finetuner.load_from_checkpoint(checkpoint_path=encoder)
         except Exception as e:
             print(e)
             print('Did not initialize as a finetuner. Trying to initializing model as an SSL checkpoint...')
