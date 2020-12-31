@@ -20,7 +20,6 @@ from pathlib import Path
 from argparse import ArgumentParser
 
 from sklearn.metrics import f1_score, accuracy_score
-from tqdm import tqdm
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
 from pl_bolts.models.self_supervised import SimCLR
