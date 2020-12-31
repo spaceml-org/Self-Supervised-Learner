@@ -39,7 +39,7 @@ from torch.optim import SGD
 class finetuner(pl.LightningModule):
 
   def __init__(self, DATA_PATH, encoder, embedding_size, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr):
-      
+      super().__init__()
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
       self.batch_size = batch_size
@@ -59,7 +59,7 @@ class finetuner(pl.LightningModule):
           self.DATA_PATH = 'split_data'
           print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
           
-      super().__init__()
+      
       self.save_hyperparameters()
       
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
