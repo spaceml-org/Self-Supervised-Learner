@@ -48,24 +48,28 @@ def load_encoder(encoder_name, kwargs):
     if encoder_name == 'minicnn':
         model, embedding_size = miniCNN(), 576
     elif encoder_name == 'resnet18':
-        model, embedding_size = resnet18(pretrained=kwargs['pretrained'], first_conv=True, maxpool1=True, return_all_feature_maps=False), 512
+        model, embedding_size = resnet18(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False), 512
+    elif encoder_name == 'imagenet_resnet18':
+        model, embedding_size = resnet18(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False), 512
     elif encoder_name == 'resnet50':
-        model, embedding_size = resnet50(pretrained=kwargs['pretrained'], first_conv=True, maxpool1=True, return_all_feature_maps=False), 2048
+        model, embedding_size = resnet50(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False), 2048
+    elif encoder_name == 'imagenet_resnet50':
+        model, embedding_size = resnet50(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False), 2048
+    
+    #try to load encoder from checkpoint
+    elif '.ckpt' in encoder_name:
+        print('Trying to initialize just the encoder from the checkpoint')
+        try:
+          model = torch.load(encoder_name)
+        except:
+          raise Exception('Encoder could not be loaded from path')
+        try:
+          embedding_size = model.embedding_size
+        except:
+          raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
+          
     else:
-        raise Exception('Encoder specified is not supported')
-
-#     if 'MODEL_PATH' in kwargs and kwargs['MODEL_PATH'] is not None:
-#         print('Loading Model from save path')
-#         model.load_state_dict(torch.load(kwargs['MODEL_PATH']))
+        raise Exception('Encoder specified not supported')
 
     return model, embedding_size
   
-def get_size(encoder_name, kwargs):
-    if encoder_name == 'minicnn':
-        return 576
-    elif encoder_name == 'resnet18':
-        return 512
-    elif encoder_name == 'resnet50':
-        return 2048
-    else:
-        raise Exception('Encoder specified is not supported')
