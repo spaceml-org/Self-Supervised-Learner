@@ -37,7 +37,7 @@ from encoders_dali import load_encoder
 
 class SIMCLR(SimCLR):
 
-  def __init__(self, encoder_name, epochs, gpus, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
+  def __init__(self, encoder, embedding_size, epochs, gpus, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr):
       #data stuff
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
@@ -49,10 +49,10 @@ class SIMCLR(SimCLR):
       self.epochs = epochs
       self.num_workers = num_workers
       self.gpus = gpus
-      self.encoder_name = encoder_name
-      self.kwargs = kwargs
+      self.lr = lr
       
       shutil.rmtree('split_data', ignore_errors=True)
+      
       if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
           splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split-self.withhold, self.val_split, self.withhold), seed = 10)
           self.DATA_PATH = 'split_data'
@@ -60,11 +60,11 @@ class SIMCLR(SimCLR):
           
       self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
       super().__init__(gpus = 1, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
+      self.encoder = encoder
+      self.num_classes = len(os.listdir(f'{self.DATA_PATH}/train'))
       self.save_hyperparameters()
       
       print("_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
-      
-      self.encoder, self.embedding_size = load_encoder(self.encoder_name, self.kwargs)
       
       class Projection(nn.Module):
           def __init__(self, input_dim, hidden_dim=2048, output_dim=128):
@@ -107,7 +107,6 @@ class SIMCLR(SimCLR):
           def __len__(self):
             return num_samples//self.batch_size
 
-
       train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
       train_labels.append('label')
 
@@ -129,8 +128,8 @@ class SIMCLR(SimCLR):
 def cli_main():
     parser = ArgumentParser()
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
-    parser.add_argument("--MODEL_PATH", default=None, type=str, help="path to model checkpoint.")
-    parser.add_argument("--encoder", default=None , type=str, help="encoder for model found in encoders.py")
+    parser.add_argument("--MODEL_PATH", default=None, type=str, help="path to SIMCLR Model checkpoint to resume training.")
+    parser.add_argument("--encoder", default=None , type=str, help="encoder to initialize. Can accept SimCLR model and infer encoder but will ignore projection weights")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
@@ -140,8 +139,6 @@ def cli_main():
     parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data")
     parser.add_argument("--withhold_split", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold from either training or validation")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
-    parser.add_argument("--eval", default=True, type=bool, help="Eval Mode will train and evaluate the finetuned model's performance")
-    parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
     parser.add_argument("--log_name", type=str, help="name of model to log on wandb and locally")
     parser.add_argument("--online_eval", default=False, type=bool, help="Do finetuning on model if labels are provided as a sanity check")
     
@@ -157,8 +154,6 @@ def cli_main():
     withhold = args.withhold_split
     MODEL_PATH = args.MODEL_PATH
     gpus = args.gpus
-    eval_model = args.eval
-    pretrain = args.pretrain_encoder
     encoder = args.encoder
     log_name = 'SIMCLR_SSL_' + args.log_name + '.ckpt'
     online_eval = args.online_eval
@@ -167,17 +162,23 @@ def cli_main():
         
     if MODEL_PATH is not None:
         print('Resuming SSL Training from Model Checkpoint')
-        model = SIMCLR.load_from_checkpoint(checkpoint_path=MODEL_PATH)     
+        model = SIMCLR.load_from_checkpoint(checkpoint_path=MODEL_PATH)
+        
+        if encoder is not None:
+            print('WARNING: you specified an encoder but also specified a SIMCLR checkpoint. This will result in your encoder changing but your projection head being initialized from your checkpoint and will error if the projection head expects a different embedding size.')
+            model.encoder, _ = load_encoder(encoder) 
     else:
-        model = SIMCLR(encoder_name = encoder, gpus = gpus, epochs = epochs, pretrained = pretrain, DATA_PATH  = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers)
+        encoder, embedding_size = load_encoder(encoder)
+        model = SIMCLR(encoder = encoder, embedding_size = embedding_size, gpus = gpus, epochs = epochs, DATA_PATH = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers, lr = lr)
         
     online_evaluator = SSLOnlineEvaluator(
       drop_p=0.,
       hidden_dim=None,
-      z_dim=576,
-      num_classes=21,
+      z_dim=embedding_size,
+      num_classes=model.num_classes,
       dataset='None'
     )
+    
     cbs = []
     backend = 'dp'
     
