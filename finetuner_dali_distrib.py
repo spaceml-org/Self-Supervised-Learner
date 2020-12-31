@@ -38,7 +38,7 @@ from torch.optim import SGD
 
 class finetuner(pl.LightningModule):
 
-  def __init__(self, DATA_PATH, encoder, embedding_size withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr):
+  def __init__(self, DATA_PATH, encoder, embedding_size, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr):
       
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
