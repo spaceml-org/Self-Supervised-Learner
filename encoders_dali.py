@@ -43,8 +43,8 @@ class miniCNN(nn.Module):
       return [x]
 
 
-def load_encoder(encoder_name, kwargs):
-    print('LOAD ENCODER: ',encoder_name, kwargs)
+def load_encoder(encoder_name):
+    print('LOAD ENCODER: ',encoder_name)
     if encoder_name == 'minicnn':
         model, embedding_size = miniCNN(), 576
     elif encoder_name == 'resnet18':
