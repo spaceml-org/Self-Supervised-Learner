@@ -128,7 +128,7 @@ class SIMCLR(SimCLR):
 def cli_main():
     parser = ArgumentParser()
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
-    parser.add_argument("--encoder", default=None , type=str, help="encoder to initialize. Can accept SimCLR model checkpoint or just encoder name in from dali_encoders")
+    parser.add_argument("--encoder", default=None , type=str, help="encoder to initialize. Can accept SimCLR model checkpoint or just encoder name in from encoders_dali")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--num_workers", default=1, type=int, help="number of workers to use to fetch data")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
