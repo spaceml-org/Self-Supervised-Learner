@@ -182,7 +182,7 @@ class finetuner(pl.LightningModule):
 def cli_main():
     parser = ArgumentParser()
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
-    parser.add_argument("--encoder", default=None, type=str, help="encoder for model found in encoders.py")
+    parser.add_argument("--encoder", default=None, type=str, help="classifier checkpoint, SSL checkpoint or encoder from encoders_dali")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--num_workers", default=1, type=int, help="number of workers to use to fetch data")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
@@ -209,10 +209,27 @@ def cli_main():
     log_name = 'FineTune_' + args.log_name + '.ckpt'
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
+    checkpointed = '.ckpt' in encoder    
     
-    #init the encoder
-    encoder, embedding_size = load_encoder(encoder)
-    model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr)
+    if checkpointed:
+        print('Trying to initializing model as a finetuner checkpoint...')
+        try:
+            model = finetuner.loader_from_checkpoint(checkpoint_path=encoder)
+        except:
+            print('Did not initialize as a finetuner. Trying to initializing model as an SSL checkpoint...')
+            try:
+                simclr = SIMCLR.load_from_checkpoint(checkpoint_path=MODEL_PATH)
+                encoder = simclr.encoder
+                embedding_size = model.embedding_size
+                model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr)
+            except:
+                print('invalid checkpoint to initialize SIMCLR model. This checkpoint needs to include the encoder and projection and be of the SIMCLR class from this library. Will try to initialize just the encoder')
+                checkpointed = False 
+            
+    elif not checkpointed:
+        encoder, embedding_size = load_encoder(encoder)
+ 
+        model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr)
     
     cbs = []
     backend = 'ddp'
