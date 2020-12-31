@@ -19,7 +19,15 @@ To run it with your own data, please put your data in the following folder struc
     /Class 2
         Image3.png
         Image4.png
+
+#When your dataset does not have labels yet you still need to nest it one level deep
+/Dataset
+    /Unlabelled
+        Image1.png
+        Image2.png
+
 ```
+
 __Optional:__ To optimize your environment for deep learning, run this repo on the pytorch nvidia docker:
 
 ```bash
