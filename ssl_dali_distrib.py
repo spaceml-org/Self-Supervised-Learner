@@ -50,6 +50,7 @@ class SIMCLR(SimCLR):
       self.num_workers = num_workers
       self.gpus = gpus
       self.lr = lr
+      self.embedding_size = embedding_size
       
       shutil.rmtree('split_data', ignore_errors=True)
       
