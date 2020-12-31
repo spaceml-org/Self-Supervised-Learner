@@ -29,9 +29,22 @@ Both self-supervised models and finetuned models can be accessed and used normal
 
 For example:
 ```python
-from SpaceForceDataSearch import SIMCLR, finetuner`
+from SpaceForceDataSearch import SIMCLR, finetuner
 simclr_model = SIMCLR.load_from_checkpoint('PATH_TO_SSL_MODEL.ckpt')
 finetuned_model = finetuner.load_from_checkpoint('PATH_TO_SSL_MODEL.ckpt')
+print(simclr_model.encoder)
+
+datapoint = my_load_and_transform_function('example.jpg')
+prediction = finetuned_model(datapoint)
+```
+
+## Using Your Own Encoder
+If you don't want to use the predefined encoders in encoders_dali.py, it's very easy to modify the code. To add your own model:
+1) Modify encoders_dali.py and add your custom model, which needs to be of type torch.nn.Module.
+2) Modify the load_encoder method of encoders_dali.py to have your model as an option. You will need to specify the output size (vector length - int) of the embedding generated for a single datapoint as well. Add another elif statement like so to do so:
+```
+ elif encoder_name == 'my_custom_encoder':
+        model, embedding_size = my_custom_encoder(my_init_params), my_model_output_embedding_size: int
 ```
 
 
