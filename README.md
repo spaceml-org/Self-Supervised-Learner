@@ -5,6 +5,10 @@ __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
 Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
 
+## Using Your Own Data Set
+SSL: python ssl_dali_distrib.py --ARGUMENTS
+FT: python finetuner_dali_distrib.py --ARGUMENTS
+
 To run it with your own data, please put your data in the following folder structure:
 ```
 /Dataset
@@ -15,7 +19,7 @@ To run it with your own data, please put your data in the following folder struc
         Image3.png
         Image4.png
 ```
-To optimize your environment for deep learning, run this repo on the pytorch nvidia docker:
+__Optional:__ To optimize your environment for deep learning, run this repo on the pytorch nvidia docker:
 
 ```bash
 docker pull nvcr.io/nvidia/pytorch:20.12-py3
