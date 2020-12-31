@@ -6,9 +6,10 @@ __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
 
 ## Using Your Own Data Set
+```bash
 SSL: python ssl_dali_distrib.py --ARGUMENTS
 FT: python finetuner_dali_distrib.py --ARGUMENTS
-
+```
 To run it with your own data, please put your data in the following folder structure:
 ```
 /Dataset
