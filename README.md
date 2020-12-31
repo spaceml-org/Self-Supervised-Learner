@@ -30,7 +30,7 @@ docker run --user=root -p 7000-8000:7000-8000/tcp --volume="/etc/group:/etc/grou
 ```
 
 ## How to access models after training in python environment
-Both self-supervised models and finetuned models can be accessed and used normally as pl_bolts.LightningModule models. They function the same as a pytorch nn.Module but have added functionality that works with a pytorch lightning Trainer.
+Both self-supervised models and finetuned models can be accessed and used normally as `pl_bolts.LightningModule` models. They function the same as a pytorch nn.Module but have added functionality that works with a pytorch lightning Trainer.
 
 For example:
 ```python
