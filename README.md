@@ -18,8 +18,16 @@ To run it with your own data, please put your data in the following folder struc
 To optimize your environment for deep learning, run this repo on the pytorch nvidia docker:
 `docker pull nvcr.io/nvidia/pytorch:20.12-py3`
 
-`mkdir docker_folder`
+```bash
+mkdir docker_folder
+docker run --user=root -p 7000-8000:7000-8000/tcp --volume="/etc/group:/etc/group:ro" --volume="/etc/passwd:/etc/passwd:ro" --volume="/etc/shadow:/etc/shadow:ro" --volume="/etc/sudoers.d:/etc/sudoers.d:ro" --gpus all -it --rm -v /home/rudyvenguswamy/docker_folder:/inside_docker nvcr.io/nvidia/pytorch:20.12-py3`
+#now clone repo inside container, install requirements as usual
+```
 
-`docker run --user=root -p 7000-8000:7000-8000/tcp --volume="/etc/group:/etc/group:ro" --volume="/etc/passwd:/etc/passwd:ro" --volume="/etc/shadow:/etc/shadow:ro" --volume="/etc/sudoers.d:/etc/sudoers.d:ro" --gpus all -it --rm -v /home/rudyvenguswamy/docker_folder:/inside_docker nvcr.io/nvidia/pytorch:20.12-py3`
+##How to access models after training
+Both self-supervised models and finetuned models can be accessed and used normally as pl_bolts.LightningModule models. They function the same as a pytorch nn.Module but have added functionality that works with a pytorch lightning Trainer.
+For example:
+`from SpaceForceDataSearch import SIMCLR, finetuner`
 
-`clone repo inside container, install requirements as usual`
+`simclr_model = model.load_from_checkpoint('PATH_TO_SSL.ckpt')`
+
