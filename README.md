@@ -29,12 +29,18 @@ Both self-supervised models and finetuned models can be accessed and used normal
 
 For example:
 ```python
-from SpaceForceDataSearch import SIMCLR, finetuner
+from SpaceForceDataSearch.ssl_dali_distrib import SIMCLR 
+from SpaceForceDataSearch.finetuner_dali_distrib import finetuner
+
 simclr_model = SIMCLR.load_from_checkpoint('PATH_TO_SSL_MODEL.ckpt')
 finetuned_model = finetuner.load_from_checkpoint('PATH_TO_SSL_MODEL.ckpt')
+
 print(simclr_model.encoder)
+print(finetuned_model.encoder)
 
 datapoint = my_load_and_transform_function('example.jpg')
+
+embedding = simclr_model(datapoint)
 prediction = finetuned_model(datapoint)
 ```
 
