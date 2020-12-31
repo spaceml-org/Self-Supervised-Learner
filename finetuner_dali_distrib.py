@@ -219,7 +219,7 @@ def cli_main():
             print(e)
             print('Did not initialize as a finetuner. Trying to initializing model as an SSL checkpoint...')
             try:
-                simclr = SIMCLR.load_from_checkpoint(checkpoint_path=MODEL_PATH)
+                simclr = SIMCLR.load_from_checkpoint(checkpoint_path=encoder)
                 encoder = simclr.encoder
                 embedding_size = model.embedding_size
                 model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr)
