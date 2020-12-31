@@ -20,7 +20,7 @@ python SpaceForceDataSearch/finetuner_dali_distrib.py --DATA_PATH merced/UCMerce
 echo "Stopping finetuning at epoch 10. Will resume now from checkpoint."
 python SpaceForceDataSearch/finetuner_dali_distrib.py --DATA_PATH merced/UCMerced_LandUse/Images --encoder models/FineTune/FineTune_example_merced_FT.ckpt --batch_size 64 --num_workers 16 --epochs 5 --gpus 1 --log_name example_merced_FT_resumed
 
-echo "Great - to access your classifier, just: 
+echo "Great - to access your classifier, just: "
 echo "from finetuner_dali_distrib import finetuner" 
 echo "model = finetuner.load_from_checkpoint\('models/FineTune/FineTune_example_merced_FT_resumed.ckpt'\)"
 echo "You can use this model like any old pytorch model."
