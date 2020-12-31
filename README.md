@@ -15,7 +15,7 @@ To run it with your own data, please put your data in the following folder struc
         Image3.png
         Image4.png
 ```
-To optimize your environment for deep learning, run this repo on docker:
+To optimize your environment for deep learning, run this repo on the pytorch nvidia docker:
 `docker pull nvcr.io/nvidia/pytorch:20.12-py3`
 
 `mkdir docker_folder`
