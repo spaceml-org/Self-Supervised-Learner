@@ -18,13 +18,8 @@ from typing import List, Optional
 from pytorch_lightning.metrics import Accuracy
 from pathlib import Path
 from argparse import ArgumentParser
-import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
-import seaborn as sn
 
 from sklearn.metrics import f1_score, accuracy_score
-import numpy as np
-import pandas as pd
 from tqdm import tqdm
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
