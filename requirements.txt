@@ -1,0 +1,12 @@
+split-folders==0.4.3
+pytorch-lightning-bolts==0.2.6rc1
+scikit-learn==0.23.2
+wandb==0.10.12
+torch==1.8.0a0+1606899
+tqdm==4.53.0
+
+#for CUDA 10
+#pip install --extra-index-url https://developer.download.nvidia.com/compute/redist nvidia-dali-cuda100
+
+#for CUDA 11
+#pip install --extra-index-url https://developer.download.nvidia.com/compute/redist nvidia-dali-cuda110
