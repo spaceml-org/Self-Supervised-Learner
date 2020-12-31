@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
+from nvidia.dali.plugin.pytorch import DALIGenericIterator
 
 import torch
 from torch.nn import functional as F
@@ -38,7 +38,7 @@ from torch.optim import SGD
 
 class finetuner(pl.LightningModule):
 
-  def __init__(self, encoder_name, DATA_PATH, MODEL_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, **kwargs):
+  def __init__(self, DATA_PATH, encoder, embedding_size withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr):
       
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
@@ -49,8 +49,9 @@ class finetuner(pl.LightningModule):
       self.num_workers = num_workers
       self.withhold = withhold
       self.kwargs = kwargs
-      self.encoder_name = encoder_name
-      self.MODEL_PATH = MODEL_PATH
+      self.encoder = encoder
+      self.embedding_size = embedding_size
+      self.lr = lr
       
       #data stuff
       shutil.rmtree('split_data', ignore_errors=True)
@@ -68,19 +69,6 @@ class finetuner(pl.LightningModule):
       #model stuff    
       self.train_acc = Accuracy()
       self.val_acc = Accuracy(compute_on_step=False)
-      
-      if self.MODEL_PATH is not None:
-          print('Using Model Checkpoint and will search for encoder object of type nn.Module inside pl.LightningModule object saved')
-          simclr = SIMCLR.load_from_checkpoint(checkpoint_path=MODEL_PATH)
-          self.encoder = model.encoder
-          self.embedding_size = model.embedding_size
-          
-          if self.kwargs['encoder_name'] is not None:
-              print('WARNING: You specified a model path to use as an encoder for finetuning but also specified an encoder_name. If a model path is specified, encoder_name, which inits the encoder from scratch is ignored.")
-          
-      else:
-          print('Initializing encoder from scratch')
-          self.encoder, self.embedding_size = load_encoder(self.kwargs['encoder_name'], self.kwargs)
       
       self.linear_layer = SSLEvaluator(
             n_input=self.embedding_size,
@@ -180,7 +168,7 @@ class finetuner(pl.LightningModule):
   def configure_optimizers(self):
       opt = SGD([
                 {'params': self.encoder.parameters()},
-                {'params': self.linear_layer.parameters(), 'lr': 0.1}
+                {'params': self.linear_layer.parameters(), 'lr': self.lr}
             ], lr=1e-4, momentum=0.9)
       
       return [opt]
@@ -194,22 +182,17 @@ class finetuner(pl.LightningModule):
 def cli_main():
     parser = ArgumentParser()
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
-    parser.add_argument("--MODEL_PATH", default=None, type=str, help="path to model checkpoint.")
-    parser.add_argument("--encoder", default=None , type=str, help="encoder for model found in encoders.py")
+    parser.add_argument("--encoder", default=None, type=str, help="encoder for model found in encoders.py")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
-    parser.add_argument("--num_workers", default=0, type=int, help="number of workers to use to fetch data")
+    parser.add_argument("--num_workers", default=1, type=int, help="number of workers to use to fetch data")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
     parser.add_argument("--epochs", default=200, type=int, help="number of epochs to train model")
-    parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for training model")
+    parser.add_argument("--lr", default=0.1, type=float, help="learning rate for training the model classification head")
     parser.add_argument("--patience", default=-1, type=int, help="automatically cuts off training if validation does not drop for (patience) epochs. Leave blank to have no validation based early stopping.")
     parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data")
     parser.add_argument("--withhold_split", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold from either training or validation")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
-    parser.add_argument("--eval", default=True, type=bool, help="Eval Mode will train and evaluate the finetuned model's performance")
-    parser.add_argument("--pretrain_encoder", default=False, type=bool, help="initialize resnet encoder with pretrained imagenet weights. Ignored if MODEL_PATH is specified.")
-    parser.add_argument("--version", default="0", type=str, help="version to name checkpoint for saving")
     parser.add_argument("--log_name", type=str, help="name of project to log on wandb")
-    parser.add_argument("--online_eval", default=False, type=bool, help="Do finetuning on model if labels are provided as a sanity check")
     
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH
@@ -221,16 +204,15 @@ def cli_main():
     patience = args.patience
     val_split = args.val_split
     withhold = args.withhold_split
-    version = args.version
-    MODEL_PATH = args.MODEL_PATH
     gpus = args.gpus
-    eval_model = args.eval
-    pretrain = args.pretrain_encoder
     encoder = args.encoder
     log_name = 'FineTune_' + args.log_name + '.ckpt'
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
-    model = finetuner(encoder = encoder, MODEL_PATH = MODEL_PATH, withhold = withhold, pretrained = pretrain, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers)
+    
+    #init the encoder
+    encoder, embedding_size = load_encoder(encoder)
+    model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH  = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr)
     
     cbs = []
     backend = 'ddp'
