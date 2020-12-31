@@ -1,5 +1,5 @@
 # SpaceForce-DataSearch
-A tool to help scientists using satellite imagery of specific phenomena to find similar images to rapidly curate a dataset for scientific studies
+A tool to quickly train a Self-Supervised Learning model and finetune the model on labeled data in order to help researchers rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.
 
 __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
