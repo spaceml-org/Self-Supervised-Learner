@@ -18,6 +18,7 @@ from pytorch_lightning.loggers import WandbLogger
 
 from typing import List, Optional
 from pytorch_lightning.metrics import Accuracy
+from pytorch_lightning.metrics.functional.classification import multiclass_auroc as Auroc
 from pathlib import Path
 from argparse import ArgumentParser
 
@@ -63,6 +64,7 @@ class finetuner(pl.LightningModule):
       #model stuff    
       self.train_acc = Accuracy()
       self.val_acc = Accuracy(compute_on_step=False)
+      self.auroc = Auroc(compute_on_step=False)
       
       self.linear_layer = SSLEvaluator(
             n_input=self.embedding_size,
@@ -128,6 +130,8 @@ class finetuner(pl.LightningModule):
       acc = self.val_acc(logits, y)
       self.log('val_loss', loss, prog_bar=True, sync_dist=True)
       self.log('val_acc_epoch', self.val_acc, prog_bar=True)
+      self.log('val_acc_epoch', self.val_acc, prog_bar=True)
+      self.log('val_auroc', self.auroc, prog_bar=True)
       return loss
 
   def loss_fn(self, logits, labels):
