@@ -18,7 +18,7 @@ from pytorch_lightning.loggers import WandbLogger
 
 from typing import List, Optional
 from pytorch_lightning.metrics import Accuracy
-from pytorch_lightning.metrics import ROC
+
 from pathlib import Path
 from argparse import ArgumentParser
 
@@ -64,7 +64,6 @@ class finetuner(pl.LightningModule):
       #model stuff    
       self.train_acc = Accuracy()
       self.val_acc = Accuracy(compute_on_step=False)
-      self.val_roc = ROC(compute_on_step=False)
       
       self.linear_layer = SSLEvaluator(
             n_input=self.embedding_size,
