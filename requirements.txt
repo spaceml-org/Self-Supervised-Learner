@@ -4,7 +4,9 @@ split-folders==0.4.3
 pytorch-lightning-bolts==0.2.6rc1
 scikit-learn==0.23.2
 wandb==0.10.12
-torch==1.8.0a0+1606899
+torch===1.7.1 
+torchvision===0.8.2 
+torchaudio===0.7.2
 tqdm==4.53.0
 torchvision==0.9.0a0
 gdown==3.12.2
