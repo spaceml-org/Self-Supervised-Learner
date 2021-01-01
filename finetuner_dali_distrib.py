@@ -64,7 +64,7 @@ class finetuner(pl.LightningModule):
       #model stuff    
       self.train_acc = Accuracy()
       self.val_acc = Accuracy(compute_on_step=False)
-      self.auroc = Auroc(compute_on_step=False)
+      self.auroc = Auroc()
       
       self.linear_layer = SSLEvaluator(
             n_input=self.embedding_size,
