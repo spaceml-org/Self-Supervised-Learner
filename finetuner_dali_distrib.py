@@ -130,7 +130,6 @@ class finetuner(pl.LightningModule):
       self.log('val_loss', loss, prog_bar=True, sync_dist=True)
       self.log('val_acc_epoch', self.val_acc, prog_bar=True)
       self.log('val_acc_epoch', self.val_acc, prog_bar=True)
-      self.log('val_roc', self.val_roc, prog_bar=True)
       return loss
 
   def loss_fn(self, logits, labels):
