@@ -185,7 +185,7 @@ def cli_main():
         shutil.rmtree(f'./split_data_{log_name}', ignore_errors=True)
         splitfolders.ratio(DATA_PATH, output=f'./split_data_{log_name}', ratio=(1-val_split-withhold, val_split, withhold), seed = 10)
         DATA_PATH = f'./split_data_{log_name}'
-        print(f'automatically splitting data into train and validation data {self.val_split} and withhold {withhold}')
+        print(f'automatically splitting data into train and validation data {val_split} and withhold {withhold}')
 
     num_classes = len(os.listdir(f'{DATA_PATH}/train'))
     
