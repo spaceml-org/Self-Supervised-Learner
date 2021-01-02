@@ -151,9 +151,9 @@ class finetuner(pl.LightningModule):
       return self.val_loader
     
   def forward(self, x):
-      feats = model.encoder(x)[-1]
+      feats = self.encoder(x)[-1]
       feats = feats.view(feats.size(0), -1)
-      logits = model.linear_layer(feats)
+      logits = self.linear_layer(feats)
       return nn.Softmax(dim = 1)(logits)
        
 def cli_main():
