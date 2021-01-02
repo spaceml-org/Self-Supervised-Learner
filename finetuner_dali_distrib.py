@@ -28,6 +28,7 @@ from sklearn.metrics import f1_score, accuracy_score
 from nvidia.dali.plugin.pytorch import DALIGenericIterator
 
 import torch
+from torch import nn
 from torch.nn import functional as F
 from torch import nn
 from torch.optim import SGD
@@ -144,10 +145,16 @@ class finetuner(pl.LightningModule):
       return [opt]
 
   def train_dataloader(self):
-       return self.train_loader
+      return self.train_loader
   
   def val_dataloader(self):
-       return self.val_loader
+      return self.val_loader
+    
+  def forward(self, x):
+      feats = model.encoder(x)[-1]
+      feats = feats.view(feats.size(0), -1)
+      logits = model.linear_layer(feats)
+      return nn.Softmax(dim = 1)(logits)
        
 def cli_main():
     parser = ArgumentParser()
