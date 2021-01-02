@@ -225,6 +225,7 @@ def cli_main():
     
     Path(f"./models/FineTune").mkdir(parents=True, exist_ok=True)
     trainer.save_checkpoint(f"./models/FineTune/{log_name}")
+    print("YOUR MODEL CAN BE ACCESSED AT: ", f"./models/FineTune/{log_name}")
     
 if __name__ == '__main__':
     cli_main()
