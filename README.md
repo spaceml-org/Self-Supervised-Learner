@@ -68,7 +68,9 @@ If you don't want to use the predefined encoders in encoders_dali.py, it's very 
         model, embedding_size = my_custom_encoder(my_init_params), my_model_output_embedding_size: int
 ```
 
-## To Do
-- Intepret Embeddings
+## Coming Updates
+- Cluster Visualizations for Embeddings 
+- Supporting numpy, TFDS datasets
+- Saliency Maps for Embeddings
 
 
