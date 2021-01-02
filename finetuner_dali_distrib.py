@@ -184,7 +184,7 @@ def cli_main():
     if not (path.isdir(f"{DATA_PATH}/train") and path.isdir(f"{DATA_PATH}/val")): 
         shutil.rmtree(f'./split_data_{log_name[:-5]}', ignore_errors=True)
         splitfolders.ratio(DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-val_split-withhold, val_split, withhold), seed = 10)
-        DATA_PATH = f'./split_data_{log_name:[-5]}'
+        DATA_PATH = f'./split_data_{log_name[:-5]}'
         print(f'automatically splitting data into train and validation data {val_split} and withhold {withhold}')
 
     num_classes = len(os.listdir(f'{DATA_PATH}/train'))
