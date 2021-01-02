@@ -35,7 +35,7 @@ from torch.optim import SGD
 
 class finetuner(pl.LightningModule):
 
-  def __init__(self, DATA_PATH, encoder, embedding_size, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr):
+  def __init__(self, DATA_PATH, encoder, embedding_size, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr, num_classes):
       super().__init__()
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
@@ -47,21 +47,12 @@ class finetuner(pl.LightningModule):
       self.withhold = withhold
       self.encoder = encoder
       self.embedding_size = embedding_size
-      self.lr = lr
+      self.lr = lr 
+      self.num_classes = num_classes
       
-      #data stuff
-      shutil.rmtree('split_data', ignore_errors=True)
-      if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
-          splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split-self.withhold, self.val_split, self.withhold), seed = 10)
-          self.DATA_PATH = 'split_data'
-          print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
-          
-      
+      #save config for checkpointing
       self.save_hyperparameters()
       
-      self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
-      self.num_classes = len(os.listdir(f'{self.DATA_PATH}/train'))
-
       #model stuff    
       self.train_acc = Accuracy()
       self.val_acc = Accuracy(compute_on_step=False)
@@ -72,15 +63,15 @@ class finetuner(pl.LightningModule):
             p=0.1,
             n_hidden=self.hidden_dims
        )
-          
+            
   def setup(self, stage = None):
-
+      #used exclusively for setting up dali finetuning pipeline, run on every gpu
+      num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
       #each gpu gets its own DALI loader
       train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
       print(f"{self.DATA_PATH}/train")
       val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
   
-      num_samples = self.num_samples
 
       class LightningWrapper(DALIGenericIterator):
           def __init__(self, *kargs, **kvargs):
@@ -188,6 +179,16 @@ def cli_main():
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     checkpointed = '.ckpt' in encoder    
     
+    #preparing data for training by splitting
+    
+    if not (path.isdir(f"{DATA_PATH}/train") and path.isdir(f"{DATA_PATH}/val")): 
+        shutil.rmtree(f'./split_data_{log_name}', ignore_errors=True)
+        splitfolders.ratio(DATA_PATH, output=f'./split_data_{log_name}', ratio=(1-val_split-withhold, val_split, withhold), seed = 10)
+        DATA_PATH = f'./split_data_{log_name}'
+        print(f'automatically splitting data into train and validation data {self.val_split} and withhold {withhold}')
+
+    num_classes = len(os.listdir(f'{DATA_PATH}/train'))
+    
     if checkpointed:
         print('Trying to initializing model as a finetuner checkpoint...')
         try:
@@ -198,16 +199,17 @@ def cli_main():
                 simclr = SIMCLR.load_from_checkpoint(checkpoint_path=encoder)
                 encoder = simclr.encoder
                 embedding_size = simclr.embedding_size
-                model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr)
+                model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes)
             except Exception as e:
                 print(e)
                 print('invalid checkpoint to initialize SIMCLR model. This checkpoint needs to include the encoder and projection and be of the SIMCLR class from this library. Will try to initialize just the encoder')
                 checkpointed = False 
             
     elif not checkpointed:
+        
         encoder, embedding_size = load_encoder(encoder)
  
-        model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr)
+        model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes)
     
     cbs = []
     backend = 'ddp'
