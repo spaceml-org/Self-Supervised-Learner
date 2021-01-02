@@ -34,13 +34,6 @@ from torch import nn
 from torch.optim import SGD
 
 
-class Flatten(nn.Module):
-    def __init__(self):
-        super(Flatten, self).__init__()
-
-    def forward(self, input_tensor):
-        return input_tensor.view(input_tensor.size(0), -1)
-
 class finetuner(pl.LightningModule):
 
   def __init__(self, DATA_PATH, encoder, embedding_size, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr, num_classes):
