@@ -90,7 +90,7 @@ class SIMCLR(SimCLR):
               def __next__(self):
                   out = super().__next__()
                   out = out[0]
-                  return tuple(out)
+                  return tuple([out[k] for k in self.output_map])
 
               def __len__(self):
                 return num_samples//self.batch_size
