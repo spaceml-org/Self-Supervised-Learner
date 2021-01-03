@@ -79,12 +79,14 @@ class finetuner(pl.LightningModule):
               def __next__(self):
                   out = super().__next__()
                   out = out[0]
-                  return out[self.output_map[0]]
+                  print(out)
+                  return out
                 
               def __len__(self):
                 return num_samples//self.batch_size
 
           train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]   
+          print(train_labels)
           self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
           self.val_loader = None
           
