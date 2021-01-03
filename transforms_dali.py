@@ -15,12 +15,13 @@ class SimCLRFinetuneTrainDataTransform(Pipeline):
 
         self.coin = ops.CoinFlip(probability=0.5)
         self.uniform = ops.Uniform(range = [0.7,1.3]) #-1 to 1
+        self.blur_amt = ops.Uniform(range = [1, int(0.1*self.input_height)])
         #read image (I think that has to be cpu, do a mixed operation to decode into gpu)
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
-        self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, device = "gpu", dtype = types.FLOAT)
+        self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, device = "gpu")
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
-        self.blur = ops.GaussianBlur(window_size = int(0.1*self.input_height), device = "gpu", dtype = types.FLOAT)
+        self.blur = ops.GaussianBlur(window_size = self.blur_amt()*2 + 1, device = "gpu", dtype = types.FLOAT)
         self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu")
 
         self.to_int64 = ops.Cast(dtype=types.INT64, device="gpu")
@@ -31,7 +32,7 @@ class SimCLRFinetuneTrainDataTransform(Pipeline):
         image = self.crop(image)
         image = self.flip(image)
         image = self.colorjit_gray(image)
-        #image = self.blur(image)
+        image = self.blur(image)
         image = self.swapaxes(image)
 
         labels = labels.gpu()
@@ -49,12 +50,14 @@ class SimCLRTrainDataTransform(Pipeline):
 
         self.coin = ops.CoinFlip(probability=0.5)
         self.uniform = ops.Uniform(range = [0.7,1.3]) #-1 to 1
-        #read image (I think that has to be cpu, do a mixed operation to decode into gpu)
+        self.blur_amt = ops.Uniform(range = [1, int(0.1*self.input_height)])
+        
+        
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
         self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, device = "gpu")
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
-        self.blur = ops.GaussianBlur(window_size = int(0.1*self.input_height), device = "gpu", dtype = types.FLOAT)
+        self.blur = ops.GaussianBlur(window_size = self.blur_amt()*2 + 1, device = "gpu", dtype = types.FLOAT)
         self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu")
         
         self.to_int64 = ops.Cast(dtype=types.INT64, device="gpu")
@@ -82,11 +85,12 @@ class SimCLRTrainDataTransform(Pipeline):
         return (im1, im2, im3, labels)
 
 class SimCLRValDataTransform(Pipeline):
-    def __init__(self, DATA_PATH, input_height, batch_size, num_threads, device_id):
+    def __init__(self, DATA_PATH, input_height, batch_size, num_threads, device_id, stage = 'train'):
         super(SimCLRValDataTransform, self).__init__(batch_size, num_threads, device_id, seed = 12)
 
         self.COPIES = 3
-
+        self.stage = stage
+        
         self.input_height = input_height
         self.input = ops.FileReader(file_root = DATA_PATH, random_shuffle = True, seed = 12)
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
@@ -111,14 +115,17 @@ class SimCLRValDataTransform(Pipeline):
         
         labels = labels.gpu()
         labels = self.to_int64(labels)
-        return (im1, im2, im3, labels)
+        if stage == 'train:
+            return (im1, im2, im3, labels)
+        else:
+            return (im1, im2, im3)
 
 class SimCLRFinetuneValDataTransform(Pipeline):
-    def __init__(self, DATA_PATH, input_height, batch_size, num_threads, device_id):
+    def __init__(self, DATA_PATH, input_height, batch_size, num_threads, device_id, stage = 'train'):
         super(SimCLRFinetuneValDataTransform, self).__init__(batch_size, num_threads, device_id, seed = 12)
 
         self.COPIES = 1
-
+        self.stage = stage
         self.input_height = input_height
         self.input = ops.FileReader(file_root = DATA_PATH, random_shuffle = True, seed = 12)
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
@@ -135,4 +142,7 @@ class SimCLRFinetuneValDataTransform(Pipeline):
 
         labels = labels.gpu()
         labels = self.to_int64(labels)
-        return (image, labels)
+        if stage == 'train:
+            return (image, labels)
+        else:
+            return (image)
