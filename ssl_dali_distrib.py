@@ -94,8 +94,7 @@ class SIMCLR(SimCLR):
               def __len__(self):
                 return num_samples//self.batch_size
 
-          inference_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
-          print(inference_labels)
+          inference_labels = [f'im{i}' for i in range(1, inference_pipeline.COPIES+1)]
           self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, fill_last_batch=False)
           self.train_loader = None
           self.val_loader = None
