@@ -26,6 +26,7 @@ from argparse import ArgumentParser
 from sklearn.metrics import f1_score, accuracy_score
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator
+from nvidia.dali.plugin.base_iterator import LastBatchPolicy
 
 import torch
 from torch import nn
@@ -88,7 +89,7 @@ class finetuner(pl.LightningModule):
 
 
           inference_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
-          self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, fill_last_batch=False)
+          self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
           self.train_loader = None
           self.val_loader = None
           
@@ -121,8 +122,8 @@ class finetuner(pl.LightningModule):
           val_labels.append('label')
 
           size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
-          self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
-          self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
+          self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
+          self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
 
   def shared_step(self, batch):
       x, y = batch
