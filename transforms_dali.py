@@ -53,7 +53,7 @@ class SimCLRTrainDataTransform(Pipeline):
         
         self.coin = ops.CoinFlip(probability=0.5)
         self.uniform = ops.Uniform(range = [0.7,1.3]) #-1 to 1
-        self.blur_amt = ops.Uniform(range = [1, int(0.1*self.input_height)])
+        self.blur_amt = ops.Uniform(values = [float(i) for i in range(1, int(0.1*self.input_height), 2)])
         
         
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
