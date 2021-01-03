@@ -9,6 +9,7 @@ torchvision===0.8.2
 torchaudio===0.7.2
 tqdm==4.53.0
 gdown==3.12.2
+termcolor==1.1.0
 
 #for CUDA 10
 #pip install --extra-index-url https://developer.download.nvidia.com/compute/redist nvidia-dali-cuda100
