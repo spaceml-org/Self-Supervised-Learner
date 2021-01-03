@@ -24,6 +24,7 @@ from argparse import ArgumentParser
 from sklearn.metrics import f1_score, accuracy_score
 
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
+from nvidia.dali.plugin.base_iterator import LastBatchPolicy
 from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 
@@ -95,7 +96,7 @@ class SIMCLR(SimCLR):
                 return num_samples//self.batch_size
 
           inference_labels = [f'im{i}' for i in range(1, inference_pipeline.COPIES+1)]
-          self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, fill_last_batch=False)
+          self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
           self.train_loader = None
           self.val_loader = None
           
@@ -127,8 +128,8 @@ class SIMCLR(SimCLR):
           val_labels.append('label')
 
           size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
-          self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
-          self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
+          self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
+          self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
       
       global_batch_size = self.nodes * self.gpus * self.batch_size if self.gpus > 0 else self.batch_size
       self.train_iters_per_epoch = num_samples // global_batch_size
