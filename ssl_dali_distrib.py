@@ -33,7 +33,7 @@ class SIMCLR(SimCLR):
 
   def __init__(self, encoder, embedding_size, epochs, gpus, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr, image_size):
       #data stuff
-      self.num_samples = num_samples
+
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
       self.batch_size = batch_size
@@ -48,7 +48,7 @@ class SIMCLR(SimCLR):
       self.embedding_size = embedding_size
       self.image_size = image_size
       
-      super().__init__(gpus = 1, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
+      super().__init__(gpus = self.gpus, num_samples = 0, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
       self.encoder = encoder
       
       class Projection(nn.Module):
@@ -129,7 +129,8 @@ class SIMCLR(SimCLR):
           size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
           self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
           self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
-
+          
+      
   def train_dataloader(self):
       return self.train_loader
   
@@ -139,7 +140,6 @@ class SIMCLR(SimCLR):
   def inference_dataloader(self):
       return self.inference_loader
     
-  
 def cli_main():
     parser = ArgumentParser()
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
@@ -207,7 +207,7 @@ def cli_main():
     )
     
     cbs = []
-    backend = 'dp'
+    backend = 'ddp'
     
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
@@ -215,7 +215,6 @@ def cli_main():
     
     if online_eval:
         cbs.append(online_evaluator)
-        backend = 'ddp'
         
     trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=20, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
     
