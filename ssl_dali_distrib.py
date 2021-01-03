@@ -113,6 +113,7 @@ class SIMCLR(SimCLR):
 
               def __next__(self):
                   out = super().__next__()
+                  print(out)
                   out = out[0]
                   return out[self.output_map[0]], torch.squeeze(out[self.output_map[-1]])
 
