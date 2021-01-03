@@ -87,7 +87,7 @@ class SIMCLR(SimCLR):
               def __next__(self):
                   out = super().__next__()
                   out = out[0]
-                  return out[self.output_map[:-1]]
+                  return tuple([out[k] for k in self.output_map[:-1]])
 
               def __len__(self):
                 return num_samples//self.batch_size
@@ -115,7 +115,7 @@ class SIMCLR(SimCLR):
                   out = super().__next__()
                   print(out)
                   out = out[0]
-                  return out[self.output_map[:-1]], torch.squeeze(out[self.output_map[-1]])
+                  return tuple([out[k] for k in self.output_map[:-1]]), torch.squeeze(out[self.output_map[-1]])
 
               def __len__(self):
                 return num_samples//self.batch_size
