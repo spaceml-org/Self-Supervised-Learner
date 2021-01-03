@@ -88,7 +88,6 @@ class finetuner(pl.LightningModule):
 
 
           inference_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
-          print(inference_labels)
           self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, fill_last_batch=False)
           self.train_loader = None
           self.val_loader = None
@@ -99,7 +98,6 @@ class finetuner(pl.LightningModule):
           num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
           #each gpu gets its own DALI loader
           train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-          print(f"{self.DATA_PATH}/train")
           val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
 
 
@@ -254,8 +252,6 @@ def cli_main():
         cbs.append(cb)
         
     trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
-    
-    print('USING BACKEND______________________________ ', backend)
     trainer.fit(model)
     
     Path(f"./models/FineTune").mkdir(parents=True, exist_ok=True)
