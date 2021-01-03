@@ -49,7 +49,7 @@ class SIMCLR(SimCLR):
       self.embedding_size = embedding_size
       self.image_size = image_size
       
-      super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
+      super().__init__(gpus = self.gpus, num_samples = 0, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
       self.encoder = encoder
       
       class Projection(nn.Module):
