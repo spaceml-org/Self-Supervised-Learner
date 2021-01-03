@@ -26,7 +26,7 @@ from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 
 #internal imports
-from transforms_dali import SimCLRTrainDataTransform
+from transforms_dali import SimCLRTrainDataTransform, SimCLRValDataTransform 
 from encoders_dali import load_encoder
 
 class SIMCLR(SimCLR):
