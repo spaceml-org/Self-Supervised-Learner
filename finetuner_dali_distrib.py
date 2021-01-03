@@ -1,6 +1,6 @@
 #internal imports
 from ssl_dali_distrib import SIMCLR
-from transforms_dali import SimCLRFinetuneTrainDataTransform
+from transforms_dali import SimCLRFinetuneValDataTransform
 from encoders_dali import load_encoder
 
 from pytorch_lightning.core.lightning import LightningModule
