@@ -31,8 +31,9 @@ from encoders_dali import load_encoder
 
 class SIMCLR(SimCLR):
 
-  def __init__(self, encoder, embedding_size, epochs, gpus, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr):
+  def __init__(self, encoder, embedding_size, epochs, gpus, DATA_PATH, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr, image_size):
       #data stuff
+      self.num_samples = num_samples
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
       self.batch_size = batch_size
@@ -45,21 +46,10 @@ class SIMCLR(SimCLR):
       self.gpus = gpus
       self.lr = lr
       self.embedding_size = embedding_size
+      self.image_size = image_size
       
-      shutil.rmtree('split_data', ignore_errors=True)
-      
-      if not (path.isdir(f"{self.DATA_PATH}/train") and path.isdir(f"{self.DATA_PATH}/val")): 
-          splitfolders.ratio(self.DATA_PATH, output=f"split_data", ratio=(1-self.val_split-self.withhold, self.val_split, self.withhold), seed = 10)
-          self.DATA_PATH = 'split_data'
-          print(f'automatically splitting data into train and validation data {self.val_split} and withhold {self.withhold}')
-          
-      self.num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
       super().__init__(gpus = 1, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
       self.encoder = encoder
-      self.num_classes = len(os.listdir(f'{self.DATA_PATH}/train'))
-      self.save_hyperparameters()
-      
-      print("_+__++_+__+__++_+__+__++_+__+__++_+__+__++_+__+__++_+_")
       
       class Projection(nn.Module):
           def __init__(self, input_dim, hidden_dim=2048, output_dim=128):
@@ -77,49 +67,79 @@ class SIMCLR(SimCLR):
               x = F.relu(self.b(x))
               x = self.l(x)
               return F.normalize(x, dim=1)
-
+            
       self.projection = Projection(input_dim = self.embedding_size, hidden_dim = self.hidden_dims)
       
-  def setup(self, stage = None):
+      self.save_hyperparameters()
       
-      #Each gpu gets its own datapipe
+  def setup(self, stage = 'train'):
+      #used for setting up dali pipeline, run on every gpu
+      if stage == 'inference':
+          print('Running model in inference mode. Dali iterator will flow data, no labels')     
+          num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
+          #each gpu gets its own DALI loader
+          inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank, stage = stage)
+          
+          class LightningWrapper(DALIGenericIterator):
+              def __init__(self, *kargs, **kvargs):
+                  super().__init__(*kargs, **kvargs)
 
-      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-      print(f"{self.DATA_PATH}/train")
-      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-  
-      num_samples = self.num_samples
+              def __next__(self):
+                  out = super().__next__()
+                  out = out[0]
+                  return out[self.output_map[0]]
 
-      class LightningWrapper(DALIGenericIterator):
-          def __init__(self, *kargs, **kvargs):
-              super().__init__(*kargs, **kvargs)
+              def __len__(self):
+                return num_samples//self.batch_size
 
-          def __next__(self):
-              out = super().__next__()
-              out = out[0]
-              return tuple([out[k] for k in self.output_map[:-1]]), torch.squeeze(out[self.output_map[-1]])
-
-          def __len__(self):
-            return num_samples//self.batch_size
-
-      train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
-      train_labels.append('label')
-
-      val_labels = [f'im{i}' for i in range(1, val_pipeline.COPIES+1)]
-      val_labels.append('label')
-
-      size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+          inference_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
+          print(inference_labels)
+          self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, fill_last_batch=False)
+          self.train_loader = None
+          self.val_loader = None
+          
+      else:
+          
+          num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+          #each gpu gets its own DALI loader
+          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+          print(f"{self.DATA_PATH}/train")
+          val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
 
 
-      self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
-      self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
+          class LightningWrapper(DALIGenericIterator):
+              def __init__(self, *kargs, **kvargs):
+                  super().__init__(*kargs, **kvargs)
+
+              def __next__(self):
+                  out = super().__next__()
+                  out = out[0]
+                  return out[self.output_map[0]], torch.squeeze(out[self.output_map[-1]])
+
+              def __len__(self):
+                return num_samples//self.batch_size
+
+
+          train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
+          train_labels.append('label')
+
+          val_labels = [f'im{i}' for i in range(1, val_pipeline.COPIES+1)]
+          val_labels.append('label')
+
+          size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+          self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
+          self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
 
   def train_dataloader(self):
-       return self.train_loader
+      return self.train_loader
   
   def val_dataloader(self):
-       return self.val_loader
-       
+      return self.val_loader
+  
+  def inference_dataloader(self):
+      return self.inference_loader
+    
+  
 def cli_main():
     parser = ArgumentParser()
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
@@ -135,6 +155,7 @@ def cli_main():
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--log_name", type=str, help="name of model to log on wandb and locally")
     parser.add_argument("--online_eval", default=False, type=bool, help="Do finetuning on model if labels are provided as a sanity check")
+    parser.add_argument("--image_size", default=256, type=int, help="height of square image")
     
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH
@@ -150,9 +171,19 @@ def cli_main():
     encoder = args.encoder
     log_name = 'SIMCLR_SSL_' + args.log_name + '.ckpt'
     online_eval = args.online_eval
+    image_size = args.image_size
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     checkpointed = '.ckpt' in encoder    
+    
+    if not (path.isdir(f"{DATA_PATH}/train") and path.isdir(f"{DATA_PATH}/val")): 
+        shutil.rmtree(f'./split_data_{log_name[:-5]}', ignore_errors=True)
+        splitfolders.ratio(DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-val_split-withhold, val_split, withhold), seed = 10)
+        DATA_PATH = f'./split_data_{log_name[:-5]}'
+        print(f'automatically splitting data into train and validation data {val_split} and withhold {withhold}')
+
+    num_classes = len(os.listdir(f'{DATA_PATH}/train'))
+        
     if checkpointed:
         print('Resuming SSL Training from Model Checkpoint')
         try:
@@ -165,13 +196,13 @@ def cli_main():
             
     elif not checkpointed:
         encoder, embedding_size = load_encoder(encoder)
-        model = SIMCLR(encoder = encoder, embedding_size = embedding_size, gpus = gpus, epochs = epochs, DATA_PATH = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers, lr = lr)
+        model = SIMCLR(encoder = encoder, embedding_size = embedding_size, gpus = gpus, epochs = epochs, DATA_PATH = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRValDataTransform, num_workers = num_workers, lr = lr, image_size = image_size)
         
     online_evaluator = SSLOnlineEvaluator(
       drop_p=0.,
       hidden_dim=None,
       z_dim=embedding_size,
-      num_classes=model.num_classes,
+      num_classes=num_classes,
       dataset='None'
     )
     
@@ -186,13 +217,11 @@ def cli_main():
         cbs.append(online_evaluator)
         backend = 'ddp'
         
-    trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
+    trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=20, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
     
-    print('USING BACKEND______________________________ ', backend)
     trainer.fit(model)
     Path(f"./models/SSL").mkdir(parents=True, exist_ok=True)
     trainer.save_checkpoint(f"./models/SSL/{log_name}")
-    #torch.save(model.encoder.state_dict(), f"./models/SSL/SIMCLR_SSL_{version}/SIMCLR_SSL_{version}.pt")
     
 if __name__ == '__main__':
     cli_main()
