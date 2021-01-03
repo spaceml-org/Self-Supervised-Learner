@@ -36,7 +36,7 @@ from torch.optim import SGD
 
 class finetuner(pl.LightningModule):
 
-  def __init__(self, DATA_PATH, encoder, embedding_size, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr, num_classes):
+  def __init__(self, DATA_PATH, encoder, embedding_size, withhold, batch_size, val_split, hidden_dims, train_transform, val_transform, num_workers, lr, num_classes, image_size):
       super().__init__()
       self.DATA_PATH = DATA_PATH
       self.val_split = val_split
@@ -50,6 +50,7 @@ class finetuner(pl.LightningModule):
       self.embedding_size = embedding_size
       self.lr = lr 
       self.num_classes = num_classes
+      self.image_size = image_size
       
       #save config for checkpointing
       self.save_hyperparameters()
@@ -66,11 +67,12 @@ class finetuner(pl.LightningModule):
        )
             
   def setup(self, stage = None):
+      #used for setting up dali pipeline, run on every gpu
       if stage == 'inference':
           print('Running model in inference mode. Dali iterator will flow data, no labels')     
           num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
           #each gpu gets its own DALI loader
-          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank, stage = stage)
+          inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank, stage = stage)
           
           class LightningWrapper(DALIGenericIterator):
               def __init__(self, *kargs, **kvargs):
@@ -85,19 +87,20 @@ class finetuner(pl.LightningModule):
                 return num_samples//self.batch_size
 
 
-          train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
-          print(train_labels)
-          self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
+          inference_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
+          print(inference_labels)
+          self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, fill_last_batch=False)
+          self.train_loader = None
           self.val_loader = None
           
           
       else:
-          #used exclusively for setting up dali finetuning pipeline, run on every gpu
+          
           num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
           #each gpu gets its own DALI loader
-          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
           print(f"{self.DATA_PATH}/train")
-          val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+          val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
 
 
           class LightningWrapper(DALIGenericIterator):
@@ -167,6 +170,9 @@ class finetuner(pl.LightningModule):
   
   def val_dataloader(self):
       return self.val_loader
+  
+  def inference_dataloader(self):
+      return self.inference_loader
     
   def forward(self, x):
       feats = self.encoder(x)[-1]
@@ -188,6 +194,7 @@ def cli_main():
     parser.add_argument("--withhold_split", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold from either training or validation")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--log_name", type=str, help="name of project to log on wandb")
+    parser.add_argument("--image_size", default=256, type=int, help="height of square image")
     
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH
@@ -202,6 +209,7 @@ def cli_main():
     gpus = args.gpus
     encoder = args.encoder
     log_name = 'FineTune_' + args.log_name + '.ckpt'
+    image_size = args.image_size
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     checkpointed = '.ckpt' in encoder    
@@ -226,7 +234,7 @@ def cli_main():
                 simclr = SIMCLR.load_from_checkpoint(checkpoint_path=encoder)
                 encoder = simclr.encoder
                 embedding_size = simclr.embedding_size
-                model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneValDataTransform, val_transform = SimCLRFinetuneValDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes)
+                model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneValDataTransform, val_transform = SimCLRFinetuneValDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes, image_size = image_size)
             except Exception as e:
                 print(e)
                 print('invalid checkpoint to initialize SIMCLR model. This checkpoint needs to include the encoder and projection and be of the SIMCLR class from this library. Will try to initialize just the encoder')
@@ -236,7 +244,7 @@ def cli_main():
         
         encoder, embedding_size = load_encoder(encoder)
  
-        model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes)
+        model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes, image_size = image_size)
     
     cbs = []
     backend = 'ddp'
