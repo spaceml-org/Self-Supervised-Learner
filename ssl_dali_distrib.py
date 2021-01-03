@@ -104,7 +104,6 @@ class SIMCLR(SimCLR):
           num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
           #each gpu gets its own DALI loader
           train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-          print(f"{self.DATA_PATH}/train")
           val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
 
 
