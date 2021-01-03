@@ -1,6 +1,6 @@
 #internal imports
 from ssl_dali_distrib import SIMCLR
-from transforms_dali import SimCLRFinetuneValDataTransform
+from transforms_dali import SimCLRFinetuneTrainDataTransform, SimCLRFinetuneValDataTransform
 from encoders_dali import load_encoder
 
 from pytorch_lightning.core.lightning import LightningModule
@@ -234,7 +234,7 @@ def cli_main():
                 simclr = SIMCLR.load_from_checkpoint(checkpoint_path=encoder)
                 encoder = simclr.encoder
                 embedding_size = simclr.embedding_size
-                model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneValDataTransform, val_transform = SimCLRFinetuneValDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes, image_size = image_size)
+                model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneValDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes, image_size = image_size)
             except Exception as e:
                 print(e)
                 print('invalid checkpoint to initialize SIMCLR model. This checkpoint needs to include the encoder and projection and be of the SIMCLR class from this library. Will try to initialize just the encoder')
@@ -244,7 +244,7 @@ def cli_main():
         
         encoder, embedding_size = load_encoder(encoder)
  
-        model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneTrainDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes, image_size = image_size)
+        model = finetuner(encoder = encoder, embedding_size = embedding_size, withhold = withhold, DATA_PATH = DATA_PATH, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRFinetuneTrainDataTransform, val_transform = SimCLRFinetuneValDataTransform, num_workers = num_workers, lr = lr, num_classes = num_classes, image_size = image_size)
     
     cbs = []
     backend = 'ddp'
