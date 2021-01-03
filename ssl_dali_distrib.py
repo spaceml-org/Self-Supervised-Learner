@@ -11,6 +11,7 @@ from os import path
 import splitfolders
 from pathlib import Path
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+import numpy as np
 
 from pytorch_lightning.loggers import WandbLogger
 
@@ -48,7 +49,7 @@ class SIMCLR(SimCLR):
       self.embedding_size = embedding_size
       self.image_size = image_size
       
-      super().__init__(gpus = self.gpus, num_samples = 0, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
+      super().__init__(gpus = self.gpus, num_samples = self.num_samples, batch_size = self.batch_size, dataset = 'None', max_epochs = self.epochs)
       self.encoder = encoder
       
       class Projection(nn.Module):
@@ -129,7 +130,20 @@ class SIMCLR(SimCLR):
           size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
           self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
           self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
-          
+      
+      global_batch_size = self.nodes * self.gpus * self.batch_size if self.gpus > 0 else self.batch_size
+      self.train_iters_per_epoch = num_samples // global_batch_size
+
+      # define LR schedule
+      warmup_lr_schedule = np.linspace(
+          self.start_lr, self.learning_rate, self.train_iters_per_epoch * self.warmup_epochs
+      )
+      iters = np.arange(self.train_iters_per_epoch * (self.max_epochs - self.warmup_epochs))
+      cosine_lr_schedule = np.array([self.final_lr + 0.5 * (self.learning_rate - self.final_lr) * (
+          1 + math.cos(math.pi * t / (self.train_iters_per_epoch * (self.max_epochs - self.warmup_epochs)))
+      ) for t in iters])
+
+      self.lr_schedule = np.concatenate((warmup_lr_schedule, cosine_lr_schedule))
       
   def train_dataloader(self):
       return self.train_loader
