@@ -78,7 +78,7 @@ class finetuner(pl.LightningModule):
 
               def __next__(self):
                   out = super().__next__()
-                  out = out[0]
+                  #out = out[0]
                   print(out)
                   return out
                 
