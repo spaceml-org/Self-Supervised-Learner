@@ -236,6 +236,6 @@ def cli_main():
     trainer.fit(model)
     Path(f"./models/SSL").mkdir(parents=True, exist_ok=True)
     trainer.save_checkpoint(f"./models/SSL/{log_name}")
-    
+    print("YOUR MODEL CAN BE ACCESSED AT: ", f"./models/SSL/{log_name}")
 if __name__ == '__main__':
     cli_main()
