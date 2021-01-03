@@ -18,10 +18,10 @@ class SimCLRFinetuneTrainDataTransform(Pipeline):
         self.blur_amt = ops.Uniform(values = [float(i) for i in range(1, int(0.1*self.input_height), 2)])
         #read image (I think that has to be cpu, do a mixed operation to decode into gpu)
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
-        self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, device = "gpu")
+        self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, device = "gpu", , dtype = types.FLOAT)
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu", dtype = types.FLOAT)
-        self.blur = ops.GaussianBlur(window_size = self.blur_amt(), device = "gpu", dtype = types.FLOAT)
+        self.blur = ops.GaussianBlur(window_size = self.blur_amt(), device = "gpu")
         self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu")
 
         self.to_int64 = ops.Cast(dtype=types.INT64, device="gpu")
