@@ -66,7 +66,7 @@ class finetuner(pl.LightningModule):
             n_hidden=self.hidden_dims
        )
             
-  def setup(self, stage = None):
+  def setup(self, stage = 'train'):
       #used for setting up dali pipeline, run on every gpu
       if stage == 'inference':
           print('Running model in inference mode. Dali iterator will flow data, no labels')     
