@@ -66,36 +66,60 @@ class finetuner(pl.LightningModule):
        )
             
   def setup(self, stage = None):
-      #used exclusively for setting up dali finetuning pipeline, run on every gpu
-      num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
-      #each gpu gets its own DALI loader
-      train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-      print(f"{self.DATA_PATH}/train")
-      val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-  
+      if stage == 'inference':
+               
+          num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
+          #each gpu gets its own DALI loader
+          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+          
+          class LightningWrapper(DALIGenericIterator):
+              def __init__(self, *kargs, **kvargs):
+                  super().__init__(*kargs, **kvargs)
 
-      class LightningWrapper(DALIGenericIterator):
-          def __init__(self, *kargs, **kvargs):
-              super().__init__(*kargs, **kvargs)
+              def __next__(self):
+                  out = super().__next__()
+                  out = out[0]
+                  return out[self.output_map[0]]
+                
+              def __len__(self):
+                return num_samples//self.batch_size
 
-          def __next__(self):
-              out = super().__next__()
-              out = out[0]
-              return out[self.output_map[0]], torch.squeeze(out[self.output_map[-1]])
+          train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]   
+          self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
+          self.val_loader = None
+          
+          
+      else:
+          #used exclusively for setting up dali finetuning pipeline, run on every gpu
+          num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+          #each gpu gets its own DALI loader
+          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+          print(f"{self.DATA_PATH}/train")
+          val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
 
-          def __len__(self):
-            return num_samples//self.batch_size
+
+          class LightningWrapper(DALIGenericIterator):
+              def __init__(self, *kargs, **kvargs):
+                  super().__init__(*kargs, **kvargs)
+
+              def __next__(self):
+                  out = super().__next__()
+                  out = out[0]
+                  return out[self.output_map[0]], torch.squeeze(out[self.output_map[-1]])
+
+              def __len__(self):
+                return num_samples//self.batch_size
 
 
-      train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
-      train_labels.append('label')
+          train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
+          train_labels.append('label')
 
-      val_labels = [f'im{i}' for i in range(1, val_pipeline.COPIES+1)]
-      val_labels.append('label')
+          val_labels = [f'im{i}' for i in range(1, val_pipeline.COPIES+1)]
+          val_labels.append('label')
 
-      size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
-      self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
-      self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
+          size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+          self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
+          self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, fill_last_batch=False)
 
   def shared_step(self, batch):
       x, y = batch
