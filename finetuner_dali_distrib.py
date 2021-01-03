@@ -79,7 +79,7 @@ class finetuner(pl.LightningModule):
               def __next__(self):
                   out = super().__next__()
                   out = out[0]
-                  return out[self.output_map[0]], torch.squeeze(out[self.output_map[-1]])
+                  return out[self.output_map[0]]
 
               def __len__(self):
                 return num_samples//self.batch_size
