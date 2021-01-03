@@ -71,19 +71,19 @@ class finetuner(pl.LightningModule):
           num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
           #each gpu gets its own DALI loader
           train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = 256, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-          print(train_pipeline)
-#           class LightningWrapper(DALIGenericIterator):
-#               def __init__(self, *kargs, **kvargs):
-#                   super().__init__(*kargs, **kvargs)
+          
+          class LightningWrapper(DALIGenericIterator):
+              def __init__(self, *kargs, **kvargs):
+                  super().__init__(*kargs, **kvargs)
 
-#               def __next__(self):
-#                   out = super().__next__()
-#                   #out = out[0]
-#                   print(out)
-#                   return out
-                
-#               def __len__(self):
-#                 return num_samples//self.batch_size
+              def __next__(self):
+                  out = super().__next__()
+                  out = out[0]
+                  return out[self.output_map[0]], torch.squeeze(out[self.output_map[-1]])
+
+              def __len__(self):
+                return num_samples//self.batch_size
+
 
           train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]   
           print(train_labels)
