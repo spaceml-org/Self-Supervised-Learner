@@ -115,7 +115,8 @@ class SimCLRValDataTransform(Pipeline):
         
         labels = labels.gpu()
         labels = self.to_int64(labels)
-        if stage == 'train:
+        
+        if self.stage == 'train:
             return (im1, im2, im3, labels)
         else:
             return (im1, im2, im3)
@@ -142,7 +143,8 @@ class SimCLRFinetuneValDataTransform(Pipeline):
 
         labels = labels.gpu()
         labels = self.to_int64(labels)
-        if stage == 'train:
+        
+        if self.stage == 'train:
             return (image, labels)
         else:
             return (image)
