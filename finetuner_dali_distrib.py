@@ -252,7 +252,7 @@ def cli_main():
         cb = EarlyStopping('val_loss', patience = patience)
         cbs.append(cb)
         
-    trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=5, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
+    trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=20, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
     trainer.fit(model)
     
     Path(f"./models/FineTune").mkdir(parents=True, exist_ok=True)
