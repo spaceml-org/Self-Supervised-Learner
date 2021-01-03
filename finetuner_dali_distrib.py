@@ -86,6 +86,7 @@ class finetuner(pl.LightningModule):
 
 
           train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]   
+          train_labels.append('label')
           print(train_labels)
           self.train_loader = DALIGenericIterator(train_pipeline, train_labels, auto_reset=True, fill_last_batch=False)
           self.val_loader = None
