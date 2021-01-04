@@ -192,10 +192,11 @@ def cli_main():
     checkpointed = '.ckpt' in encoder    
     
     if not (path.isdir(f"{DATA_PATH}/train") and path.isdir(f"{DATA_PATH}/val")): 
+        print(colored(f'Automatically splitting data into train and validation data...', 'blue'))
         shutil.rmtree(f'./split_data_{log_name[:-5]}', ignore_errors=True)
         splitfolders.ratio(DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-val_split-withhold, val_split, withhold), seed = 10)
         DATA_PATH = f'./split_data_{log_name[:-5]}'
-        print(colored(f'Automatically splitting data into train and validation data {val_split} and withhold {withhold}', 'blue'))
+        
 
     num_classes = len(os.listdir(f'{DATA_PATH}/train'))
         
@@ -236,6 +237,6 @@ def cli_main():
     trainer.fit(model)
     Path(f"./models/SSL").mkdir(parents=True, exist_ok=True)
     trainer.save_checkpoint(f"./models/SSL/{log_name}")
-    print(colored("YOUR MODEL CAN BE ACCESSED AT: ", blue), f"./models/SSL/{log_name}")
+    print(colored("YOUR MODEL CAN BE ACCESSED AT: ", 'blue'), f"./models/SSL/{log_name}")
 if __name__ == '__main__':
     cli_main()
