@@ -1,3 +1,4 @@
+from termcolor import colored
 import torch
 from torch.nn import functional as F
 from torch import nn
@@ -78,7 +79,7 @@ class SIMCLR(SimCLR):
   def setup(self, stage = 'train'):
       #used for setting up dali pipeline, run on every gpu
       if stage == 'inference':
-          print('Running model in inference mode. Dali iterator will flow data, no labels')     
+          print(colored('Running model in inference mode. Dali iterator will flow data, no labels', 'green'))    
           num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
           #each gpu gets its own DALI loader
           inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank, stage = stage)
