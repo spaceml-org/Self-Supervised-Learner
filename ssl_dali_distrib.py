@@ -80,7 +80,7 @@ class SIMCLR(SimCLR):
       #used for setting up dali pipeline, run on every gpu
       if stage == 'inference':
           print(colored('Running model in inference mode. Dali iterator will flow data, no labels', 'green'))    
-          num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
+
           #each gpu gets its own DALI loader
           inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank, stage = stage)
           
@@ -92,9 +92,6 @@ class SIMCLR(SimCLR):
                   out = super().__next__()
                   out = out[0]
                   return tuple([out[k] for k in self.output_map])
-
-              def __len__(self):
-                return num_samples//self.batch_size
 
           inference_labels = [f'im{i}' for i in range(1, inference_pipeline.COPIES+1)]
           self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
@@ -132,19 +129,19 @@ class SIMCLR(SimCLR):
           self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
           self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
       
-      global_batch_size = self.nodes * self.gpus * self.batch_size if self.gpus > 0 else self.batch_size
-      self.train_iters_per_epoch = num_samples // global_batch_size
+          global_batch_size = self.nodes * self.gpus * self.batch_size if self.gpus > 0 else self.batch_size
+          self.train_iters_per_epoch = num_samples // global_batch_size
 
-      # define LR schedule
-      warmup_lr_schedule = np.linspace(
-          self.start_lr, self.learning_rate, self.train_iters_per_epoch * self.warmup_epochs
-      )
-      iters = np.arange(self.train_iters_per_epoch * (self.max_epochs - self.warmup_epochs))
-      cosine_lr_schedule = np.array([self.final_lr + 0.5 * (self.learning_rate - self.final_lr) * (
-          1 + math.cos(math.pi * t / (self.train_iters_per_epoch * (self.max_epochs - self.warmup_epochs)))
-      ) for t in iters])
+          # define LR schedule
+          warmup_lr_schedule = np.linspace(
+              self.start_lr, self.learning_rate, self.train_iters_per_epoch * self.warmup_epochs
+          )
+          iters = np.arange(self.train_iters_per_epoch * (self.max_epochs - self.warmup_epochs))
+          cosine_lr_schedule = np.array([self.final_lr + 0.5 * (self.learning_rate - self.final_lr) * (
+              1 + math.cos(math.pi * t / (self.train_iters_per_epoch * (self.max_epochs - self.warmup_epochs)))
+          ) for t in iters])
 
-      self.lr_schedule = np.concatenate((warmup_lr_schedule, cosine_lr_schedule))
+          self.lr_schedule = np.concatenate((warmup_lr_schedule, cosine_lr_schedule))
       
   def train_dataloader(self):
       return self.train_loader
