@@ -111,8 +111,8 @@ class SIMCLR(SimCLR):
 
 
           class LightningWrapper(DALIGenericIterator):
-              def __init__(self, *kargs, **kvargs):
-                  super().__init__(num_samples, *kargs, **kvargs)
+              def __init__(self, num_samples, *kargs, **kvargs):
+                  super().__init__(*kargs, **kvargs)
                   self.num_samples = num_samples
 
               def __next__(self):
