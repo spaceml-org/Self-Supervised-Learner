@@ -94,7 +94,7 @@ class SIMCLR(SimCLR):
                   return tuple([out[k] for k in self.output_map])
                 
              def __len__(self):
-                return self.num_samples//self.batch_size
+                  return self.num_samples//self.batch_size
 
           inference_labels = [f'im{i}' for i in range(1, inference_pipeline.COPIES+1)]
           self.inference_loader = LightningWrapper(num_samples, inference_pipeline, inference_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
@@ -121,7 +121,7 @@ class SIMCLR(SimCLR):
                   return tuple([out[k] for k in self.output_map[:-1]]), torch.squeeze(out[self.output_map[-1]])
 
               def __len__(self):
-                return self.num_samples//self.batch_size
+                  return self.num_samples//self.batch_size
 
 
           train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
