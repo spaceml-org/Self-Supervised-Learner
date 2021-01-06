@@ -72,7 +72,6 @@ class finetuner(pl.LightningModule):
       #used for setting up dali pipeline, run on every gpu
       if stage == 'inference':
           print(colored('Running model in inference mode. Dali iterator will flow data, no labels', 'green'))       
-          num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
           #each gpu gets its own DALI loader
           inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank, stage = stage)
           
@@ -84,10 +83,6 @@ class finetuner(pl.LightningModule):
                   out = super().__next__()
                   out = out[0]
                   return out[self.output_map[0]]
-
-              def __len__(self):
-                return num_samples//self.batch_size
-
 
           inference_labels = [f'im{i}' for i in range(1, inference_pipeline.COPIES+1)]
           self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
