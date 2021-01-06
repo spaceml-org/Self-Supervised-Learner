@@ -95,7 +95,7 @@ class SimCLRValDataTransform(Pipeline):
         self.stage = stage
         
         self.input_height = input_height
-        self.input = ops.FileReader(file_root = DATA_PATH, random_shuffle = True, seed = 12)
+        self.input = ops.FileReader(file_root = DATA_PATH, random_shuffle = False, seed = 12)
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
         self.crop = ops.RandomResizedCrop(size = self.input_height, random_area =1, random_aspect_ratio = 1, minibatch_size = batch_size, device = "gpu", dtype = types.FLOAT)
         self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu")
@@ -131,7 +131,7 @@ class SimCLRFinetuneValDataTransform(Pipeline):
         self.COPIES = 1
         self.stage = stage
         self.input_height = input_height
-        self.input = ops.FileReader(file_root = DATA_PATH, random_shuffle = True, seed = 12)
+        self.input = ops.FileReader(file_root = DATA_PATH, random_shuffle = False, seed = 12)
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
         self.crop = ops.RandomResizedCrop(size = self.input_height, random_area =1, random_aspect_ratio = 1, minibatch_size = batch_size, device = "gpu", dtype = types.FLOAT)
         self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu")
