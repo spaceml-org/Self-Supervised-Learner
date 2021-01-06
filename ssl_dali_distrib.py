@@ -93,7 +93,7 @@ class SIMCLR(SimCLR):
                   out = out[0]
                   return tuple([out[k] for k in self.output_map])
                 
-             def __len__(self):
+              def __len__(self):
                   return self.num_samples//self.batch_size
 
           inference_labels = [f'im{i}' for i in range(1, inference_pipeline.COPIES+1)]
