@@ -80,27 +80,31 @@ class SIMCLR(SimCLR):
       #used for setting up dali pipeline, run on every gpu
       if stage == 'inference':
           print(colored('Running model in inference mode. Dali iterator will flow data, no labels', 'green'))    
-
+          num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
           #each gpu gets its own DALI loader
           inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank, stage = stage)
           
           class LightningWrapper(DALIGenericIterator):
-              def __init__(self, *kargs, **kvargs):
+              def __init__(self, num_samples, *kargs, **kvargs):
                   super().__init__(*kargs, **kvargs)
-
+                  self.num_samples = num_samples
               def __next__(self):
                   out = super().__next__()
                   out = out[0]
                   return tuple([out[k] for k in self.output_map])
+                
+             def __len__(self):
+                return self.num_samples//self.batch_size
 
           inference_labels = [f'im{i}' for i in range(1, inference_pipeline.COPIES+1)]
-          self.inference_loader = LightningWrapper(inference_pipeline, inference_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
+          self.inference_loader = LightningWrapper(num_samples, inference_pipeline, inference_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
           self.train_loader = None
           self.val_loader = None
           
       else:
           
-          num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+          num_samples_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
+          num_samples_val = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/val')])
           #each gpu gets its own DALI loader
           train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
           val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
@@ -108,7 +112,8 @@ class SIMCLR(SimCLR):
 
           class LightningWrapper(DALIGenericIterator):
               def __init__(self, *kargs, **kvargs):
-                  super().__init__(*kargs, **kvargs)
+                  super().__init__(num_samples, *kargs, **kvargs)
+                  self.num_samples = num_samples
 
               def __next__(self):
                   out = super().__next__()
@@ -116,7 +121,7 @@ class SIMCLR(SimCLR):
                   return tuple([out[k] for k in self.output_map[:-1]]), torch.squeeze(out[self.output_map[-1]])
 
               def __len__(self):
-                return num_samples//self.batch_size
+                return self.num_samples//self.batch_size
 
 
           train_labels = [f'im{i}' for i in range(1, train_pipeline.COPIES+1)]
@@ -126,8 +131,8 @@ class SIMCLR(SimCLR):
           val_labels.append('label')
 
           size_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
-          self.train_loader = LightningWrapper(train_pipeline, train_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
-          self.val_loader = LightningWrapper(val_pipeline, val_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
+          self.train_loader = LightningWrapper(num_samples_train, train_pipeline, train_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
+          self.val_loader = LightningWrapper(num_samples_val, val_pipeline, val_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
       
           global_batch_size = self.nodes * self.gpus * self.batch_size if self.gpus > 0 else self.batch_size
           self.train_iters_per_epoch = num_samples // global_batch_size
