@@ -1,4 +1,4 @@
-# SpaceForce-DataSearch Test Branch
+# SpaceForce-DataSearch Test Branch 
 A tool to quickly train a Self-Supervised Learning model and finetune the model on labeled data in order to help researchers rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.
 
 __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
