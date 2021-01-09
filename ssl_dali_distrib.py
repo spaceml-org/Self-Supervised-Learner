@@ -106,8 +106,10 @@ class SIMCLR(SimCLR):
           num_samples_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
           num_samples_val = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/val')])
           #each gpu gets its own DALI loader
-          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-          val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+          print('MY GLOBAL RANK IS:______ ', self.global_rank)
+          print('MY LOCAL RANK IS:______ ', self.local_rank)
+          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.local_rank)
+          val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.local_rank)
 
 
           class LightningWrapper(DALIGenericIterator):
@@ -232,7 +234,6 @@ def cli_main():
     
     if online_eval:
         cbs.append(online_evaluator)
-        backend = 'ddp'
         
     trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=20, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
     print('BACKEND: __________________', backend)
