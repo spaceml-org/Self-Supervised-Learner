@@ -74,7 +74,7 @@ class finetuner(pl.LightningModule):
           num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
           print(colored('Running model in inference mode. Dali iterator will flow data, no labels', 'green'))       
           #each gpu gets its own DALI loader
-          inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank, stage = stage)
+          inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.local_rank, stage = stage)
           
           class LightningWrapper(DALIGenericIterator):
               def __init__(self, num_samples, *kargs, **kvargs):
@@ -99,8 +99,8 @@ class finetuner(pl.LightningModule):
           num_samples_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
           num_samples_val = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/val')])
           #each gpu gets its own DALI loader
-          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
-          val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank)
+          train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.local_rank)
+          val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.local_rank)
 
 
           class LightningWrapper(DALIGenericIterator):
