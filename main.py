@@ -35,6 +35,7 @@ from encoders_dali import load_encoder
 from ssl_dali_distrib import cli_main, SIMCLR
 from utils import plot_metrics, plot_umap, get_embeddings, n_random_subset, prepare_dataset, class_distrib, farthest_point, min_max_diverse_embeddings, animate_umap
 from cli_main import cli_main
+
 def driver():
   parser = ArgumentParser()
   parser.add_argument("--image_size", default = 256, type=int, help="Size of the image")
