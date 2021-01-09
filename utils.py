@@ -12,7 +12,7 @@ from ssl_dali_distrib import SIMCLR
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.animation as animation
 import imageio
-
+import torch
 
 def plot_umap(feature_list, filenames , path, n_neighbors=20, count = 0):
   # feature_list = feature_list.detach().numpy()
