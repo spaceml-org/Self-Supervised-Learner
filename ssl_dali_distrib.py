@@ -82,7 +82,7 @@ class SIMCLR(SimCLR):
           print(colored('Running model in inference mode. Dali iterator will flow data, no labels', 'green'))    
           num_samples = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}')])
           #each gpu gets its own DALI loader
-          inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.global_rank, stage = stage)
+          inference_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.local_rank, stage = stage)
           
           class LightningWrapper(DALIGenericIterator):
               def __init__(self, num_samples, *kargs, **kvargs):
@@ -106,8 +106,6 @@ class SIMCLR(SimCLR):
           num_samples_train = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/train')])
           num_samples_val = sum([len(files) for r, d, files in os.walk(f'{self.DATA_PATH}/val')])
           #each gpu gets its own DALI loader
-          print('MY GLOBAL RANK IS:______ ', self.global_rank)
-          print('MY LOCAL RANK IS:______ ', self.local_rank)
           train_pipeline = self.train_transform(DATA_PATH = f"{self.DATA_PATH}/train", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.local_rank)
           val_pipeline = self.val_transform(DATA_PATH = f"{self.DATA_PATH}/val", input_height = self.image_size, batch_size = self.batch_size, num_threads = self.num_workers, device_id = self.local_rank)
 
@@ -236,7 +234,6 @@ def cli_main():
         cbs.append(online_evaluator)
         
     trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=20, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
-    print('BACKEND: __________________', backend)
     trainer.fit(model)
     Path(f"./models/SSL").mkdir(parents=True, exist_ok=True)
     trainer.save_checkpoint(f"./models/SSL/{log_name}")
