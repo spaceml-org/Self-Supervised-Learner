@@ -199,7 +199,6 @@ def cli_main():
         splitfolders.ratio(DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-val_split-withhold, val_split, withhold), seed = 10)
         DATA_PATH = f'./split_data_{log_name[:-5]}'
         
-
     num_classes = len(os.listdir(f'{DATA_PATH}/train'))
         
     if checkpointed:
@@ -225,7 +224,7 @@ def cli_main():
     )
     
     cbs = []
-    backend = 'ddp2'
+    backend = 'ddp'
     
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
@@ -233,7 +232,7 @@ def cli_main():
     
     if online_eval:
         cbs.append(online_evaluator)
-        backend = 'ddp'
+        backend = 'dp'
         
     trainer = Trainer(gpus=gpus, max_epochs = epochs, progress_bar_refresh_rate=20, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, logger = wandb_logger, enable_pl_optimizer=True)
     print('BACKEND: __________________', backend)
