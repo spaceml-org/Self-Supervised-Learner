@@ -224,7 +224,7 @@ def cli_main():
     )
     
     cbs = []
-    backend = 'ddp2'
+    backend = 'horovod'
     
     if patience > 0:
         cb = EarlyStopping('val_loss', patience = patience)
