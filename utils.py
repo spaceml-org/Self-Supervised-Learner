@@ -33,6 +33,7 @@ def plot_umap(feature_list, filenames , path, n_neighbors=20, count = 0):
   scatter_plot= plt.scatter(u[:,0], u[:, 1], c=class_labels, cmap = color_map)
   plt.title('UMAP embedding of random colours. Iteration ' + str(count+1));
   plt.colorbar(scatter_plot)
+  
   # if not os.path.isdir("./graphs/"):
   #   print("Creating directory to store graphs")
   #   os.mkdir("./graphs/")
