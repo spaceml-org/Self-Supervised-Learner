@@ -134,7 +134,7 @@ class SIMCLR(SimCLR):
           self.train_loader = LightningWrapper(num_samples_train, train_pipeline, train_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
           self.val_loader = LightningWrapper(num_samples_val, val_pipeline, val_labels, auto_reset=True, last_batch_policy = LastBatchPolicy.PARTIAL,  last_batch_padded = True)
       
-          global_batch_size = self.nodes * self.gpus * self.batch_size if self.gpus > 0 else self.batch_size
+          global_batch_size = self.nodes * self.batch_size if self.gpus > 0 else self.batch_size
           self.train_iters_per_epoch = self.train_loader.num_samples // global_batch_size
 
           # define LR schedule
