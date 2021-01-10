@@ -35,8 +35,10 @@ from encoders_dali import load_encoder
 from ssl_dali_distrib import cli_main, SIMCLR
 from utils import plot_metrics, plot_umap, get_embeddings, n_random_subset, prepare_dataset, class_distrib, farthest_point, min_max_diverse_embeddings, animate_umap
 from cli_main import cli_main
+from TSNE import TSNE_visualiser
 
 def driver():
+
   parser = ArgumentParser()
   parser.add_argument("--image_size", default = 256, type=int, help="Size of the image")
   parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
@@ -95,6 +97,7 @@ def driver():
     os.mkdir("./graphs/")
     os.mkdir("./graphs/DiversityAlgorithm/")
     os.mkdir("./graphs/Full_Dataset/")
+    os.mkdir("./graphs/TSNE/")
   for i in range(num_iters):
     print("-----------------Iteration: ",i+1,"----------------------")
     ckpt = cli_main(size, buffer_dataset_path+"/train", batch_size, num_workers, hidden_dims, epochs, lr, 
@@ -111,7 +114,19 @@ def driver():
     print("Number and Shape of Embeddings:", len(embedding),embedding[0].shape)
     plot_umap(da_embeddings, da_files, count= i, path="./graphs/DiversityAlgorithm/")
     plot_umap(embedding, dataset_paths, count= i, path="./graphs/Full_Dataset/")
-  animate_umap("./graphs/DiversityAlgorithm", fps = 1)
+    ##TSNE 
+    print("Starting TSNE")
+    da_tsne = TSNE_visualiser(da_embeddings, da_files)
+    print("KNN Clusters created")
+    neighbors, distances, indices = da_tsne.knn_cluster(da_tsne.feature_list)
+    print("KNN Clusters created, onto TSNE")
+    tsne_results = da_tsne.fit_tsne(da_tsne.feature_list)
+    print("TSNE Fit complete")
+    da_tsne.scatter_plot(tsne_results, da_tsne.labels, "./graphs/TSNE/", i)
+    da_tsne.show_tsne(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
+    da_tsne.tsne_to_grid_plotter_manual(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
+    print("Graphs created and stored")
+  imate_umap("./graphs/DiversityAlgorithm", fps = 1)
   animate_umap("./graphs/Full_Dataset",fps=1)
   if metric != "count":
     print(metric_array)
