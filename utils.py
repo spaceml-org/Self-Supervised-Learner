@@ -19,7 +19,7 @@ def plot_umap(feature_list, filenames , path, n_neighbors=20, count = 0):
   class_id = []
   for _ in filenames:
     class_id.append(_.split("/")[6])
-  num_points = dict((x,class_id.count(x)) for x in set(class_id)))
+  num_points = dict((x,class_id.count(x)) for x in set(class_id))
   le = LabelEncoder()
   class_labels = le.fit_transform(class_id)
   # print("Classes: ",le.classes_)
