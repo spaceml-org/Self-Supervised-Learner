@@ -63,7 +63,7 @@ class TSNE_visualiser:
                             n_jobs= n_jobs,
                             metric=metric).fit_transform(feature_list)
 
-        print('t-SNE done! Time elapsed: {} seconds'.format(time.time() - time_start))
+        print('T-SNE done! Time elapsed: {} seconds'.format(time.time() - time_start))
         return tsne_results
     
     def scatter_plot(self, tsne_results, labels, path, count = 0):
@@ -106,7 +106,6 @@ class TSNE_visualiser:
         axis.autoscale()
 
   def show_tsne(self, x, y, images, path, count = 0):
-
         fig, axis = plt.subplots()
         fig.set_size_inches(22, 22, forward=True)
         self.plot_images_in_2d(x, y, images, zoom=0.3, axis=axis)
