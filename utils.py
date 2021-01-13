@@ -20,6 +20,9 @@ def plot_umap(feature_list, filenames , path, n_neighbors=20, count = 0):
   for _ in filenames:
     class_id.append(_.split("/")[6])
   num_points = dict((x,class_id.count(x)) for x in set(class_id))
+  txt = ''
+  for i in num_points.keys():
+    txt += i + ':' + str(d[i]) + " "
   le = LabelEncoder()
   class_labels = le.fit_transform(class_id)
   # print("Classes: ",le.classes_)
@@ -33,7 +36,9 @@ def plot_umap(feature_list, filenames , path, n_neighbors=20, count = 0):
   scatter_plot= plt.scatter(u[:,0], u[:, 1], c=class_labels, cmap = color_map)
   plt.title('UMAP embedding of random colours. Iteration ' + str(count+1));
   plt.colorbar(scatter_plot)
-  
+
+  plt.text(.5, .05, txt, ha='center')
+
   # if not os.path.isdir("./graphs/"):
   #   print("Creating directory to store graphs")
   #   os.mkdir("./graphs/")
