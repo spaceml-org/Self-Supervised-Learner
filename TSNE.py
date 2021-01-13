@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from matplotlib.cbook import get_sample_data
+from sklearn.preprocessing import LabelEncoder
 
 class TSNE_visualiser: 
     def __init__(self, feature_list, filenames):
@@ -70,7 +71,8 @@ class TSNE_visualiser:
     '''
     Plots a scatter plot for the given TSNE fit variable
     '''
-        
+        le = LabelEncoder()
+        class_labels = le.fit_transform(labels)
         color_map = plt.cm.get_cmap('tab20b_r')
         scatter_plot = plt.scatter(tsne_results[:, 0],
                                 tsne_results[:, 1],
