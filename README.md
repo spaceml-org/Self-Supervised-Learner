@@ -26,7 +26,16 @@
 
 # Curator
 
-
+<table border="0">
+ <tr>
+    <td><b style="font-size:30px">Title</b></td>
+    <td><b style="font-size:30px">Title 2</b></td>
+ </tr>
+ <tr>
+    <td>Lorem ipsum ...</td>
+    <td>Lorem ipsum ...</td>
+ </tr>
+</table>
 __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
 Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
