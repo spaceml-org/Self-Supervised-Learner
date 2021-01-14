@@ -8,6 +8,7 @@ import PIL
 from PIL import Image
 from sklearn.neighbors import NearestNeighbors
 import glob
+import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
