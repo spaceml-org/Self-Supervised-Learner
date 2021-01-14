@@ -101,21 +101,27 @@ def n_random_subset(n, paths):
   # random_points = [paths[i] for i in datapoints]
   
   return datapoints
+
 ##TODO add class distribution to the umap plot tomorrow. 
+
+
 def prepare_dataset(dir, paths): 
 
   try: 
     os.makedirs(os.path.join(dir, 'train'))
   except:
     shutil.rmtree(dir)
-    os.makedirs(os.path.join(dir, 'train'))
+    os.mkdir(dir)
+    # os.makedirs(os.path.join(dir, 'train'))
 
   for x in paths:
-    if x.split("/")[6] not in os.listdir(os.path.join(dir,"train")):
-      os.mkdir(os.path.join(os.path.join(dir,"train"),x.split("/")[6]))
-      shutil.copy(x, os.path.join(os.path.join(dir,"train"),x.split("/")[6]))
+    # if x.split("/")[-2] not in os.listdir(os.path.join(dir,"train")):
+    if x.split("/")[-2] not in os.listdir(dir):
+      # os.mkdir(os.path.join(os.path.join(dir,"train"),x.split("/")[-2]))
+      os.mkdir(os.path.join(dir,x.split("/")[-2]))
+      shutil.copy(x, os.path.join(os.path.join(dir,x.split("/")[-2])))
     else:
-      shutil.copy(x, os.path.join(os.path.join(dir,"train"),x.split("/")[6]))
+      shutil.copy(x, os.path.join(os.path.join(dir,x.split("/")[-2])))
   print('Subset moved to directory. Dataset abiding formats created successfully')
 
 def farthest_point(embeddings):
