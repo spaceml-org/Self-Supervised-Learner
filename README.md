@@ -14,7 +14,7 @@
 </p>
 
 
-[![Pip Package](https://img.shields.io/badge/Pip Package-Coming%20Soon-blue.svg)](https://shields.io/)
+[![Pip Package](https://img.shields.io/badge/Pip%20Package-Coming%20Soon-0073b7.svg)](https://shields.io/)
 [![Python Version](https://img.shields.io/badge/python-3.5%20|%203.6%20|%203.7%20|%203.8-blue.svg)](https://shields.io/)
 <!--
 [![CodeFactor](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning/badge)](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning)
