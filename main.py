@@ -100,7 +100,7 @@ def driver():
     os.mkdir("./graphs/TSNE/")
   for i in range(num_iters):
     print("-----------------Iteration: ",i+1,"----------------------")
-    ckpt = cli_main(size, buffer_dataset_path+"/train", batch_size, num_workers, hidden_dims, epochs, lr, 
+    ckpt = cli_main(size, buffer_dataset_path, batch_size, num_workers, hidden_dims, epochs, lr, 
             patience, val_split, withhold, gpus, encoder, log_name, online_eval)
     encoder = ckpt
     print("Obtaining Embeddings")
