@@ -28,18 +28,18 @@
 
 __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
+Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
+
 <table border="0">
  <tr>
     <td><b style="font-size:30px">Release</b></td>
     <td><b style="font-size:30px">Version</b></td>
  </tr>
  <tr>
-    <td>1.0</td>
+    <td>1.0.1</td>
     <td>Support for SIMCLR</td>
  </tr>
 </table>
-
-Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
 
 ## Using Your Own Data Set
 ```bash
