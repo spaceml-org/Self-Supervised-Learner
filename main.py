@@ -58,7 +58,7 @@ def driver():
   parser.add_argument("--subset_size", default= 0.1, type = int, help= "size of the subset of dataset that goes into SimCLR training")
   parser.add_argument("--buffer_dataset_path", type= str, help = "Where the subsets are stored everytime before passing into SimCLR")
   parser.add_argument("--metric", default="count", type=str, help="Type of Metric to evaluate pretraining")
-
+  parser.add_argument("--TSNE", default = False, type= bool, help= 'Toggles TSNE plots' )
   args = parser.parse_args()
   size = args.image_size
   DATA_PATH = args.DATA_PATH
@@ -78,7 +78,7 @@ def driver():
   subset_size = args.subset_size
   buffer_dataset_path = args.buffer_dataset_path
   metric = args.metric
-
+  tsne_exec = args.TSNE
   train_image_paths = list(paths.list_images(DATA_PATH + '/train'))
   random_points_fnames = n_random_subset(subset_size, train_image_paths)
   prepare_dataset(buffer_dataset_path , random_points_fnames)
@@ -92,12 +92,19 @@ def driver():
   #creating a folder for storing graphs
   try:
     os.mkdir("./graphs/")
+    os.mkdir("./graphs/")
+    os.mkdir("./graphs/DiversityAlgorithm/")
+    os.mkdir("./graphs/Full_Dataset/")
+    if tsne_exec:
+      os.mkdir("./graphs/TSNE/")
   except:
     shutil.rmtree("./graphs/")
     os.mkdir("./graphs/")
     os.mkdir("./graphs/DiversityAlgorithm/")
     os.mkdir("./graphs/Full_Dataset/")
-    os.mkdir("./graphs/TSNE/")
+    if tsne_exec:
+      os.mkdir("./graphs/TSNE/")
+
   for i in range(num_iters):
     print("-----------------Iteration: ",i+1,"----------------------")
     ckpt = cli_main(size, buffer_dataset_path, batch_size, num_workers, hidden_dims, epochs, lr, 
@@ -115,17 +122,18 @@ def driver():
     plot_umap(da_embeddings, da_files, count= i, path="./graphs/DiversityAlgorithm/")
     plot_umap(embedding, dataset_paths, count= i, path="./graphs/Full_Dataset/")
     ##TSNE 
-    print("Starting TSNE")
-    da_tsne = TSNE_visualiser(da_embeddings, da_files)
-    print("KNN Clusters created")
-    neighbors, distances, indices = da_tsne.knn_cluster(da_tsne.feature_list)
-    print("KNN Clusters created, onto TSNE")
-    tsne_results = da_tsne.fit_tsne(da_tsne.feature_list)
-    print("TSNE Fit complete")
-    da_tsne.scatter_plot(tsne_results, da_tsne.labels, "./graphs/TSNE/", i)
-    da_tsne.show_tsne(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
-    da_tsne.tsne_to_grid_plotter_manual(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
-    print("Graphs created and stored")
+    if tsne_exec:
+      print("Starting TSNE")
+      da_tsne = TSNE_visualiser(da_embeddings, da_files)
+      print("KNN Clusters created")
+      neighbors, distances, indices = da_tsne.knn_cluster(da_tsne.feature_list)
+      print("KNN Clusters created, onto TSNE")
+      tsne_results = da_tsne.fit_tsne(da_tsne.feature_list)
+      print("TSNE Fit complete")
+      da_tsne.scatter_plot(tsne_results, da_tsne.labels, "./graphs/TSNE/", i)
+      da_tsne.show_tsne(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
+      da_tsne.tsne_to_grid_plotter_manual(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
+      print("TSNE Graphs created and stored")
   imate_umap("./graphs/DiversityAlgorithm", fps = 1)
   animate_umap("./graphs/Full_Dataset",fps=1)
   if metric != "count":
