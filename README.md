@@ -107,7 +107,7 @@ If you don't want to use the predefined encoders in encoders_dali.py, it's very 
 ```
 
 ## Coming Updates
-- Cluster Visualizations for Embeddings 
+:heavy_check_mark: Cluster Visualizations for Embeddings 
 - Supporting numpy, TFDS datasets
 - Saliency Maps for Embeddings
 
