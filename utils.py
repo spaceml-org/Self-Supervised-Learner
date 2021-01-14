@@ -132,7 +132,7 @@ def farthest_point(embeddings):
   return distances.index(max(distances))
 
 def class_distrib(filenames, metric = 'count'):
-    filenames = paths.list_images(os.path.join(filenames, 'train'))
+    filenames = paths.list_images(filenames)
     classes = {}
     for x in filenames:
       if x.split('/')[-2] in classes:
