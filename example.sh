@@ -7,7 +7,7 @@ cd ..
 
 echo "downloaded merced data into current directory."
 echo "Training SIMCLR Model"
-python SpaceForceDataSearch/ssl_dali_distrib.py --DATA_PATH merced/UCMerced_LandUse/Images --encoder minicnn --batch_size 64 --num_workers 16 --epochs 10 --gpus 1 --log_name example_merced_SSL
+python SpaceForceDataSearch/ssl_dali_distrib.py --DATA_PATH merced/UCMerced_LandUse/Images --encoder minicnn32 --batch_size 64 --num_workers 16 --epochs 10 --gpus 1 --log_name example_merced_SSL
 
 echo "Stopped SSL training at epoch 10. Will resume now from checkpoint."
 python SpaceForceDataSearch/ssl_dali_distrib.py --DATA_PATH merced/UCMerced_LandUse/Images --encoder models/SSL/SIMCLR_SSL_example_merced_SSL.ckpt --batch_size 64 --num_workers 16 --epochs 5 --gpus 1 --log_name example_merced_SSL_resumed
