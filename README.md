@@ -38,7 +38,7 @@ Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
     <td><b style="font-size:30px">Version</b></td>
  </tr>
  <tr>
-    <td>1.0.1</td>
+    <td>:heavy_check_mark: 1.0.1</td>
     <td>Support for SIMCLR</td>
  </tr>
 </table>
