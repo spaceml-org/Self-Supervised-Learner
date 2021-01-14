@@ -14,9 +14,8 @@
 </p>
 
 
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pytorch-lightning)](https://pypi.org/project/pytorch-lightning/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/ansicolortags.svg)](http://spaceml.org/)
-[![Generic badge](https://img.shields.io/badge/<SUBJECT>-<STATUS>-<COLOR>.svg)](https://shields.io/)
+[![hello badge](https://img.shields.io/badge/hello-<STATUS>-<COLOR>.svg)](https://shields.io/)
 <!--
 [![CodeFactor](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning/badge)](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning)
 -->
