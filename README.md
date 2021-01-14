@@ -3,14 +3,13 @@
 <img src="https://github.com/RudyVenguswamy/SpaceForceDataSearch/blob/main/curator.PNG" width="400px" height="300px">
 
 
-**The lightweight PyTorch wrapper for high-performance AI research.
-Scale your models, not the boilerplate.**
+**A tool to quickly train a Self-Supervised Learning model and finetune the model on labeled data in order to help researchers rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.**
 
 ---
 
 <p align="center">
   <a href="https://www.pytorchlightning.ai/">Website</a> •
-  <a href="#key-features">Key Features</a> •
+  <a href="https://arxiv.org/abs/2012.10610">SpaceML</a> •
   <a href="#how-to-use">How To Use</a> •
   <a href="https://pytorch-lightning.readthedocs.io/en/stable/">Docs</a> •
   <a href="#examples">Examples</a> •
@@ -39,7 +38,7 @@ Scale your models, not the boilerplate.**
 </div>
 
 # Curator
-A tool to quickly train a Self-Supervised Learning model and finetune the model on labeled data in order to help researchers rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.
+
 
 __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
