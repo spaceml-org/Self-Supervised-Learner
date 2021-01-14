@@ -77,7 +77,7 @@ class TSNE_visualiser:
         color_map = plt.cm.get_cmap('tab20b_r')
         scatter_plot = plt.scatter(tsne_results[:, 0],
                                 tsne_results[:, 1],
-                                c=labels,
+                                c=class_labels,
                                 cmap=color_map)
         
         plt.colorbar(scatter_plot)
