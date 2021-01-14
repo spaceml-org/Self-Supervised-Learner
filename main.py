@@ -134,7 +134,7 @@ def driver():
       da_tsne.show_tsne(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
       da_tsne.tsne_to_grid_plotter_manual(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
       print("TSNE Graphs created and stored")
-  imate_umap("./graphs/DiversityAlgorithm", fps = 1)
+  animate_umap("./graphs/DiversityAlgorithm", fps = 1)
   animate_umap("./graphs/Full_Dataset",fps=1)
   if metric != "count":
     print(metric_array)
