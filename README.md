@@ -8,14 +8,9 @@
 ---
 
 <p align="center">
-  <a href="https://www.pytorchlightning.ai/">Website</a> •
+  <a href="http://spaceml.org/">Website</a> •
   <a href="https://arxiv.org/abs/2012.10610">SpaceML</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="https://pytorch-lightning.readthedocs.io/en/stable/">Docs</a> •
-  <a href="#examples">Examples</a> •
-  <a href="#community">Community</a> •
-  <a href="#grid-ai">Grid AI</a> •
-  <a href="#licence">Licence</a>
+  <a href="https://colab.research.google.com/github/RudyVenguswamy/SpaceForceDataSearch/blob/main/PythonColabTutorial_Merced.ipynb">Examples</a> •
 </p>
 
 <!-- DO NOT ADD CONDA DOWNLOADS... README CHANGES MUST BE APPROVED BY EDEN OR WILL -->
