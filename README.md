@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/RudyVenguswamy/SpaceForceDataSearch/blob/main/curator.PNG" width="700px">
+<img src="https://github.com/RudyVenguswamy/SpaceForceDataSearch/blob/main/curator.PNG" width="700px" height="400px">
 
 
 **The lightweight PyTorch wrapper for high-performance AI research.
