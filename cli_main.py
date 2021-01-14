@@ -23,8 +23,9 @@ from pathlib import Path
 from argparse import ArgumentParser
 
 from sklearn.metrics import f1_score, accuracy_score
+from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 
-from ssl_dali_distrib import SimCLR
+from ssl_dali_distrib import SIMCLR
 from transforms_dali import SimCLRTrainDataTransform
 from encoders_dali import load_encoder
 
@@ -34,6 +35,13 @@ def cli_main(size, DATA_PATH, batch_size, num_workers, hidden_dims, epochs, lr,
     
     wandb_logger = WandbLogger(name=log_name,project='SpaceForce')
     checkpointed = '.ckpt' in encoder    
+    print("DATA_PATH",DATA_PATH)
+    if not (path.isdir(f"{DATA_PATH}/train") and path.isdir(f"{DATA_PATH}/val")): 
+        print(colored(f'Automatically splitting data into train and validation data...', 'blue'))
+        shutil.rmtree(f'./split_data_{log_name[:-5]}', ignore_errors=True)
+        splitfolders.ratio(DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-val_split-withhold, val_split, withhold), seed = 10)
+        DATA_PATH = f'./split_data_{log_name[:-5]}'
+
     if checkpointed:
         print('Resuming SSL Training from Model Checkpoint')
         try:
@@ -42,20 +50,12 @@ def cli_main(size, DATA_PATH, batch_size, num_workers, hidden_dims, epochs, lr,
         except Exception as e:
             print(e)
             print('invalid checkpoint to initialize SIMCLR. This checkpoint needs to include the encoder and projection and is of the SIMCLR class from this library. Will try to initialize just the encoder')
-            checkpointed = False 
-            
+            checkpointed = False         
     elif not checkpointed:
         encoder, embedding_size = load_encoder(encoder)
-        model = SIMCLR(size = size, encoder = encoder, embedding_size = embedding_size, gpus = gpus, epochs = epochs, DATA_PATH = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers, lr = lr)
-        
-    online_evaluator = SSLOnlineEvaluator(
-      drop_p=0.,
-      hidden_dim=None,
-      z_dim=embedding_size,
-      num_classes=model.num_classes,
-      dataset='None'
-    )
-    
+        model = SIMCLR(image_size = size, encoder = encoder, embedding_size = embedding_size, gpus = gpus, epochs = epochs, DATA_PATH = DATA_PATH, withhold = withhold, batch_size = batch_size, val_split = val_split, hidden_dims = hidden_dims, train_transform = SimCLRTrainDataTransform, val_transform = SimCLRTrainDataTransform, num_workers = num_workers, lr = lr)
+    print("DATA_PATH after Not checkpointed",DATA_PATH)
+
     cbs = []
     backend = 'dp'
     
@@ -64,6 +64,14 @@ def cli_main(size, DATA_PATH, batch_size, num_workers, hidden_dims, epochs, lr,
         cbs.append(cb)
     
     if online_eval:
+        num_classes = len(os.listdir(f'{DATA_PATH}/train'))   
+        online_evaluator = SSLOnlineEvaluator(
+          drop_p=0.,
+          hidden_dim=None,
+          z_dim=embedding_size,
+          num_classes=num_classes,
+          dataset='None'
+        )
         cbs.append(online_evaluator)
         backend = 'ddp'
         
