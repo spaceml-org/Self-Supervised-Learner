@@ -36,6 +36,7 @@
     <td>Lorem ipsum ...</td>
  </tr>
 </table>
+
 __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
 Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
