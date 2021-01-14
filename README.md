@@ -1,4 +1,3 @@
-![alt text](https://github.com/RudyVenguswamy/SpaceForceDataSearch/blob/main/curator.PNG)
 # SpaceForce-DataSearch
 A tool to quickly train a Self-Supervised Learning model and finetune the model on labeled data in order to help researchers rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.
 
