@@ -36,7 +36,6 @@ def plot_umap(feature_list, filenames , path, n_neighbors=20, count = 0):
   scatter_plot= plt.scatter(u[:,0], u[:, 1], c=class_labels, cmap = color_map)
   plt.title('UMAP embedding of random colours. Iteration ' + str(count+1));
   plt.colorbar(scatter_plot)
-
   plt.text(.5, .05, txt, ha='center')
 
   # if not os.path.isdir("./graphs/"):
@@ -70,7 +69,7 @@ def min_max_diverse_embeddings(n , filenames, feature_list, i = None) :
   filename_output.append(filename_copy[idx])
   min_distances = [1000] * len(set_input)
   # maximizes the minimum distance
-  for _ in tqdm(range(n - 1)) :
+  for _ in tqdm(range(n - 1)):
       for i in range(len(set_input)) :
           # distances[i] = minimum of the distances between set_output and one of set_input
           dist = np.linalg.norm(set_input[i] - set_output[-1])
