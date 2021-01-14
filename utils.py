@@ -171,5 +171,4 @@ def animate_umap(path, fps= 1, format = 'gif'):
     os.remove(output)
   imageio.mimsave(output, images, fps=1)
 
-# TSNE
 
