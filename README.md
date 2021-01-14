@@ -26,7 +26,7 @@
 -->
 </div>
 
-# Curator
+# Curator :earth_americas:
 
 __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
