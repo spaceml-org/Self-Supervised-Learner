@@ -15,7 +15,7 @@
 
 
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/ansicolortags.svg)](http://spaceml.org/)
-[![hello badge](https://img.shields.io/badge/hello-<STATUS>-<COLOR>.svg)](https://shields.io/)
+[![hello badge](https://img.shields.io/badge/hello-<STATUS>-blue.svg)](https://shields.io/)
 <!--
 [![CodeFactor](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning/badge)](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning)
 -->
