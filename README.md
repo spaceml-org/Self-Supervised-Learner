@@ -1,9 +1,9 @@
 <div align="center">
 
-<img src="https://github.com/RudyVenguswamy/SpaceForceDataSearch/blob/main/readme/curator_wide_logo.PNG" >
+<img src="https://github.com/RudyVenguswamy/SpaceForceDataSearch/blob/main/readme/curator_logo_wide.PNG" >
 
 
-**Rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.**
+<!--**Rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.** -->
 
 ---
 
