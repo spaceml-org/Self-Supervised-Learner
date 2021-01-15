@@ -111,7 +111,12 @@ If you don't want to use the predefined encoders in encoders_dali.py, it's very 
 ```
 
 ## Releases
-- :heavy_check_mark: (0.8.0)
+- :heavy_check_mark: (0.7.0) Dali Transforms Added
+- :heavy_check_mark: (0.8.0) UC Merced Example Added
+- :heavy_check_mark: (0.9.0) Model Inference with Dali Supported
+- :heavy_check_mark: (1.0.0) SIMCLR Model Supported
+- :heavy_check_mark: (1.0.1) GPU Memory Issues Fixed
+- :heavy_check_mark: (1.0.1) Multi-GPU Training Enabled
 - :ticket: (1.0.2) Cluster Visualizations for Embeddings 
 - :ticket: (1.1.0) Supporting numpy, TFDS datasets
 - :ticket: (1.2.0) Saliency Maps for Embeddings
