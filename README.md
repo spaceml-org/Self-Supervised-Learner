@@ -31,8 +31,10 @@
 Curator can be used to train a classifier with fewer labeled examples needed.
 
 ### How it Works
-1) The first step to do so is to train a self-supervised model (encoder). Self-supervised learning does not require labels and let's the model learn from purely unlabeled data.
-2) With the self-supervised training done, the encoder is used to initialize a classifier (finetuning). Because the encoder learned from the entire unlabeled dataset previously, the classifier is able to get better results than training from scratch or pure transfer learning.
+1) **Self-Supervied Learning (SSL): Training an encoder without labels**
+    The first step to do so is to train a self-supervised model (encoder). Self-supervised learning does not require labels and let's the model learn from purely unlabeled data.
+2) **Fine tuning (FT): Training a classifier with labels**
+    With the self-supervised training done, the encoder is used to initialize a classifier (finetuning). Because the encoder learned from the entire unlabeled dataset previously, the classifier is able to get better results than training from scratch or pure transfer learning.
 
 __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
