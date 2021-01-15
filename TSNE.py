@@ -96,10 +96,8 @@ class TSNE_visualiser:
             axis = plt.gca()
         x, y = np.atleast_1d(x, y)
         for x0, y0, image_path in zip(x, y, image_vectors):
-            image_path= image_path.numpy()
-            z = (image_path * 255).astype(np.uint8)
-            image = Image.fromarray(z)
-            image.thumbnail((200, 200), Image.ANTIALIAS)
+            image = Image.open(image_path)
+            image.thumbnail((100, 100), Image.ANTIALIAS)
             img = OffsetImage(image, zoom=zoom)
             anno_box = AnnotationBbox(img, (x0, y0),
                                     xycoords='data',
