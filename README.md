@@ -1,9 +1,51 @@
-# SpaceForce-DataSearch
-A tool to quickly train a Self-Supervised Learning model and finetune the model on labeled data in order to help researchers rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.
+<div align="center">
+
+<img src="https://github.com/RudyVenguswamy/SpaceForceDataSearch/blob/main/readme/curator_logo_wide.PNG" >
+
+
+<!--**Rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.** -->
+
+---
+
+<p align="center">
+  <a href="http://spaceml.org/">Website</a> •
+  <a href="https://arxiv.org/abs/2012.10610">SpaceML</a> •
+  <a href="https://colab.research.google.com/github/RudyVenguswamy/SpaceForceDataSearch/blob/main/PythonColabTutorial_Merced.ipynb">Examples</a> 
+</p>
+
+
+
+[![Python Version](https://img.shields.io/badge/python-3.5%20|%203.6%20|%203.7%20|%203.8-blue.svg)](https://www.python.org/)
+[![CUDA](https://img.shields.io/badge/Cuda-10%20|%2011.0-4dc71f.svg)](https://docs.nvidia.com/deeplearning/dali/user-guide/docs/installation.html)
+[![Pip Package](https://img.shields.io/badge/Pip%20Package-Coming%20Soon-0073b7.svg)](https://pypi.org/project/pip/)
+[![Docker](https://img.shields.io/badge/Docker%20Image-Coming%20Soon-34a0ef.svg)](https://www.docker.com/)
+
+[![Google Colab Notebook Example](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RudyVenguswamy/SpaceForceDataSearch/blob/main/PythonColabTutorial_Merced.ipynb)
+<!--
+[![CodeFactor](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning/badge)](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning)
+-->
+</div>
+
+# Curator :earth_americas:
 
 __Requirements__: GPU with CUDA 10+ enabled, requirements.txt
 
 Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
+
+<table border="0">
+ <tr>
+    <td><b style="font-size:30px">Most Recent Release</b></td>
+    <td><b style="font-size:30px">Update</b></td>
+    <td><b style="font-size:30px">Model</b></td>
+    <td><b style="font-size:30px">Processing Speed</b></td>
+ </tr>
+ <tr>
+    <td>:heavy_check_mark: 1.0.2</td>
+    <td>Package Speed Improvements</td>
+    <td>Support for SIMCLR</td>
+    <td>Multi-GPU Training Supported</td>
+ </tr>
+</table>
 
 ## Using Your Own Data Set
 ```bash
@@ -33,7 +75,7 @@ __Optional:__ To optimize your environment for deep learning, run this repo on t
 ```bash
 docker pull nvcr.io/nvidia/pytorch:20.12-py3
 mkdir docker_folder
-docker run --user=root -p 7000-8000:7000-8000/tcp --volume="/etc/group:/etc/group:ro" --volume="/etc/passwd:/etc/passwd:ro" --volume="/etc/shadow:/etc/shadow:ro" --volume="/etc/sudoers.d:/etc/sudoers.d:ro" --gpus all -it --rm -v /home/rudyvenguswamy/docker_folder:/inside_docker nvcr.io/nvidia/pytorch:20.12-py3
+docker run --user=root -p 7000-8000:7000-8000/tcp --volume="/etc/group:/etc/group:ro" --volume="/etc/passwd:/etc/passwd:ro" --volume="/etc/shadow:/etc/shadow:ro" --volume="/etc/sudoers.d:/etc/sudoers.d:ro" --gpus all -it --rm -v /docker_folder:/inside_docker nvcr.io/nvidia/pytorch:20.12-py3
 apt update
 apt install -y libgl1-mesa-glx
 #now clone repo inside container, install requirements as usual, login to wandb if you'd like to
@@ -68,9 +110,16 @@ If you don't want to use the predefined encoders in encoders_dali.py, it's very 
         model, embedding_size = my_custom_encoder(my_init_params), my_model_output_embedding_size: int
 ```
 
-## Coming Updates
-- Cluster Visualizations for Embeddings 
-- Supporting numpy, TFDS datasets
-- Saliency Maps for Embeddings
+## Releases
+- :heavy_check_mark: (0.7.0) Dali Transforms Added
+- :heavy_check_mark: (0.8.0) UC Merced Example Added
+- :heavy_check_mark: (0.9.0) Model Inference with Dali Supported
+- :heavy_check_mark: (1.0.0) SIMCLR Model Supported
+- :heavy_check_mark: (1.0.1) GPU Memory Issues Fixed
+- :heavy_check_mark: (1.0.1) Multi-GPU Training Enabled
+- :heavy_check_mark: (1.0.2) Package Speed Improvements
+- :ticket: (1.0.3) Cluster Visualizations for Embeddings 
+- :ticket: (1.1.0) Supporting numpy, TFDS datasets
+- :ticket: (1.2.0) Saliency Maps for Embeddings
 
 
