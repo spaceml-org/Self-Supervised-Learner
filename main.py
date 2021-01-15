@@ -15,7 +15,8 @@ from os import path
 import splitfolders
 from pathlib import Path
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-
+import PIL
+from PIL import Image
 from pytorch_lightning.loggers import WandbLogger
 
 from typing import List, Optional
