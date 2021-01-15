@@ -34,12 +34,16 @@ Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
 
 <table border="0">
  <tr>
-    <td><b style="font-size:30px">Release</b></td>
-    <td><b style="font-size:30px">Version</b></td>
+    <td><b style="font-size:30px">Most Recent Release</b></td>
+    <td><b style="font-size:30px">Update</b></td>
+    <td><b style="font-size:30px">Model</b></td>
+    <td><b style="font-size:30px">Processing Speed</b></td>
  </tr>
  <tr>
-    <td>:heavy_check_mark: 1.0.1</td>
+    <td>:heavy_check_mark: 1.0.2</td>
+    <td>Package Speed Improvements</td>
     <td>Support for SIMCLR</td>
+    <td>Multi-GPU Training Supported</td>
  </tr>
 </table>
 
