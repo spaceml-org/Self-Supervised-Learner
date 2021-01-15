@@ -117,7 +117,8 @@ If you don't want to use the predefined encoders in encoders_dali.py, it's very 
 - :heavy_check_mark: (1.0.0) SIMCLR Model Supported
 - :heavy_check_mark: (1.0.1) GPU Memory Issues Fixed
 - :heavy_check_mark: (1.0.1) Multi-GPU Training Enabled
-- :ticket: (1.0.2) Cluster Visualizations for Embeddings 
+- :heavy_check_mark: (1.0.2) Package Speed Improvements
+- :ticket: (1.0.3) Cluster Visualizations for Embeddings 
 - :ticket: (1.1.0) Supporting numpy, TFDS datasets
 - :ticket: (1.2.0) Saliency Maps for Embeddings
 
