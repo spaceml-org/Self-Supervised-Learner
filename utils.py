@@ -18,7 +18,7 @@ def plot_umap(feature_list, filenames , path, n_neighbors=20, count = 0):
   # feature_list = feature_list.detach().numpy()
   class_id = []
   for _ in filenames:
-    class_id.append(_.split("/")[6])
+    class_id.append(_.split("/")[-2])
   num_points = dict((x,class_id.count(x)) for x in set(class_id))
   txt = ''
   for i in num_points.keys():
