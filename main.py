@@ -56,7 +56,7 @@ def driver():
   parser.add_argument("--log_name", type=str, help="name of model to log on wandb and locally")
   parser.add_argument("--online_eval", default=False, type=bool, help="Do finetuning on model if labels are provided as a sanity check")
   parser.add_argument("--num_iterations", default=1, type=int, help="Number of times pretraining occurs")
-  parser.add_argument("--subset_size", default= 0.1, type = int, help= "size of the subset of dataset that goes into SimCLR training")
+  parser.add_argument("--subset_size", default= 0.1, type = float, help= "size of the subset of dataset that goes into SimCLR training")
   parser.add_argument("--buffer_dataset_path", type= str, help = "Where the subsets are stored everytime before passing into SimCLR")
   parser.add_argument("--metric", default="count", type=str, help="Type of Metric to evaluate pretraining")
   parser.add_argument("--TSNE", default = False, type= bool, help= 'Toggles TSNE plots' )
