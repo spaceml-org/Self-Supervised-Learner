@@ -15,7 +15,7 @@ import imageio
 import torch
 from tqdm.notebook import tqdm
 import PIL.Image as Image
-
+from torchvision import transforms
 
 def plot_umap(feature_list, filenames , path, n_neighbors=20, count = 0):
   # feature_list = feature_list.detach().numpy()
@@ -106,7 +106,7 @@ def get_embeddings_test(ckpt, PATH, size= 256):
       im = Image.open(f).convert('RGB')
       im = t(im)
       im = np.asarray(im).transpose(2, 0, 1)
-      im = torch.Tensor(im).unqueeze(0).cuda()
+      im = torch.Tensor(im).unsqueeze(0).cuda()
       embedding = model(im)[0]
       embedding_matrix = torch.vstack((embedding_matrix, embedding))
   print('Embedding Shape', embedding_matrix.shape)
@@ -189,7 +189,8 @@ def plot_metrics(metric, metric_array):
   plt.savefig(fname)
   plt.show();
 
-def animate_umap(path, fps= 1, format = 'gif'):
+
+def animate(path, fps= 1, format = 'gif', method = 'tsne'):
   images = []
   files = natsorted(list(paths.list_images(path)))
   for filename in files:
@@ -198,5 +199,4 @@ def animate_umap(path, fps= 1, format = 'gif'):
   if os.path.exists(output):
     os.remove(output)
   imageio.mimsave(output, images, fps=1)
-
 

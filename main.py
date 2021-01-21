@@ -34,7 +34,7 @@ from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 from transforms_dali import SimCLRTrainDataTransform
 from encoders_dali import load_encoder
 from ssl_dali_distrib import cli_main, SIMCLR
-from utils import plot_metrics, plot_umap, get_embeddings, n_random_subset, prepare_dataset, class_distrib, farthest_point, min_max_diverse_embeddings, animate_umap, get_embeddings_test
+from utils import plot_metrics, plot_umap, get_embeddings, n_random_subset, prepare_dataset, class_distrib, farthest_point, min_max_diverse_embeddings, animate, get_embeddings_test
 from cli_main import cli_main
 from TSNE import TSNE_visualiser
 
@@ -59,6 +59,7 @@ def driver():
   parser.add_argument("--subset_size", default= 0.1, type = float, help= "size of the subset of dataset that goes into SimCLR training")
   parser.add_argument("--buffer_dataset_path", type= str, help = "Where the subsets are stored everytime before passing into SimCLR")
   parser.add_argument("--metric", default="count", type=str, help="Type of Metric to evaluate pretraining")
+  parser.add_argument("--UMAP", default = False, type =bool, help = 'Toggles UMAP plots')
   parser.add_argument("--TSNE", default = False, type= bool, help= 'Toggles TSNE plots' )
   args = parser.parse_args()
   size = args.image_size
@@ -79,40 +80,52 @@ def driver():
   subset_size = args.subset_size
   buffer_dataset_path = args.buffer_dataset_path
   metric = args.metric
+  umap_exec = args.UMAP
   tsne_exec = args.TSNE
   train_image_paths = list(paths.list_images(DATA_PATH)
   random_points_fnames = n_random_subset(subset_size, train_image_paths)
   prepare_dataset(buffer_dataset_path , random_points_fnames)
 
-  transform = transforms.Compose([transforms.ToTensor(), transforms.Resize([size, size], interpolation=2)])
-  val_data = datasets.ImageFolder(root=DATA_PATH+'/train', transform=transform) 
-  dataset_paths = [pair[0] for pair in val_data.samples]
-  val_loader = DataLoader(val_data, batch_size = batch_size, shuffle=False)
+  ims = []
+  for folder in os.listdir(DATA_PATH):
+    for im in os.listdir(f'{DATA_PATH}/{folder}'):
+      ims.append(f'{DATA_PATH}/{folder}/{im}')
+  # transform = transforms.Compose([transforms.ToTensor(), transforms.Resize([size, size], interpolation=2)])
+  # val_data = datasets.ImageFolder(root=DATA_PATH+'/train', transform=transform) 
+  # dataset_paths = [pair[0] for pair in val_data.samples]
+  # val_loader = DataLoader(val_data, batch_size = batch_size, shuffle=False)
   metric_array = []
 
   #creating a folder for storing graphs
   try:
     os.mkdir("./graphs/")
-    os.mkdir("./graphs/")
-    os.mkdir("./graphs/DiversityAlgorithm/")
-    os.mkdir("./graphs/Full_Dataset/")
+    if umap_exec: 
+      os.mkdir("./graphs/UMAP/")
+      os.mkdir("./graphs/UMAP/DiversityAlgorithm/")
+      os.mkdir("./graphs/UMAP/Full_Dataset/")
     if tsne_exec:
       os.mkdir("./graphs/TSNE/")
+      os.mkdir("./graphs/TSNE/DiversityAlgorithm/")
+      os.mkdir("./graphs/TSNE/Full_Dataset/")
   except:
     shutil.rmtree("./graphs/")
     os.mkdir("./graphs/")
-    os.mkdir("./graphs/DiversityAlgorithm/")
-    os.mkdir("./graphs/Full_Dataset/")
+    if umap_exec: 
+      os.mkdir("./graphs/UMAP/")
+      os.mkdir("./graphs/UMAP/DiversityAlgorithm/")
+      os.mkdir("./graphs/UMAP/Full_Dataset/")
     if tsne_exec:
       os.mkdir("./graphs/TSNE/")
-
+      os.mkdir("./graphs/TSNE/DiversityAlgorithm/")
+      os.mkdir("./graphs/TSNE/Full_Dataset/")
+  
   for i in range(num_iters):
     print("-----------------Iteration: ",i+1,"----------------------")
     ckpt = cli_main(size, buffer_dataset_path, batch_size, num_workers, hidden_dims, epochs, lr, 
             patience, val_split, withhold, gpus, encoder, log_name, online_eval)
     encoder = ckpt
     print("Obtaining Embeddings")
-    embedding = get_embeddings(encoder, val_loader)
+    embedding = get_embeddings_test(encoder, ims, 64)
     #Updated embedding extraction function //TODO AJAY 
     # embedding = get_embeddings_test(encoder, buffer_dataset_path)
     print("Applying Diversity Algorithm...")
@@ -122,23 +135,32 @@ def driver():
     print("New Dataset abiding formats successfully created")
     metric_array.append(class_distrib(buffer_dataset_path, metric= metric))
     print("Number and Shape of Embeddings:", len(embedding),embedding[0].shape)
-    plot_umap(da_embeddings, da_files, count= i, path="./graphs/DiversityAlgorithm/")
-    plot_umap(embedding, dataset_paths, count= i, path="./graphs/Full_Dataset/")
+    if umap_exec:
+      plot_umap(da_embeddings, da_files, count= i, path="./graphs/UMAP/DiversityAlgorithm/")
+      plot_umap(embedding, ims, count= i, path="./graphs/UMAP/Full_Dataset/")
     ##TSNE 
     if tsne_exec:
       print("Starting TSNE")
       da_tsne = TSNE_visualiser(da_embeddings, da_files)
-      print("KNN Clusters created")
-      # neighbors, distances, indices = da_tsne.knn_cluster(da_tsne.feature_list)
-      print("KNN Clusters created, onto TSNE")
+      full_tsne = TSNE_visualiser(embedding, ims)
+      # print("KNN Clusters created")
+      # # neighbors, distances, indices = da_tsne.knn_cluster(da_tsne.feature_list)
+      # print("KNN Clusters created, onto TSNE")
       tsne_results = da_tsne.fit_tsne(da_tsne.feature_list)
+      print('TSNE Full Dataset')
+      full_tsne_results = full_tsne.fit_tsne(full_tsne.feature_list)
       print("TSNE Fit complete")
-      da_tsne.scatter_plot(tsne_results, da_tsne.labels, "./graphs/TSNE/", i)
-      da_tsne.show_tsne(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
-      da_tsne.tsne_to_grid_plotter_manual(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/", i)
+      da_tsne.scatter_plot(tsne_results, da_tsne.labels, "./graphs/TSNE/DiversityAlgorithm/", i)
+      full_tsne.scatter_plot(full_tsne_results, full_tsne.labels, "./graphs/TSNE/Full_Dataset/", i)
+      da_tsne.show_tsne(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/DiversityAlgorithm", i)
+      da_tsne.tsne_to_grid_plotter_manual(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/DiversityAlgorithm", i)
       print("TSNE Graphs created and stored")
-  animate_umap("./graphs/DiversityAlgorithm", fps = 1)
-  animate_umap("./graphs/Full_Dataset",fps=1)
+  if umap_exec:
+    animate("./graphs/UMAP/DiversityAlgorithm", fps = 1)
+    animate("./graphs/UMAP/Full_Dataset",fps=1)
+  if tsne_exec:
+    animate('./graphs/TSNE/DiversityAlgorithm/', fps= 1) 
+    animate("./graphs/TSNE/Full_Dataset/", fpps = 1)
   if metric != "count":
     print(metric_array)
     plot_metrics(metric, metric_array)

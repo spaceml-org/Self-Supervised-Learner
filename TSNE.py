@@ -81,7 +81,8 @@ class TSNE_visualiser:
                                 cmap=color_map)
         
         plt.colorbar(scatter_plot)
-        fname = path + 'TSNE_Scatter_DA_Itr_' + str(count+1) + '.png'
+        plt.title('TSNE of Embeddings . Iteration ' + str(count+1));
+        fname = path + 'TSNE_Scatter_Itr_' + str(count+1) + '.png'
         plt.savefig(fname)
         plt.show()
 
