@@ -125,7 +125,7 @@ def driver():
             patience, val_split, withhold, gpus, encoder, log_name, online_eval)
     encoder = ckpt
     print("Obtaining Embeddings")
-    embedding = get_embeddings_test(encoder, ims, 64)
+    embedding = get_embeddings_test(encoder, ims, size)
     #Updated embedding extraction function //TODO AJAY 
     # embedding = get_embeddings_test(encoder, buffer_dataset_path)
     print("Applying Diversity Algorithm...")

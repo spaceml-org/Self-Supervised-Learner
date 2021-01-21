@@ -86,7 +86,7 @@ def min_max_diverse_embeddings(n , filenames, feature_list, i = None) :
       del min_distances[inds]
   return filename_output, set_output, min_distances
 
-def get_embeddings_test(ckpt, PATH, size= 256):
+def get_embeddings_test(ckpt, ims, size= 256):
   '''
   ckpt : checkpoint path 
   PATH : Dataset path
@@ -97,10 +97,7 @@ def get_embeddings_test(ckpt, PATH, size= 256):
   t= transforms.Resize((size, size))
   embedding_matrix = torch.empty(size= (0, model.embedding_size)).cuda()
   model = model.encoder
-  ims = []
-  for folder in os.listdir(PATH):
-    for im in os.listdir(f'{PATH}/{folder}'):
-      ims.append(f'{PATH}/{folder}/{im}')
+  
   for f in tqdm(ims):
     with torch.no_grad():
       im = Image.open(f).convert('RGB')
