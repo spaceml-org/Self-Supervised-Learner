@@ -86,7 +86,7 @@ def min_max_diverse_embeddings(n , filenames, feature_list, i = None) :
       del min_distances[inds]
   return filename_output, set_output, min_distances
 
-def get_embeddings_test(ckpt, PATH):
+def get_embeddings_test(ckpt, PATH, size= 256):
   '''
   ckpt : checkpoint path 
   PATH : Dataset path
