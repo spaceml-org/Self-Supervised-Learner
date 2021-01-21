@@ -34,7 +34,7 @@ from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 from transforms_dali import SimCLRTrainDataTransform
 from encoders_dali import load_encoder
 from ssl_dali_distrib import cli_main, SIMCLR
-from utils import plot_metrics, plot_umap, get_embeddings, n_random_subset, prepare_dataset, class_distrib, farthest_point, min_max_diverse_embeddings, animate_umap
+from utils import plot_metrics, plot_umap, get_embeddings, n_random_subset, prepare_dataset, class_distrib, farthest_point, min_max_diverse_embeddings, animate_umap, get_embeddings_test
 from cli_main import cli_main
 from TSNE import TSNE_visualiser
 
@@ -113,6 +113,8 @@ def driver():
     encoder = ckpt
     print("Obtaining Embeddings")
     embedding = get_embeddings(encoder, val_loader)
+    #Updated embedding extraction function //TODO AJAY 
+    # embedding = get_embeddings_test(encoder, buffer_dataset_path)
     print("Applying Diversity Algorithm...")
     da_files, da_embeddings, da_distances = min_max_diverse_embeddings(subset_size, dataset_paths,  embedding, i = farthest_point(embedding))
     print("Preparing New Dataset...")
