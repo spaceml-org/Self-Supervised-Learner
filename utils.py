@@ -13,6 +13,9 @@ from sklearn.preprocessing import LabelEncoder
 import matplotlib.animation as animation
 import imageio
 import torch
+from tqdm.notebook import tqdm
+import PIL.Image as Image
+
 
 def plot_umap(feature_list, filenames , path, n_neighbors=20, count = 0):
   # feature_list = feature_list.detach().numpy()
@@ -83,7 +86,33 @@ def min_max_diverse_embeddings(n , filenames, feature_list, i = None) :
       del min_distances[inds]
   return filename_output, set_output, min_distances
 
-def get_embeddings(ckpt_path,dataloader):
+def get_embeddings_test(ckpt, PATH):
+  '''
+  ckpt : checkpoint path 
+  PATH : Dataset path
+  '''
+  model = SIMCLR.load_from_checkpoint(ckpt)
+  model.eval()
+  model.cuda()
+  t= transforms.Resize((size, size))
+  embedding_matrix = torch.empty(size= (0, model.embedding_size)).cuda()
+  model = model.encoder
+  ims = []
+  for folder in os.listdir(PATH):
+    for im in os.listdir(f'{PATH}/{folder}'):
+      ims.append(f'{PATH}/{folder}/{im}')
+  for f in tqdm(ims):
+    with torch.no_grad():
+      im = Image.open(f).convert('RGB')
+      im = t(im)
+      im = np.asarray(im).transpose(2, 0, 1)
+      im = torch.Tensor(im).unqueeze(0).cuda()
+      embedding = model(im)[0]
+      embedding_matrix = torch.vstack((embedding_matrix, embedding))
+  print('Embedding Shape', embedding_matrix.shape)
+  return embedding_matrix.detach().cpu().numpy()
+
+def get_embeddings(ckpt_path, PATH):
 
   embedding = []
   labels = []
