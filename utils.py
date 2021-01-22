@@ -192,7 +192,7 @@ def animate(path, fps= 1, format = 'gif', method = 'tsne'):
   files = natsorted(list(paths.list_images(path)))
   for filename in files:
       images.append(imageio.imread(filename))
-  output = path + '_umap_seq.' + format
+  output = path + '_'+method+'_seq.' + format
   if os.path.exists(output):
     os.remove(output)
   imageio.mimsave(output, images, fps=1)

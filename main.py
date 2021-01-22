@@ -82,7 +82,7 @@ def driver():
   metric = args.metric
   umap_exec = args.UMAP
   tsne_exec = args.TSNE
-  train_image_paths = list(paths.list_images(DATA_PATH)
+  train_image_paths = list(paths.list_images(DATA_PATH))
   random_points_fnames = n_random_subset(subset_size, train_image_paths)
   prepare_dataset(buffer_dataset_path , random_points_fnames)
 
