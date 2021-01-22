@@ -160,7 +160,7 @@ def driver():
     animate("./graphs/UMAP/Full_Dataset",fps=1)
   if tsne_exec:
     animate('./graphs/TSNE/DiversityAlgorithm/', fps= 1) 
-    animate("./graphs/TSNE/Full_Dataset/", fpps = 1)
+    animate("./graphs/TSNE/Full_Dataset/", fps = 1)
   if metric != "count":
     print(metric_array)
     plot_metrics(metric, metric_array)
