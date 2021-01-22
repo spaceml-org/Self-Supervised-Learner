@@ -133,10 +133,10 @@ def n_random_subset(n, paths):
 def prepare_dataset(dir, paths): 
 
   try: 
-    os.makedirs(os.path.join(dir, 'train'))
+    os.makedirs(dir)
   except:
     shutil.rmtree(dir)
-    os.mkdir(dir)
+    os.makedirs(dir)
     # os.makedirs(os.path.join(dir, 'train'))
 
   for x in paths:
