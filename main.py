@@ -129,7 +129,7 @@ def driver():
     #Updated embedding extraction function //TODO AJAY 
     # embedding = get_embeddings_test(encoder, buffer_dataset_path)
     print("Applying Diversity Algorithm...")
-    da_files, da_embeddings, da_distances = min_max_diverse_embeddings(subset_size, dataset_paths,  embedding, i = farthest_point(embedding))
+    da_files, da_embeddings, da_distances = min_max_diverse_embeddings(subset_size, ims,  embedding, i = farthest_point(embedding))
     print("Preparing New Dataset...")
     prepare_dataset(buffer_dataset_path, da_files)
     print("New Dataset abiding formats successfully created")
