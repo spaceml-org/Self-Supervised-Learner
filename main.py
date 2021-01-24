@@ -124,16 +124,19 @@ def driver():
     ckpt = cli_main(size, buffer_dataset_path, batch_size, num_workers, hidden_dims, epochs, lr, 
             patience, val_split, withhold, gpus, encoder, log_name, online_eval)
     encoder = ckpt
+    
     print("Obtaining Embeddings")
     embedding = get_embeddings_test(encoder, ims, size)
-    #Updated embedding extraction function //TODO AJAY 
-    # embedding = get_embeddings_test(encoder, buffer_dataset_path)
+   
     print("Applying Diversity Algorithm...")
     da_files, da_embeddings, da_distances = min_max_diverse_embeddings(subset_size, ims,  embedding, i = farthest_point(embedding))
+    
     print("Preparing New Dataset...")
     prepare_dataset(buffer_dataset_path, da_files)
+    
     print("New Dataset abiding formats successfully created")
     metric_array.append(class_distrib(buffer_dataset_path, metric= metric))
+    
     print("Number and Shape of Embeddings:", len(embedding),embedding[0].shape)
     if umap_exec:
       plot_umap(da_embeddings, da_files, count= i, path="./graphs/UMAP/DiversityAlgorithm/")
@@ -143,18 +146,19 @@ def driver():
       print("Starting TSNE")
       da_tsne = TSNE_visualiser(da_embeddings, da_files)
       full_tsne = TSNE_visualiser(embedding, ims)
-      # print("KNN Clusters created")
-      # # neighbors, distances, indices = da_tsne.knn_cluster(da_tsne.feature_list)
-      # print("KNN Clusters created, onto TSNE")
+      
       tsne_results = da_tsne.fit_tsne(da_tsne.feature_list)
+      
       print('TSNE Full Dataset')
       full_tsne_results = full_tsne.fit_tsne(full_tsne.feature_list)
       print("TSNE Fit complete")
+      
       da_tsne.scatter_plot(tsne_results, da_tsne.labels, "./graphs/TSNE/DiversityAlgorithm/", i)
       full_tsne.scatter_plot(full_tsne_results, full_tsne.labels, "./graphs/TSNE/Full_Dataset/", i)
       da_tsne.show_tsne(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/DiversityAlgorithm", i)
       da_tsne.tsne_to_grid_plotter_manual(tsne_results[:, 0], tsne_results[:, 1], da_tsne.filenames, "./graphs/TSNE/DiversityAlgorithm", i)
       print("TSNE Graphs created and stored")
+  
   if umap_exec:
     animate("./graphs/UMAP/DiversityAlgorithm", fps = 1)
     animate("./graphs/UMAP/Full_Dataset",fps=1)
