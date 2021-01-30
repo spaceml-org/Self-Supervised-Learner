@@ -81,9 +81,7 @@ def min_max_diverse_embeddings(n , filenames, feature_list, i = None) :
       inds = min_distances.index(max(min_distances))
       set_output.append(set_input[inds])
       filename_output.append(filename_copy[inds])
-#       del set_input[inds]
-#       del filename_copy[inds]
-#       del min_distances[inds]
+
   return filename_output, set_output, min_distances
 
 def get_embeddings_test(ckpt, ims, size= 256):
