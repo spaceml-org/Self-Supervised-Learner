@@ -8,11 +8,10 @@
 ---
 
 <p align="center">
-  <a href="http://spaceml.org/">Website</a> •
-  <a href="https://arxiv.org/abs/2012.10610">SpaceML</a> •
-  <a href="https://colab.research.google.com/github/RudyVenguswamy/SpaceForceDataSearch/blob/main/PythonColabTutorial_Merced.ipynb">Examples</a> 
+  Published by <a href="http://spaceml.org/">SpaceML</a> •
+  <a href="https://arxiv.org/abs/2012.10610">About SpaceML</a> •
+  <a href="https://colab.research.google.com/github/RudyVenguswamy/SpaceForceDataSearch/blob/main/PythonColabTutorial_Merced.ipynb">Quick Colab Example</a> 
 </p>
-
 
 
 [![Python Version](https://img.shields.io/badge/python-3.5%20|%203.6%20|%203.7%20|%203.8-blue.svg)](https://www.python.org/)
@@ -30,15 +29,15 @@
 
 Curator can be used to train a classifier with fewer labeled examples needed.
 
-### How it Works
-1) **Self-Supervied Learning (SSL): Training an encoder without labels**
+### How Curator Works
+Step 1) **Self-Supervied Learning (SSL): Training an encoder without labels**
    - The first step is to train a self-supervised encoder. Self-supervised learning does not require labels and lets the model learn from purely unlabeled data to build an image encoder.
-2) **Fine tuning (FT): Training a classifier with labels**
+
+Step 2) **Fine tuning (FT): Training a classifier with labels**
    - With the self-supervised training done, the encoder is used to initialize a classifier (finetuning). Because the encoder learned from the entire unlabeled dataset previously, the classifier is able to achieve higher classification accuracy than training from scratch or pure transfer learning.
 
-__Requirements__: GPU with CUDA 10+ enabled, requirements.txt
+__Requirements__: GPU with CUDA 10+ enabled, [requirements.txt](https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/requirements.txt)
 
-Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
 
 <table border="0">
  <tr>
@@ -54,6 +53,9 @@ Run `sh example.sh` to see the tool in action on the UC Merced land use dataset
     <td>Multi-GPU Training Supported</td>
  </tr>
 </table>
+
+## TL;DR Quick example
+Run [`sh example.sh`](https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/example.sh) to see the tool in action on the [UC Merced land use dataset](http://weegee.vision.ucmerced.edu/datasets/landuse.html).
 
 ## Using Your Own Data Set
 ```bash
@@ -130,4 +132,13 @@ If you don't want to use the predefined encoders in encoders_dali.py, it's very 
 - :ticket: (1.1.0) Supporting numpy, TFDS datasets
 - :ticket: (1.2.0) Saliency Maps for Embeddings
 
-
+## Citation
+If you find Curator useful in your research, please consider citing
+```
+@article{,
+  title={},
+  author={},
+  journal={},
+  year={}
+}
+```
