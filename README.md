@@ -133,7 +133,9 @@ If you don't want to use the predefined encoders in encoders_dali.py, it's very 
 - :ticket: (1.2.0) Saliency Maps for Embeddings
 
 ## Citation
-If you find Curator useful in your research, please consider citing
+If you find Curator useful in your research, please consider citing it
+
+<!--
 ```
 @article{,
   title={},
@@ -142,3 +144,6 @@ If you find Curator useful in your research, please consider citing
   year={}
 }
 ```
+-->
+</div>
+
