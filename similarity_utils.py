@@ -11,6 +11,8 @@ from finetuner_dali_distrib import finetuner
 import torch
 from torch.utils.data import DataLoader
 from sklearn.metrics import classification_report, f1_score, recall_score
+from torchvision.datasets import ImageFolder
+
 #####ALL HELPER FUNCTIONS BELOW
 def faiss_nearest_neighbors(query, num_candidates = None, dataset = None, index = None):
     '''
