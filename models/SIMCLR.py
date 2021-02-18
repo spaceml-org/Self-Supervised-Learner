@@ -10,28 +10,21 @@ import pytorch_lightning as pl
 import numpy as np
 import math
 
-import nvidia.dali.ops as ops
-import nvidia.dali.types as types
-from nvidia.dali.pipeline import Pipeline
-from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
-
 from pl_bolts.models.self_supervised import SimCLR
-from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
+from pl_bolts.models.self_supervised.SimCLR import Projection
 
 #Internal Imports
-from dali_utils.dali_transforms import SimCLRDataTransform
-from dali_utils.setup import setup_dali
-
+from dali_utils.dali_transforms import SimCLRTransform
+from dali_utils.lightning_compat import SimCLRWrapper
 
 class SIMCLR(SimCLR):
 
-    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dims, image_size, train_transform = SimCLRDataTransform, **simclr_hparams):
+    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dims, image_size, transform = SimCLRTransform, **simclr_hparams):
 
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
         self.hidden_dims = hidden_dims
-        self.train_transform = train_transform
-        self.val_transform = val_transform
+        self.transform = transform
         self.image_size = image_size
         self.simclr_hparams = simclr_hparams
         self.num_image_copies = 3
@@ -47,12 +40,12 @@ class SIMCLR(SimCLR):
     def init_model(self):
         return None
 
-    def setup(self, stage):
+    def setup(self, stage = 'train'):
         if stage == 'train':
-            self.train_loader = setup_dali(self.DATA_PATH, transform = self.train_transform(batch_size = self.batch_size, image_size = self.image_size, copies = 3, labels = True))
-            self.val_loader = setup_dali(self.VAL_PATH, transform = self.val_transform(batch_size = self.batch_size, image_size = self.image_size, copies = 3, labels = True))
+            self.train_loader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, image_size = self.image_size, copies = 3, mode = 'train'))
+            self.val_loader = SimCLRWrapper(self.VAL_PATH, transform = self.transform(batch_size = self.batch_size, image_size = self.image_size, copies = 3, mode = 'validation'))
         elif stage == 'test' or 'inference':
-            self.test_dataloader = setup_dali(self.DATA_PATH, transform = self.val_transform(batch_size = self.batch_size, image_size = self.image_size, copies = 1, labels = False))
+            self.test_dataloader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, image_size = self.image_size, copies = 1, mode = 'inference'))
             self.inference_dataloader = self.test_dataloader
      
     def train_dataloader(self):
