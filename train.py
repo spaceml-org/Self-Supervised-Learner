@@ -83,7 +83,8 @@ def load_model(parser):
 
 def cli_main():
     parser = ArgumentParser()
-    parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
+    parser.add_argument("--DATA_PATH", type=str, help="path to folders with images to train on.")
+    parser.add_argument("--VAL_PATH", type=str, default = None, help="path to validation folders with images")
     parser.add_argument("--model", type=str, help="model to initialize. Can accept model checkpoint or just encoder name from models.py")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--cpus", default=1, type=int, help="number of cpus to use to fetch data")
@@ -92,7 +93,7 @@ def cli_main():
     parser.add_argument("--learning_rate", default=1e-3, type=float, help="learning rate for encoder")
     parser.add_argument("--linear_lr", default=1e-1, type=float, help="learning rate for classification head. Ignored when classifier technique is not called")
     parser.add_argument("--patience", default=-1, type=int, help="automatically cuts off training if validation does not drop for (patience) epochs. Leave blank to have no validation based early stopping.")
-    parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data")
+    parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data. Ignored if VAL_PATH specified")
     parser.add_argument("--withhold_split", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold from either training or validation. Used for experimenting with labels neeeded")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--log_name", type=str, default=None, help="name of model to log on wandb and locally")
@@ -117,11 +118,12 @@ def cli_main():
         pass
     
     #Splitting Data into train and validation
-    if not (os.path.isdir(f"{args.DATA_PATH}/train") and os.path.isdir(f"{args.DATA_PATH}/val")) and args.val_split != 0: 
+    if not (os.path.isdir(f"{args.DATA_PATH}/train") and os.path.isdir(f"{args.DATA_PATH}/val")) and args.val_split != 0 and args.VAL_PATH is None: 
         print(colored(f'Automatically splitting data into train and validation data...', 'blue'))
         shutil.rmtree(f'./split_data_{log_name[:-5]}', ignore_errors=True)
         splitfolders.ratio(args.DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-args.val_split-args.withhold_split, args.val_split, args.withhold_split), seed = args.seed)
-        args.DATA_PATH = f'./split_data_{log_name[:-5]}'
+        args.DATA_PATH = f'./split_data_{log_name[:-5]}/train'
+        args.DATA_PATH = f'./split_data_{log_name[:-5]}/val'
   
     #loading model
     model = load_model(parser)
