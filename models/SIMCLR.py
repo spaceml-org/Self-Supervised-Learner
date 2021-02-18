@@ -16,6 +16,7 @@ from nvidia.dali.pipeline import Pipeline
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
 
 from pl_bolts.models.self_supervised import SimCLR
+print(SIMCLR.Projection)
 from SIMCLR import Projection as Projection
 
 #Internal Imports
