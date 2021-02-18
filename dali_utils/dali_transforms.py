@@ -1,0 +1,58 @@
+
+import nvidia.dali.ops as ops
+import nvidia.dali.types as types
+from nvidia.dali.pipeline import Pipeline
+
+class SimCLRTransform(Pipeline):
+    def __init__(self, DATA_PATH, input_height, batch_size, copies, stage, num_threads, device_id, seed = 1729):
+        super(SimCLRTransform, self).__init__(batch_size, num_threads, device_id, seed = seed)
+
+        self.input_height = input_height
+        self.stage = stage
+
+        self.input = ops.FileReader(file_root = DATA_PATH, random_shuffle = True, seed = seed)
+        self.to_int32 = ops.Cast(dtype=types.INT32, device="gpu")
+
+        self.coin = ops.CoinFlip(probability=0.5)
+        self.uniform = ops.Uniform(range = [0.7,1.3])
+        self.blur_amt = ops.Uniform(values = [float(i) for i in range(1, int(0.1*self.input_height), 2)])
+
+        self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
+        self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, device = "gpu")
+        self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
+        self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
+        self.blur = ops.GaussianBlur(window_size = self.to_int32(self.blur_amt()), device = "gpu", dtype = types.FLOAT)
+        self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu") 
+
+    def train_transform(self, image):
+        image = self.decode(image)
+        image = self.crop(image)
+        image = self.flip(image)
+        image = self.colorjit_gray(image)
+        image = self.blur(image)
+        image = self.swapaxes(image)
+        return image
+    
+    def val_transform(self, image):
+        image = self.decode(image)
+        image = self.crop(image)
+        image = self.swapaxes(image)
+        return image
+
+    def define_graph(self):
+        jpegs, label = self.input()
+        
+        if self.stage == 'train':
+            self.transform = train_transform
+        else:
+            self.transform = val_transform
+
+        batch = ()
+        for i in range(1,self.copies):
+            batch += (self.transform(jpegs), )
+        
+        if self.stage != 'inference':
+            label = label.gpu()
+            label = self.to_int32(label)
+            batch + (label, )
+        return batch
