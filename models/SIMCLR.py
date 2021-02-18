@@ -1,15 +1,14 @@
 import os
 from termcolor import colored
+import numpy as np
+import math
+from argparse import ArgumentParser
+
 import torch
 from torch.nn import functional as F
 from torch import nn
-from pytorch_lightning.core.lightning import LightningModule
 
-from torch.optim import Adam
 import pytorch_lightning as pl
-import numpy as np
-import math
-
 from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
 
