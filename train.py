@@ -71,8 +71,7 @@ def load_model(parser):
           embedding_size = encoder.embedding_size
         except:
           raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
-
-      
+        
     return technique(**model_args.__dict__)
 
 
@@ -81,7 +80,7 @@ def cli_main():
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
     parser.add_argument("--model", type=str, help="model to initialize. Can accept model checkpoint or just encoder name from models.py")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
-    parser.add_argument("--num_workers", default=1, type=int, help="number of workers to use to fetch data. Typically 2 * cpus available")
+    parser.add_argument("--cpus", default=1, type=int, help="number of cpus to use to fetch data")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
     parser.add_argument("--epochs", default=400, type=int, help="number of epochs to train model")
     parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for encoder")
