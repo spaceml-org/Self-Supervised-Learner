@@ -79,7 +79,7 @@ def load_model(parser):
           raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
         init_model = False
         
-    print(colored('LOAD ENCODER: ', 'blue'), encoder_name)
+    #print(colored('LOAD ENCODER: ', 'blue'), encoder_name)
     return model
 
 
