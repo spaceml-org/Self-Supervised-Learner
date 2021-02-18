@@ -31,56 +31,49 @@ def load_model(parser):
 #         'CLASSIFIER': CLASSIFIER.CLASSIFIER,
     }
 
+    
     args = parser.parse_args()
     technique = supported_techniques[args.technique]
 
-    
+    #get arguments related to initializing technique
+    model_args = technique.add_model_specific_args(parser).parse_args()
+
     if '.ckpt' in args.model:
-        try:
-            technique.load_from_checkpoint(model_args)
-        except:
-            print('Unable to initialize checkpoint for technique. We will initialize just the encoder for your specified technique.')
-            pass
-    elif True:
-        print('hi')
-
-        init_model = True
-
+        return technique.load_from_checkpoint(**model_args.__dict__)
 
     #encoder specified
-    elif 'minicnn' in encoder_name:
+    elif 'minicnn' in args.model:
         #special case to make minicnn output variable output embedding size depending on user arg
-        output_size =  int(''.join(x for x in encoder_name if x.isdigit()))
-        encoder, embedding_size = encoders.miniCNN(output_size), output_size
-        init_model = False  
-    elif encoder_name == 'resnet18':
-        encoder, embedding_size = encoders.resnet18(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False), 512
-        init_model = False
-    elif encoder_name == 'imagenet_resnet18':
-        encoder, embedding_size = encoders.resnet18(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False), 512
-        init_model = False
-    elif encoder_name == 'resnet50':
-        encoder, embedding_size = encoders.resnet50(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False), 2048
-        init_model = False
-    elif encoder_name == 'imagenet_resnet50':
-        encoder, embedding_size = encoders.resnet50(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False), 2048
-        init_model = False
-    
+        output_size =  int(''.join(x for x in args.model if x.isdigit()))
+        model_args.encoder = encoders.miniCNN(output_size), output_size
+        model_args.encoder.embedding_size = output_size  
+    elif args.model == 'resnet18':
+        model_args.encoder = encoders.resnet18(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        model_args.encoder.embedding_size = 512
+    elif args.model == 'imagenet_resnet18':
+        model_args.encoder = encoders.resnet18(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        model_args.encoder.embedding_size = 512
+    elif args.model == 'resnet50':
+        model_args.encoder = encoders.resnet50(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        model_args.encoder.embedding_size = 2048
+    elif args.model == 'imagenet_resnet50':
+        model_args.encoder = encoders.resnet50(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        model_args.encoder.embedding_size = 2048
+
     #try loading just the encoder
     else:
         print('Trying to initialize just the encoder from a pytorch model file (.pt)')
         try:
-          model = torch.load(encoder_name)
+          encoder = torch.load(args.model)
         except:
           raise Exception('Encoder could not be loaded from path')
         try:
-          embedding_size = model.embedding_size
+          embedding_size = encoder.embedding_size
         except:
           raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
-        init_model = False
-        
-    #print(colored('LOAD ENCODER: ', 'blue'), encoder_name)
-    return model
+
+      
+    return technique(**model_args.__dict__)
 
 
 def cli_main():
