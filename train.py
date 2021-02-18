@@ -34,14 +34,14 @@ def load_model(parser):
     
     args = parser.parse_args()
     technique = supported_techniques[args.technique]
-
-    #get arguments related to initializing technique
-    model_args = technique.add_model_specific_args(parser).parse_args()
+    model_args = args
+#     #get arguments related to initializing technique
+#     model_args = technique.add_model_specific_args(parser).parse_args()
     
-    #options from train.py that conflict with pytorch lightning added manually 
-    model_args.gpus = args.gpus
-    model_args.learning_rate = args.learning_rate
-    model_args.batch_size = args.batch_size
+#     #options from train.py that conflict with pytorch lightning added manually 
+#     model_args.gpus = args.gpus
+#     model_args.learning_rate = args.learning_rate
+#     model_args.batch_size = args.batch_size
     
 
     if '.ckpt' in args.model:
