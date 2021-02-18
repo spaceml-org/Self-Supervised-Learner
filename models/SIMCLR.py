@@ -11,7 +11,7 @@ import numpy as np
 import math
 
 from pl_bolts.models.self_supervised import SimCLR
-from pl_bolts.models.self_supervised.SimCLR import Projection
+from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
 
 #Internal Imports
 from dali_utils.dali_transforms import SimCLRTransform
