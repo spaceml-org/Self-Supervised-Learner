@@ -27,8 +27,8 @@ def load_model(parser):
     #load checkpoint models
     supported_techniques = {
         'SIMCLR': SIMCLR.SIMCLR,
-        'SIMSIAM': SIMSIAM.SIMSIAM,
-        'CLASSIFIER': CLASSIFIER.CLASSIFIER,
+#         'SIMSIAM': SIMSIAM.SIMSIAM,
+#         'CLASSIFIER': CLASSIFIER.CLASSIFIER,
     }
 
     args = parser.parse_args()
