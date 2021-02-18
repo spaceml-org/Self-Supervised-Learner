@@ -73,12 +73,7 @@ class SIMCLR(SimCLR):
         
         parser.add_argument("--start_lr", default=0, type=float, help="initial warmup learning rate")
         parser.add_argument("--final_lr", type=float, default=1e-6, help="final learning rate")
-        
-        #the following two conflict with our train.py arguments so no default specified here
-        parser.add_argument("--gpus", type=int)
-        parser.add_argument("--batch_size", type=int)
-        parser.add_argument("--learning_rate", type=float)
-        
+
         return parser
 
  
