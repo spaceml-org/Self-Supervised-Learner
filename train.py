@@ -85,7 +85,7 @@ def load_model(parser):
 
 def cli_main():
     parser = ArgumentParser()
-    parser.add_argument("--args.DATA_PATH", type=str, help="path to folders with images")
+    parser.add_argument("--DATA_PATH", type=str, help="path to folders with images")
     parser.add_argument("--model", type=str, help="model to initialize. Can accept model checkpoint or just encoder name from models.py")
     parser.add_argument("--batch_size", default=128, type=int, help="batch size for SSL")
     parser.add_argument("--num_workers", default=1, type=int, help="number of workers to use to fetch data. Typically 2 * cpus available")
