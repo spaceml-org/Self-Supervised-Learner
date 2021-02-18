@@ -51,7 +51,7 @@ def load_model(parser):
     elif 'minicnn' in args.model:
         #special case to make minicnn output variable output embedding size depending on user arg
         output_size =  int(''.join(x for x in args.model if x.isdigit()))
-        model_args.encoder = encoders.miniCNN(output_size), output_size
+        model_args.encoder = encoders.miniCNN(output_size)
         model_args.encoder.embedding_size = output_size  
     elif args.model == 'resnet18':
         model_args.encoder = encoders.resnet18(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
