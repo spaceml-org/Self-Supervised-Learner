@@ -19,8 +19,8 @@ from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
 
 #Internal Imports
-from .dali_utils.dali_transforms import SimCLRTrainDataTransform, SimCLRValDataTransform
-from .dali_utils.setup import setup_dali
+from dali_transforms import SimCLRTrainDataTransform, SimCLRValDataTransform
+from dali_utils.setup import setup_dali
 
 
 class SIMCLR(SimCLR):
