@@ -37,6 +37,12 @@ def load_model(parser):
 
     #get arguments related to initializing technique
     model_args = technique.add_model_specific_args(parser).parse_args()
+    
+    #options from train.py that conflict with pytorch lightning added manually 
+    model_args.gpus = args.gpus
+    model_args.learning_rate = args.learning_rate
+    model_args.batch_size = args.batch_size
+    
 
     if '.ckpt' in args.model:
         return technique.load_from_checkpoint(**model_args.__dict__)
