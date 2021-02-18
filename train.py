@@ -83,7 +83,7 @@ def cli_main():
     parser.add_argument("--cpus", default=1, type=int, help="number of cpus to use to fetch data")
     parser.add_argument("--hidden_dims", default=128, type=int, help="hidden dimensions in classification layer added onto model for finetuning")
     parser.add_argument("--epochs", default=400, type=int, help="number of epochs to train model")
-    parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for encoder")
+    parser.add_argument("--learning_rate", default=1e-3, type=float, help="learning rate for encoder")
     parser.add_argument("--linear_lr", default=1e-1, type=float, help="learning rate for classification head. Ignored when classifier technique is not called")
     parser.add_argument("--patience", default=-1, type=int, help="automatically cuts off training if validation does not drop for (patience) epochs. Leave blank to have no validation based early stopping.")
     parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data")
