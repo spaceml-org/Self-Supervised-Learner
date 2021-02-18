@@ -53,5 +53,33 @@ class SIMCLR(SimCLR):
   
     def val_dataloader(self):
         return self.val_loader
+    
+    #give user permission to add extra arguments for SIMCLR model particularly
+    def add_model_specific_args(parent_parser):
+        parser = ArgumentParser(parents=[parent_parser], add_help=False)
+
+        # things we need to pass into pytorch lightning simclr model
+        
+        parser.add_argument("--num_workers", default=8, type=int, help="num of workers per GPU")
+        parser.add_argument("--optimizer", default="adam", type=str, help="choose between adam/sgd")
+        parser.add_argument("--lars_wrapper", action='store_true', help="apple lars wrapper over optimizer used")
+        parser.add_argument('--exclude_bn_bias', action='store_true', help="exclude bn/bias from weight decay")
+        parser.add_argument("--max_epochs", default=1000, type=int, help="number of total epochs to run")
+        parser.add_argument("--max_steps", default=-1, type=int, help="max steps")
+        parser.add_argument("--warmup_epochs", default=10, type=int, help="number of warmup epochs")
+        
+
+        parser.add_argument("--temperature", default=0.1, type=float, help="temperature parameter in training loss")
+        parser.add_argument("--weight_decay", default=1e-6, type=float, help="weight decay")
+        
+        parser.add_argument("--start_lr", default=0, type=float, help="initial warmup learning rate")
+        parser.add_argument("--final_lr", type=float, default=1e-6, help="final learning rate")
+        
+        #the following two conflict with our train.py arguments so no default specified here
+        parser.add_argument("--gpus", type=int)
+        parser.add_argument("--batch_size", type=int)
+        parser.add_argument("--learning_rate", type=float)
+        
+        return parser
 
  
