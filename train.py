@@ -12,7 +12,7 @@ import torch
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
-from pytorch_lightning.loggers import WandbLogge
+from pytorch_lightning.loggers import WandbLogger
 
 from argparse import ArgumentParser
 
