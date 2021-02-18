@@ -16,12 +16,27 @@ from nvidia.dali.pipeline import Pipeline
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, DALIClassificationIterator
 
 from pl_bolts.models.self_supervised import SimCLR
-print(SimCLR.Projection)
-from SimCLR import Projection as Projection
 
 #Internal Imports
 from .dali_utils.dali_transforms import SimCLRTrainDataTransform, SimCLRValDataTransform
 from .dali_utils.setup import setup_dali
+
+class Projection(nn.Module):
+
+    def __init__(self, input_dim=2048, hidden_dim=2048, output_dim=128):
+        super().__init__()
+        self.output_dim = output_dim
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
+
+        self.model = nn.Sequential(
+            nn.Linear(self.input_dim, self.hidden_dim), nn.BatchNorm1d(self.hidden_dim), nn.ReLU(),
+            nn.Linear(self.hidden_dim, self.output_dim, bias=False)
+        )
+
+    def forward(self, x):
+        x = self.model(x)
+        return F.normalize(x, dim=1)
 
 class SIMCLR(SimCLR):
 
