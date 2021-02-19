@@ -15,7 +15,7 @@ class SimCLRWrapper(DALIGenericIterator):
         self.num_samples =  transform.num_samples
         self.next_fn = get_next(transform.stage != 'inference')
     
-    def get_next(with_label):
+    def get_next(self, with_label):
         def include_label():
             out = super().__next__()
             out = out[0]
