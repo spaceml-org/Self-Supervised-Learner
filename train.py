@@ -23,7 +23,8 @@ def load_model(args, technique):
     #load model
     if '.ckpt' in args.model:
         args.checkpoint_path = args.model
-        model = technique.load_from_checkpoint(**args.__dict__)
+        return technique.load_from_checkpoint(**args.__dict__)
+        
 
     #encoder specified
     elif 'minicnn' in args.model:
@@ -55,7 +56,6 @@ def load_model(args, technique):
           embedding_size = encoder.embedding_size
         except:
           raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
-    print(args.__dict__)
     return technique(**args.__dict__)
     
 
