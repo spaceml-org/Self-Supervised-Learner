@@ -37,7 +37,6 @@ class SIMCLR(SimCLR):
         self.num_classes = len(data_temp.classes)
         self.cpus = cpus
         self.seed = seed
-        print(simclr_hparams)
         
         super().__init__(**simclr_hparams)
         self.encoder = encoder
