@@ -112,7 +112,7 @@ def cli_main():
     parser.add_argument("--seed", default=1729, type=int, help="random seed for run for reproducibility")
 
     #loading model
-    model, args = load_model(parser)
+    model, args = load_model_and_data(parser)
     print(colored("Model architecture successfully loaded", 'blue'))
     
     #logging
