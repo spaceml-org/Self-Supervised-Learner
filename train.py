@@ -93,6 +93,12 @@ def cli_main():
     args, _ = technique.add_model_specific_args(parser).parse_known_args()
     print(args)
     
+    #logging
+    wandb_logger = None
+    log_name = args.technique + '_' + args.log_name + '.ckpt'
+    if log_name is not None:
+        wandb_logger = WandbLogger(name=log_name,project='Curator')
+    
     #resize images here
     if args.resize:
         #implement resize and modify args.DATA_PATH accordingly
@@ -109,11 +115,7 @@ def cli_main():
     model = load_model(args)
     print(colored("Model architecture successfully loaded", 'blue'))
     
-    #logging
-    wandb_logger = None
-    log_name = args.technique + '_' + args.log_name + '.ckpt'
-    if log_name is not None:
-        wandb_logger = WandbLogger(name=log_name,project='Curator')
+
    
     online_evaluator = SSLOnlineEvaluator(
       drop_p=0.,
