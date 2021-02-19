@@ -8,7 +8,8 @@ class SimCLRWrapper(DALIGenericIterator):
         image_ids = [f'im{i}' for i in range(transform.copies)]
         if transform.stage != 'inference':
             image_ids.append('label')
-            
+        print(transform)
+        print(image_ids)
         super().__init__(transform, image_ids, last_batch_policy = LastBatchPolicy.PARTIAL)
 
         self.num_samples =  transform.num_samples
