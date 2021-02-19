@@ -29,7 +29,7 @@ class SimCLRTransform(Pipeline):
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
         self.blur = ops.GaussianBlur(window_size = self.to_int32_cpu(self.blur_amt()), device = "gpu")
-        self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu") 
+        self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu", dtype = types.FLOAT) 
 
     def train_transform(self, image):
         image = self.decode(image)
