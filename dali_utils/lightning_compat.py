@@ -6,7 +6,7 @@ from nvidia.dali.plugin.base_iterator import LastBatchPolicy
 class SimCLRWrapper(DALIGenericIterator):
     def __init__(self, transform):
         image_ids = [f'im{i}' for i in range(transform.copies)]
-        if transforms.stage != 'inference':
+        if transform.stage != 'inference':
             image_ids.append('label')
             
         super().__init__(transform, image_ids, last_batch_policy = LastBatchPolicy.PARTIAL)
