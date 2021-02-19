@@ -19,6 +19,8 @@ class SimCLRWrapper(DALIGenericIterator):
         def include_label():
             out = super().__next__()
             out = out[0]
+            print('GENEN')
+            print(out)
             return tuple([out[k] for k in self.output_map[:-1]]), torch.squeeze(out[self.output_map[-1]])
 
         def without_label():
