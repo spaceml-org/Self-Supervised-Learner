@@ -3,6 +3,7 @@ from termcolor import colored
 import numpy as np
 import math
 from argparse import ArgumentParser
+from termcolor import colored
 
 import torch
 from torch.nn import functional as F
@@ -20,7 +21,7 @@ from dali_utils.lightning_compat import SimCLRWrapper
 class SIMCLR(SimCLR):
 
     def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dims, image_size, seed, cpus, transform = SimCLRTransform, **simclr_hparams):
-        print(simclr_hparams)
+        print(colored('Intializing SIMCLR with the following parameters: ','blue'), simclr_hparams)
         
         data_temp = ImageFolder(DATA_PATH)
         
