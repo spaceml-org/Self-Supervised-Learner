@@ -48,14 +48,14 @@ def load_model(args, technique):
     else:
         print('Trying to initialize just the encoder from a pytorch model file (.pt)')
         try:
-          encoder = torch.load(args.model)
+          args.encoder = torch.load(args.model)
         except:
           raise Exception('Encoder could not be loaded from path')
         try:
           embedding_size = encoder.embedding_size
         except:
           raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
-        
+     
     return technique(**args.__dict__)
     
 
