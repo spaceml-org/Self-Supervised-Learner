@@ -30,7 +30,6 @@ class SIMCLR(SimCLR):
         self.transform = transform
         self.image_size = image_size
         self.simclr_hparams = simclr_hparams
-        self.num_image_copies = 3
         self.num_samples = len(data_temp)
         self.num_classes = len(data_temp.classes)
         self.cpus = cpus
