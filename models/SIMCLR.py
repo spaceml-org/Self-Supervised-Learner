@@ -30,13 +30,12 @@ class SIMCLR(SimCLR):
         self.hidden_dims = hidden_dims
         self.transform = transform
         self.image_size = image_size
-        self.simclr_hparams = simclr_hparams
         num_samples = len(data_temp)
         self.num_classes = len(data_temp.classes)
         self.cpus = cpus
         self.seed = seed
-        
-        super().__init__(dataset = None, num_samples = num_samples, **self.simclr_hparams)
+        print(simclr_hparams)
+        super().__init__(dataset = None, num_samples = num_samples, **simclr_hparams)
         self.encoder = encoder
             
         self.projection = Projection(input_dim = self.encoder.embedding_size, hidden_dim = self.hidden_dims)
