@@ -19,41 +19,11 @@ from argparse import ArgumentParser
 #Internal Package Imports
 from models import SIMCLR, encoders
 
-def load_model_and_data(parser):
-    '''
-    insert comment here
-    '''
-    
-    #load checkpoint models
-    supported_techniques = {
-        'SIMCLR': SIMCLR.SIMCLR,
-#         'SIMSIAM': SIMSIAM.SIMSIAM,
-#         'CLASSIFIER': CLASSIFIER.CLASSIFIER,
-    }
-    #add ability to parse unknown args
-    args, _ = parser.parse_known_args()
-    
-    technique = supported_techniques[args.technique]
-    
-    args, _ = technique.add_model_specific_args(parser).parse_known_args()
-    print(args)
-    
-    #resize images here
-    if args.resize:
-        #implement resize and modify args.DATA_PATH accordingly
-        pass
-    
-    #Splitting Data into train and validation
-    if not (os.path.isdir(f"{args.DATA_PATH}/train") and os.path.isdir(f"{args.DATA_PATH}/val")) and args.val_split != 0 and args.VAL_PATH is None: 
-        print(colored(f'Automatically splitting data into train and validation data...', 'blue'))
-        shutil.rmtree(f'./split_data_{log_name[:-5]}', ignore_errors=True)
-        splitfolders.ratio(args.DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-args.val_split-args.withhold_split, args.val_split, args.withhold_split), seed = args.seed)
-        args.DATA_PATH = f'./split_data_{log_name[:-5]}/train'
-        args.VAL_PATH = f'./split_data_{log_name[:-5]}/val'
-        
+def load_model(args):
+    #load model
     if '.ckpt' in args.model:
         args.checkpoint_path = args.model
-        return technique.load_from_checkpoint(**args.__dict__), args
+        model = technique.load_from_checkpoint(**args.__dict__)
 
     #encoder specified
     elif 'minicnn' in args.model:
@@ -86,10 +56,16 @@ def load_model_and_data(parser):
         except:
           raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
         
-    return technique(**args.__dict__), args
-
+    return technique(**args.__dict__)
+    
 
 def cli_main():
+    supported_techniques = {
+        'SIMCLR': SIMCLR.SIMCLR,
+#         'SIMSIAM': SIMSIAM.SIMSIAM,
+#         'CLASSIFIER': CLASSIFIER.CLASSIFIER,
+    }
+    
     parser = ArgumentParser()
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images to train on.")
     parser.add_argument("--VAL_PATH", type=str, default = None, help="path to validation folders with images")
@@ -111,8 +87,26 @@ def cli_main():
     parser.add_argument("--technique", default=None, type=str, help="SIMCLR, SIMSIAM or CLASSIFIER")
     parser.add_argument("--seed", default=1729, type=int, help="random seed for run for reproducibility")
 
-    #loading model
-    model, args = load_model_and_data(parser)
+    #add ability to parse unknown args
+    args, _ = parser.parse_known_args()
+    technique = supported_techniques[args.technique]
+    args, _ = technique.add_model_specific_args(parser).parse_known_args()
+    print(args)
+    
+    #resize images here
+    if args.resize:
+        #implement resize and modify args.DATA_PATH accordingly
+        pass
+    
+    #Splitting Data into train and validation
+    if not (os.path.isdir(f"{args.DATA_PATH}/train") and os.path.isdir(f"{args.DATA_PATH}/val")) and args.val_split != 0 and args.VAL_PATH is None: 
+        print(colored(f'Automatically splitting data into train and validation data...', 'blue'))
+        shutil.rmtree(f'./split_data_{log_name[:-5]}', ignore_errors=True)
+        splitfolders.ratio(args.DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-args.val_split-args.withhold_split, args.val_split, args.withhold_split), seed = args.seed)
+        args.DATA_PATH = f'./split_data_{log_name[:-5]}/train'
+        args.VAL_PATH = f'./split_data_{log_name[:-5]}/val'
+    
+    model = load_model(args)
     print(colored("Model architecture successfully loaded", 'blue'))
     
     #logging
