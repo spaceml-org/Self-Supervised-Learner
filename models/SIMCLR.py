@@ -48,6 +48,7 @@ class SIMCLR(SimCLR):
         return None
 
     def setup(self, stage = 'train'):
+        print('DOING SETUP______: ', stage)
         if stage == 'train':
             self.train_loader = SimCLRWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed))
             self.val_loader = SimCLRWrapper(transform = self.transform(self.VAL_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed))
