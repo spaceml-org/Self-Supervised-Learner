@@ -63,7 +63,7 @@ class SimCLRTransform(Pipeline):
             print('ADDING LABEL')
             label = label.gpu()
             label = self.to_int32(label)
-            batch + (label, )
+            batch += (label, )
             print('HERE LEN BATCH')
             print(len(batch))
             print(batch)
