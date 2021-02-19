@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 import torch
 from torch.nn import functional as F
 from torch import nn
+from torchvision.datasets import ImageFolder
 
 import pytorch_lightning as pl
 from pl_bolts.models.self_supervised import SimCLR
@@ -28,8 +29,9 @@ class SIMCLR(SimCLR):
         self.image_size = image_size
         self.simclr_hparams = simclr_hparams
         self.num_image_copies = 3
-
-        super().__init__(**self.simclr_hparams)
+        self.num_samples = len(ImageFolder(DATA_PATH))
+        
+        super().__init__(dataset = None, num_samples = self.num_samples, **self.simclr_hparams)
         self.encoder = encoder
             
         self.projection = Projection(input_dim = self.encoder.embedding_size, hidden_dim = self.hidden_dims)
