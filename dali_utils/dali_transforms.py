@@ -18,7 +18,8 @@ class SimCLRTransform(Pipeline):
 
         self.input = ops.FileReader(file_root = DATA_PATH, random_shuffle = True, seed = seed)
         self.to_int32 = ops.Cast(dtype=types.INT32, device="gpu")
-
+        self.to_int32_cpu = ops.Cast(dtype=types.INT32, device="cpu")
+        
         self.coin = ops.CoinFlip(probability=0.5)
         self.uniform = ops.Uniform(range = [0.7,1.3])
         self.blur_amt = ops.Uniform(values = [float(i) for i in range(1, int(0.1*self.input_height), 2)])
@@ -27,7 +28,7 @@ class SimCLRTransform(Pipeline):
         self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, device = "gpu")
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
-        self.blur = ops.GaussianBlur(window_size = self.to_int32(self.blur_amt()), device = "gpu", dtype = types.FLOAT)
+        self.blur = ops.GaussianBlur(window_size = self.to_int32_cpu(self.blur_amt()), device = "gpu", dtype = types.FLOAT)
         self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu") 
 
     def train_transform(self, image):
