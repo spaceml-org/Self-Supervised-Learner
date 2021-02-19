@@ -49,10 +49,10 @@ class SIMCLR(SimCLR):
 
     def setup(self, stage = 'train'):
         if stage == 'train':
-            self.train_loader = SimCLRWrapper(transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed))
-            self.val_loader = SimCLRWrapper(transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed))
+            self.train_loader = SimCLRWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed))
+            self.val_loader = SimCLRWrapper(transform = self.transform(self.VAL_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed))
         elif stage == 'test' or 'inference':
-            self.test_dataloader = SimCLRWrapper(transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
+            self.test_dataloader = SimCLRWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
             self.inference_dataloader = self.test_dataloader
      
     def train_dataloader(self):
