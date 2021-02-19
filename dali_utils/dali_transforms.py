@@ -49,9 +49,9 @@ class SimCLRTransform(Pipeline):
         jpegs, label = self.input()
         
         if self.stage == 'train':
-            self.transform = train_transform
+            self.transform = self.train_transform
         else:
-            self.transform = val_transform
+            self.transform = self.val_transform
 
         batch = ()
         for i in range(1,self.copies):
