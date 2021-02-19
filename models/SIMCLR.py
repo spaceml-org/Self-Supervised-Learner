@@ -19,7 +19,7 @@ from dali_utils.lightning_compat import SimCLRWrapper
 
 class SIMCLR(SimCLR):
 
-    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dims, image_size, transform = SimCLRTransform, **simclr_hparams):
+    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dims, image_size, transform = SimCLRTransform, seed, cpus, **simclr_hparams):
         print(simclr_hparams)
         
         data_temp = ImageFolder(DATA_PATH)
@@ -33,6 +33,8 @@ class SIMCLR(SimCLR):
         self.num_image_copies = 3
         self.num_samples = len(data_temp)
         self.num_classes = len(data_temp.classes)
+        self.cpus = cpus
+        self.seed = seed
         
         super().__init__(dataset = None, num_samples = self.num_samples, **self.simclr_hparams)
         self.encoder = encoder
@@ -47,10 +49,10 @@ class SIMCLR(SimCLR):
 
     def setup(self, stage = 'train'):
         if stage == 'train':
-            self.train_loader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'train'))
-            self.val_loader = SimCLRWrapper(self.VAL_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'validation'))
+            self.train_loader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed))
+            self.val_loader = SimCLRWrapper(self.VAL_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed))
         elif stage == 'test' or 'inference':
-            self.test_dataloader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference'))
+            self.test_dataloader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
             self.inference_dataloader = self.test_dataloader
      
     def train_dataloader(self):
