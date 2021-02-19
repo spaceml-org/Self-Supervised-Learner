@@ -19,7 +19,7 @@ from argparse import ArgumentParser
 #Internal Package Imports
 from models import SIMCLR, encoders
 
-def load_model(args):
+def load_model(args, technique):
     #load model
     if '.ckpt' in args.model:
         args.checkpoint_path = args.model
@@ -91,7 +91,6 @@ def cli_main():
     args, _ = parser.parse_known_args()
     technique = supported_techniques[args.technique]
     args, _ = technique.add_model_specific_args(parser).parse_known_args()
-    print(args)
     
     #logging
     wandb_logger = None
@@ -112,7 +111,7 @@ def cli_main():
         args.DATA_PATH = f'./split_data_{log_name[:-5]}/train'
         args.VAL_PATH = f'./split_data_{log_name[:-5]}/val'
     
-    model = load_model(args)
+    model = load_model(args, technique)
     print(colored("Model architecture successfully loaded", 'blue'))
     
 
