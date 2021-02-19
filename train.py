@@ -36,6 +36,7 @@ def load_model(args):
     
 
     if '.ckpt' in args.model:
+        args.checkpoint_path = args['model']
         return technique.load_from_checkpoint(**args.__dict__)
 
     #encoder specified
