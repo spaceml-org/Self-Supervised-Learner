@@ -43,20 +43,20 @@ def load_model(parser):
     elif 'minicnn' in args.model:
         #special case to make minicnn output variable output embedding size depending on user arg
         output_size =  int(''.join(x for x in args.model if x.isdigit()))
-        model_args.encoder = encoders.miniCNN(output_size)
-        model_args.encoder.embedding_size = output_size  
+        args.encoder = encoders.miniCNN(output_size)
+        args.encoder.embedding_size = output_size  
     elif args.model == 'resnet18':
-        model_args.encoder = encoders.resnet18(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
-        model_args.encoder.embedding_size = 512
+        args.encoder = encoders.resnet18(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        args.encoder.embedding_size = 512
     elif args.model == 'imagenet_resnet18':
-        model_args.encoder = encoders.resnet18(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
-        model_args.encoder.embedding_size = 512
+        args.encoder = encoders.resnet18(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        args.encoder.embedding_size = 512
     elif args.model == 'resnet50':
-        model_args.encoder = encoders.resnet50(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
-        model_args.encoder.embedding_size = 2048
+        args.encoder = encoders.resnet50(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        args.encoder.embedding_size = 2048
     elif args.model == 'imagenet_resnet50':
-        model_args.encoder = encoders.resnet50(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
-        model_args.encoder.embedding_size = 2048
+        args.encoder = encoders.resnet50(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        args.encoder.embedding_size = 2048
 
     #try loading just the encoder
     else:
