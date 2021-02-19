@@ -1,5 +1,6 @@
 import os
 import math
+import torch
 from nvidia.dali.plugin.pytorch import DALIGenericIterator
 from nvidia.dali.plugin.base_iterator import LastBatchPolicy
 
@@ -17,8 +18,6 @@ class SimCLRWrapper(DALIGenericIterator):
         def include_label(self):
             out = super().__next__()
             out = out[0]
-            print('GENEN')
-            print(out)
             return tuple([out[k] for k in self.output_map[:-1]]), torch.squeeze(out[self.output_map[-1]])
 
         def without_label(self):
