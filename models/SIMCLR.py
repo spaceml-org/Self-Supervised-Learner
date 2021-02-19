@@ -50,7 +50,7 @@ class SIMCLR(SimCLR):
     def setup(self, stage = 'inference'):
         if stage == 'fit':
             train = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
-#             print(self.VAL_PATH)
+            print(self.VAL_PATH)
 #             print(len(ImageFolder(self.VAL_PATH))
             val = self.transform(self.VAL_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
             print('GOT HERE')
