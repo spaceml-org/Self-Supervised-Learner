@@ -13,7 +13,7 @@ class SimCLRWrapper(DALIGenericIterator):
         super().__init__(transform, image_ids, last_batch_policy = LastBatchPolicy.PARTIAL)
 
         self.num_samples =  transform.num_samples
-        self.next_fn = get_next(transform.stage != 'inference')
+        self.next_fn = self.get_next(transform.stage != 'inference')
     
     def get_next(self, with_label):
         def include_label():
