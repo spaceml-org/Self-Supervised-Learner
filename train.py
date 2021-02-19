@@ -96,6 +96,7 @@ def cli_main():
 
     #add ability to parse unknown args
     args, model_args = parser.parse_known_args()
+    print(args)
     print(model_args)
     #logging
     wandb_logger = None
