@@ -47,10 +47,10 @@ class SIMCLR(SimCLR):
 
     def setup(self, stage = 'train'):
         if stage == 'train':
-            self.train_loader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, mode = 'train'))
-            self.val_loader = SimCLRWrapper(self.VAL_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, mode = 'validation'))
+            self.train_loader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'train'))
+            self.val_loader = SimCLRWrapper(self.VAL_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'validation'))
         elif stage == 'test' or 'inference':
-            self.test_dataloader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 1, mode = 'inference'))
+            self.test_dataloader = SimCLRWrapper(self.DATA_PATH, transform = self.transform(batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference'))
             self.inference_dataloader = self.test_dataloader
      
     def train_dataloader(self):
