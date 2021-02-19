@@ -55,7 +55,7 @@ def load_model(args, technique):
           embedding_size = encoder.embedding_size
         except:
           raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
-    print(**args.__dict__)
+    print(args.__dict__)
     return technique(**args.__dict__)
     
 
