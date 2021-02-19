@@ -25,17 +25,21 @@ class SIMCLR(SimCLR):
         
         data_temp = ImageFolder(DATA_PATH)
         
+        #derived values (not passed in) need to be added to model hparams
+        simclr_hparams['num_samples'] = len(data_temp)
+        simclr_hparams['dataset'] = None
+        
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
         self.hidden_dims = hidden_dims
         self.transform = transform
         self.image_size = image_size
-        num_samples = len(data_temp)
         self.num_classes = len(data_temp.classes)
         self.cpus = cpus
         self.seed = seed
         print(simclr_hparams)
-        super().__init__(dataset = None, num_samples = num_samples, **simclr_hparams)
+        
+        super().__init__(**simclr_hparams)
         self.encoder = encoder
             
         self.projection = Projection(input_dim = self.encoder.embedding_size, hidden_dim = self.hidden_dims)
