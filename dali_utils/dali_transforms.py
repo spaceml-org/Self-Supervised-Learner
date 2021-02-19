@@ -56,15 +56,10 @@ class SimCLRTransform(Pipeline):
 
         batch = ()
         for i in range(self.copies):
-            print('COPIED')
             batch += (self.transform(jpegs), )
         
         if self.stage is not 'inference':
-            print('ADDING LABEL')
             label = label.gpu()
             label = self.to_int32(label)
             batch += (label, )
-            print('HERE LEN BATCH')
-            print(len(batch))
-            print(batch)
         return batch
