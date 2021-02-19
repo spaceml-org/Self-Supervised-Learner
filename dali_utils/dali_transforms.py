@@ -2,10 +2,14 @@
 import nvidia.dali.ops as ops
 import nvidia.dali.types as types
 from nvidia.dali.pipeline import Pipeline
+from torchvision.datasets import ImageFolder
 
 class SimCLRTransform(Pipeline):
     def __init__(self, DATA_PATH, input_height, batch_size, copies, stage, num_threads, device_id, seed = 1729):
         super(SimCLRTransform, self).__init__(batch_size, num_threads, device_id, seed = seed)
+        
+        #this lets our pytorch compat function find the length of our dataset
+        self.num_samples = len(ImageFolder(DATA_PATH))
 
         self.input_height = input_height
         self.stage = stage
