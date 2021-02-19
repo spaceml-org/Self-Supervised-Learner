@@ -29,7 +29,7 @@ class SIMCLR(SimCLR):
         self.simclr_hparams = simclr_hparams
         self.num_image_copies = 3
 
-        super().__init__(self.simclr_hparams)
+        super().__init__(**self.simclr_hparams)
         self.encoder = encoder
             
         self.projection = Projection(input_dim = self.encoder.embedding_size, hidden_dim = self.hidden_dims)
