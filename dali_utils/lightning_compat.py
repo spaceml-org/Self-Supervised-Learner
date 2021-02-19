@@ -16,14 +16,14 @@ class SimCLRWrapper(DALIGenericIterator):
         self.next_fn = self.get_next(transform.stage != 'inference')
     
     def get_next(self, with_label):
-        def include_label():
+        def include_label(self):
             out = super().__next__()
             out = out[0]
             print('GENEN')
             print(out)
             return tuple([out[k] for k in self.output_map[:-1]]), torch.squeeze(out[self.output_map[-1]])
 
-        def without_label():
+        def without_label(self):
             out = super().__next__()
             out = out[0]
             return tuple([out[k] for k in self.output_map])
