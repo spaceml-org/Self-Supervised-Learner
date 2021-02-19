@@ -95,8 +95,8 @@ def cli_main():
     parser.add_argument("--seed", default=1729, type=int, help="random seed for run for reproducibility")
 
     #add ability to parse unknown args
-    args = parser.parse_args()
-    
+    args, model_args = parser.parse_args()
+    print(model_args)
     #logging
     wandb_logger = None
     log_name = args.technique + '_' + args.log_name + '.ckpt'
