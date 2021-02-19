@@ -64,4 +64,5 @@ class SimCLRTransform(Pipeline):
             batch + (label, )
             print('HERE LEN BATCH')
             print(len(batch))
+            print(batch)
         return batch
