@@ -10,7 +10,9 @@ class SimCLRTransform(Pipeline):
         
         #this lets our pytorch compat function find the length of our dataset
         self.num_samples = len(ImageFolder(DATA_PATH))
-
+        
+        
+        self.copies = copies
         self.input_height = input_height
         self.stage = stage
 
