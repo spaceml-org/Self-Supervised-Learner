@@ -19,7 +19,7 @@ from argparse import ArgumentParser
 #Internal Package Imports
 from models import SIMCLR, encoders
 
-def load_model(parser):
+def load_model(args):
     '''
     insert comment here
     '''
@@ -32,7 +32,6 @@ def load_model(parser):
     }
 
     
-    args = parser.parse_args()
     technique = supported_techniques[args.technique]
     
 
@@ -118,7 +117,7 @@ def cli_main():
         args.VAL_PATH = f'./split_data_{log_name[:-5]}/val'
   
     #loading model
-    model = load_model(parser)
+    model = load_model(args)
     print(colored("Model architecture successfully loaded", 'blue'))
     
     online_evaluator = SSLOnlineEvaluator(
