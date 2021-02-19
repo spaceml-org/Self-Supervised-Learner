@@ -19,7 +19,7 @@ from argparse import ArgumentParser
 #Internal Package Imports
 from models import SIMCLR, encoders
 
-def load_model(args):
+def load_model(args, parser):
     '''
     insert comment here
     '''
@@ -31,9 +31,10 @@ def load_model(args):
 #         'CLASSIFIER': CLASSIFIER.CLASSIFIER,
     }
 
-    
     technique = supported_techniques[args.technique]
-    
+    model_args = technique.add_model_specific_args(parser).parse_known_args()
+    print(args)
+    print(model_args)
 
     if '.ckpt' in args.model:
         args.checkpoint_path = args.model
@@ -96,9 +97,8 @@ def cli_main():
     parser.add_argument("--seed", default=1729, type=int, help="random seed for run for reproducibility")
 
     #add ability to parse unknown args
-    args, model_args = parser.parse_known_args()
-    print(args)
-    print(model_args)
+    args, _ = parser.parse_known_args()
+
     #logging
     wandb_logger = None
     log_name = args.technique + '_' + args.log_name + '.ckpt'
@@ -119,7 +119,7 @@ def cli_main():
         args.VAL_PATH = f'./split_data_{log_name[:-5]}/val'
   
     #loading model
-    model = load_model(args)
+    model = load_model(args, parser)
     print(colored("Model architecture successfully loaded", 'blue'))
     
     online_evaluator = SSLOnlineEvaluator(
