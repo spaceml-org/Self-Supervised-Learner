@@ -131,7 +131,7 @@ def cli_main():
     online_evaluator = SSLOnlineEvaluator(
       drop_p=0.,
       hidden_dim=None,
-      z_dim=model.embedding_size,
+      z_dim=model.encoder.embedding_size,
       num_classes=model.num_classes,
       dataset='None'
     )
