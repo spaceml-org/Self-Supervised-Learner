@@ -44,6 +44,7 @@ class SIMCLR(SimCLR):
         self.projection = Projection(input_dim = self.encoder.embedding_size, hidden_dim = self.hidden_dims)
 
         self.save_hyperparameters()
+        print(self.hparams)
   
     #override pytorch SIMCLR with our own encoder so we will overwrite the function plbolts calls to init the encoder
     def init_model(self):
