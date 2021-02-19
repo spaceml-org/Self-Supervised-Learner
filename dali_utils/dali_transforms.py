@@ -56,6 +56,7 @@ class SimCLRTransform(Pipeline):
 
         batch = ()
         for i in range(1,self.copies):
+            print('COPIED')
             batch += (self.transform(jpegs), )
         
         if self.stage != 'inference':
