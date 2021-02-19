@@ -19,7 +19,7 @@ from dali_utils.lightning_compat import SimCLRWrapper
 
 class SIMCLR(SimCLR):
 
-    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dims, image_size, transform = SimCLRTransform, seed, cpus, **simclr_hparams):
+    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dims, image_size, seed, cpus, transform = SimCLRTransform, **simclr_hparams):
         print(simclr_hparams)
         
         data_temp = ImageFolder(DATA_PATH)
