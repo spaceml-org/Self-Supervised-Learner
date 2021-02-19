@@ -115,7 +115,7 @@ def cli_main():
         shutil.rmtree(f'./split_data_{log_name[:-5]}', ignore_errors=True)
         splitfolders.ratio(args.DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-args.val_split-args.withhold_split, args.val_split, args.withhold_split), seed = args.seed)
         args.DATA_PATH = f'./split_data_{log_name[:-5]}/train'
-        args.DATA_PATH = f'./split_data_{log_name[:-5]}/val'
+        args.VAL_PATH = f'./split_data_{log_name[:-5]}/val'
   
     #loading model
     model = load_model(parser)
