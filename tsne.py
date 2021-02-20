@@ -12,7 +12,6 @@ import pandas as pd
 import time
 from pathlib import Path
 import sys
-sys.path.insert(0, './SpaceForceDataSearch')
 from torchvision import transforms
 from ssl_dali_distrib import SIMCLR 
 from finetuner_dali_distrib import finetuner
@@ -166,7 +165,7 @@ class TSNE_visualiser:
         axis.update_datalim(np.column_stack([x, y]))
         axis.autoscale()
 
-    def show_tsne(self, x, y, images, path, count = 0):
+    def show_tsne(self, x, y, images):
       
       fig, axis = plt.subplots()
       fig.set_size_inches(22, 22, forward=True)
