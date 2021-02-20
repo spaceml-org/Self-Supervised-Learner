@@ -5,6 +5,7 @@ pytorch-lightning-bolts==0.3.0
 scikit-learn==0.23.2
 wandb==0.10.12
 torch===1.7.1 
+pytorch-lightning==1.1.8
 torchvision===0.8.2 
 torchaudio===0.7.2
 tqdm==4.53.0
