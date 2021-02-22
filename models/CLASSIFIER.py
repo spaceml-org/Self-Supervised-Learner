@@ -22,11 +22,6 @@ class CLASSIFIER(SSLFineTuner):
     def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, transform = SimCLRTransform, **classifier_hparams):
         
         data_temp = ImageFolder(DATA_PATH)
-       
-        #derived values (not passed in) need to be added to model hparams
-        classifier_hparams['in_features'] = encoder.embedding_size
-        classifier_hparams['num_classes'] = len(data_temp.classes)
-        classifier_hparams['hidden_dim'] = hidden_dim
         
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
@@ -34,8 +29,34 @@ class CLASSIFIER(SSLFineTuner):
         self.image_size = image_size
         self.cpus = cpus
         self.seed = seed
+        
+        backbone: torch.nn.Module,
+        in_features: int = 2048,
+        num_classes: int = 1000,
+        epochs: int = 100,
+        hidden_dim: Optional[int] = None,
+        dropout: float = 0.,
+        learning_rate: float = 0.1,
+        weight_decay: float = 1e-6,
+        nesterov: bool = False,
+        scheduler_type: str = 'cosine',
+        decay_epochs: List = [60, 80],
+        gamma: float = 0.1,
+        final_lr: float = 0.
            
-        super().__init__(backbone = encoder, **classifier_hparams)
+        super().__init__(backbone = encoder, 
+                         in_features = encoder.embedding_size, 
+                         num_classes = len(data_temp.classes), 
+                         epochs = classifier_hparams['epochs'],
+                         hidden_dim = hidden_dim
+                         dropout = classifier_hparams['dropout'],
+                         learning_rate = classifier_hparams['learning_rate'],
+                         nesterov = classifier_hparams['nesterov'],
+                         scheduler_type = classifier_hparams['scheduler_type'],
+                         decay_epochs = classifier_hparams['decay_epochs'],
+                         gamma = classifier_hparams['gamma'],
+                         final_lr = classifier_hparams['final_lr']  
+                        )
         
         self.save_hyperparameters()
         print('saved hparams here')
