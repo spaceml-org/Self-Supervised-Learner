@@ -30,20 +30,6 @@ class CLASSIFIER(SSLFineTuner):
         self.cpus = cpus
         self.seed = seed
         
-        backbone: torch.nn.Module,
-        in_features: int = 2048,
-        num_classes: int = 1000,
-        epochs: int = 100,
-        hidden_dim: Optional[int] = None,
-        dropout: float = 0.,
-        learning_rate: float = 0.1,
-        weight_decay: float = 1e-6,
-        nesterov: bool = False,
-        scheduler_type: str = 'cosine',
-        decay_epochs: List = [60, 80],
-        gamma: float = 0.1,
-        final_lr: float = 0.
-           
         super().__init__(backbone = encoder, 
                          in_features = encoder.embedding_size, 
                          num_classes = len(data_temp.classes), 
