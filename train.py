@@ -62,7 +62,7 @@ def load_model(args, technique):
 def cli_main():
     supported_techniques = {
         'SIMCLR': SIMCLR.SIMCLR,
-#         'SIMSIAM': SIMSIAM.SIMSIAM,
+        'SIMSIAM': SIMSIAM.SIMSIAM,
 #         'CLASSIFIER': CLASSIFIER.CLASSIFIER,
     }
     
