@@ -75,11 +75,11 @@ class CLASSIFIER(SSLFineTuner):
         if stage == 'fit':
             train = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
             val = self.transform(self.VAL_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
-            self.train_loader = SimCLRWrapper(transform = train)
-            self.val_loader = SimCLRWrapper(transform = val)
+            self.train_loader = ClassifierWrapper(transform = train)
+            self.val_loader = ClassifierWrapper(transform = val)
             
         elif stage == 'inference':
-            self.test_dataloader = SimCLRWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
+            self.test_dataloader = ClassifierWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
             self.inference_dataloader = self.test_dataloader
      
     def train_dataloader(self):
