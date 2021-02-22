@@ -9,6 +9,7 @@ import torch
 from torch.nn import functional as F
 from torch import nn
 from torchvision.datasets import ImageFolder
+from torch.optim import SGD
 
 import pytorch_lightning as pl
 from pl_bolts.models.self_supervised.ssl_finetuner import SSLFineTuner
