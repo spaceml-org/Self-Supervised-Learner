@@ -29,6 +29,7 @@ class CLASSIFIER(SSLFineTuner):
         self.image_size = image_size
         self.cpus = cpus
         self.seed = seed
+        self.num_classes = num_classes
         
         super().__init__(backbone = encoder, 
                          in_features = encoder.embedding_size, 
