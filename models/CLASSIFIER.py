@@ -34,7 +34,7 @@ class CLASSIFIER(SSLFineTuner):
                          in_features = encoder.embedding_size, 
                          num_classes = len(data_temp.classes), 
                          epochs = classifier_hparams['epochs'],
-                         hidden_dim = hidden_dim
+                         hidden_dim = hidden_dim,
                          dropout = classifier_hparams['dropout'],
                          learning_rate = classifier_hparams['learning_rate'],
                          nesterov = classifier_hparams['nesterov'],
