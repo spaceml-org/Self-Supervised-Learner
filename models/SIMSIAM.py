@@ -43,7 +43,9 @@ class SIMSIAM(SimSiam):
         
         #overriding pl_lightning encoder after original simsiam init
         self.encoder = encoder
-        self.init_model()
+        self.online_network = SiameseArm(
+            self.encoder, input_dim=self.hidden_mlp, hidden_size=self.hidden_mlp, output_dim=self.feat_dim
+        )
 
         self.save_hyperparameters()
         print('saved hparams here')
@@ -51,9 +53,7 @@ class SIMSIAM(SimSiam):
   
     #override pytorch SimSiam with our own encoder so we will overwrite the function plbolts calls to init the encoder
     def init_model(self):
-        self.online_network = SiameseArm(
-            self.encoder, input_dim=self.hidden_mlp, hidden_size=self.hidden_mlp, output_dim=self.feat_dim
-        )
+        return None
 
 
     def setup(self, stage = 'inference'):
