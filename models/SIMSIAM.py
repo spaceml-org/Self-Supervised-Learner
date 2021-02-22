@@ -44,7 +44,7 @@ class SIMSIAM(SimSiam):
         #overriding pl_lightning encoder after original simsiam init
         self.encoder = encoder
         self.online_network = SiameseArm(
-            self.encoder, input_dim=self.hidden_mlp, hidden_size=self.hidden_mlp, output_dim=self.feat_dim
+            self.encoder, input_dim=self.encoder.embedding_size, hidden_size=self.hidden_mlp, output_dim=self.feat_dim
         )
 
         self.save_hyperparameters()
@@ -79,7 +79,6 @@ class SIMSIAM(SimSiam):
 
         # things we need to pass into pytorch lightning simsiam model
 
-        parser.add_argument("--hidden_mlp", default=2048, type=int, help="hidden layer dimension in projection head")
         parser.add_argument("--feat_dim", default=128, type=int, help="feature dimension")
 
         # training params
