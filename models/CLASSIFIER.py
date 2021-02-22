@@ -30,14 +30,11 @@ class CLASSIFIER(SSLFineTuner):
         
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
-        self.hidden_dims = hidden_dims
         self.transform = transform
         self.image_size = image_size
-        self.num_classes = len(data_temp.classes)
         self.cpus = cpus
         self.seed = seed
-        
-        
+           
         super().__init__(backbone = encoder, **classifier_hparams)
         
         self.save_hyperparameters()
