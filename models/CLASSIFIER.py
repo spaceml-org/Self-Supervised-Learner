@@ -70,6 +70,19 @@ class CLASSIFIER(SSLFineTuner):
             )
 
         return [optimizer], [scheduler]
+    
+    def shared_step(self, batch):
+        x, y = batch
+
+        with torch.no_grad():
+            feats = self.backbone(x)[0]
+
+        feats = feats.view(feats.size(0), -1)
+        logits = self.linear_layer(feats)
+        loss = F.cross_entropy(logits, y)
+
+        return loss, logits, y
+    
 
     def setup(self, stage = 'inference'):
         if stage == 'fit':
