@@ -29,11 +29,11 @@ class CLASSIFIER(SSLFineTuner):
         self.image_size = image_size
         self.cpus = cpus
         self.seed = seed
-        self.num_classes = num_classes
+        self.num_classes = len(data_temp.classes)
         
         super().__init__(backbone = encoder, 
                          in_features = encoder.embedding_size, 
-                         num_classes = len(data_temp.classes), 
+                         num_classes = self.num_classes, 
                          epochs = classifier_hparams['epochs'],
                          hidden_dim = hidden_dim,
                          dropout = classifier_hparams['dropout'],
