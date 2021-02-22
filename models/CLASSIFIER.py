@@ -32,6 +32,7 @@ class CLASSIFIER(SSLFineTuner):
         self.seed = seed
         self.num_classes = len(data_temp.classes)
         self.batch_size = classifier_hparams['batch_size']
+        self.classifier_hparams = self.classifier_hparams
         
         super().__init__(backbone = encoder, 
                          in_features = encoder.embedding_size, 
