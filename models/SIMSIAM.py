@@ -36,9 +36,13 @@ class SIMSIAM(SimSiam):
         self.num_classes = len(data_temp.classes)
         self.cpus = cpus
         self.seed = seed
-        self.encoder = encoder
+        
         
         super().__init__(**simsiam_hparams)
+        
+        #overriding pl_lightning encoder after original simsiam init
+        self.encoder = encoder
+        self.init_model()
 
         self.save_hyperparameters()
         print('saved hparams here')
