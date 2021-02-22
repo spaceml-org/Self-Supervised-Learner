@@ -17,7 +17,7 @@ from pytorch_lightning.loggers import WandbLogger
 from argparse import ArgumentParser
 
 #Internal Package Imports
-from models import SIMCLR, encoders
+from models import SIMCLR, SIMSIAM, encoders
 
 def load_model(args, technique):
     #load model
