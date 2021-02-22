@@ -101,5 +101,5 @@ class CLASSIFIER(SSLFineTuner):
         parser.add_argument("--decay_epochs", default=[60, 80], type=list, help="epochs to do optimizer decay")
         parser.add_argument("--weight_decay", default=1e-6, type=float, help="weight decay")
         parser.add_argument("--final_lr", type=float, default=1e-6, help="final learning rate")
-        
+        parser.add_argument("--momentum", type=float, default=0.9, help="momentum for learning rate")
         return parser
