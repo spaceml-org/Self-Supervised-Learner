@@ -20,7 +20,7 @@ from dali_utils.lightning_compat import SimCLRWrapper
 
 class SIMCLR(SimCLR):
 
-    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dims, image_size, seed, cpus, transform = SimCLRTransform, **simclr_hparams):
+    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, transform = SimCLRTransform, **simclr_hparams):
         
         data_temp = ImageFolder(DATA_PATH)
         
@@ -30,7 +30,7 @@ class SIMCLR(SimCLR):
         
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
-        self.hidden_dims = hidden_dims
+        self.hidden_dim = hidden_dim
         self.transform = transform
         self.image_size = image_size
         self.num_classes = len(data_temp.classes)
@@ -40,7 +40,7 @@ class SIMCLR(SimCLR):
         super().__init__(**simclr_hparams)
         self.encoder = encoder
             
-        self.projection = Projection(input_dim = self.encoder.embedding_size, hidden_dim = self.hidden_dims)
+        self.projection = Projection(input_dim = self.encoder.embedding_size, hidden_dim = self.hidden_dim)
 
         self.save_hyperparameters()
         print('saved hparams here')
