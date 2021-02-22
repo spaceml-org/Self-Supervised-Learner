@@ -25,8 +25,8 @@ class SIMSIAM(SimSiam):
         data_temp = ImageFolder(DATA_PATH)
         
         #derived values (not passed in) need to be added to model hparams
-        simclr_hparams['num_samples'] = len(data_temp)
-        simclr_hparams['dataset'] = None
+        simsiam_hparams['num_samples'] = len(data_temp)
+        simsiam_hparams['dataset'] = None
         
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
