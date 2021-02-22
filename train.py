@@ -75,7 +75,6 @@ def cli_main():
     parser.add_argument("--hidden_dim", default=128, type=int, help="hidden dimensions in projection head or classification layer for finetuning")
     parser.add_argument("--epochs", default=400, type=int, help="number of epochs to train model")
     parser.add_argument("--learning_rate", default=1e-3, type=float, help="learning rate for encoder")
-    parser.add_argument("--linear_lr", default=1e-1, type=float, help="learning rate for classification head. Ignored when classifier technique is not called")
     parser.add_argument("--patience", default=-1, type=int, help="automatically cuts off training if validation does not drop for (patience) epochs. Leave blank to have no validation based early stopping.")
     parser.add_argument("--val_split", default=0.2, type=float, help="percent in validation data. Ignored if VAL_PATH specified")
     parser.add_argument("--withhold_split", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold from either training or validation. Used for experimenting with labels neeeded")
