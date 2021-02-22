@@ -12,6 +12,7 @@ from torchvision.datasets import ImageFolder
 
 import pytorch_lightning as pl
 from pl_bolts.models.self_supervised import SimSiam
+from pl_bolts.models.self_supervised.simsiam.models import SiameseArm
 #from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
 
 #Internal Imports
