@@ -43,6 +43,7 @@ class CLASSIFIER(SSLFineTuner):
                          gamma = classifier_hparams['gamma'],
                          final_lr = classifier_hparams['final_lr']  
                         )
+        self.encoder = encoder
         
         self.save_hyperparameters()
         print('saved hparams here')
