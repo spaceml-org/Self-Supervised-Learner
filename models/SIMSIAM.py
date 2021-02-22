@@ -21,7 +21,7 @@ from dali_utils.lightning_compat import SimCLRWrapper
 
 class SIMSIAM(SimSiam):
 
-    def __init__(self, encoder, DATA_PATH, VAL_PATH, image_size, seed, cpus, transform = SimCLRTransform, **simsiam_hparams):
+    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, transform = SimCLRTransform, **simsiam_hparams):
         
         data_temp = ImageFolder(DATA_PATH)
         
@@ -31,6 +31,7 @@ class SIMSIAM(SimSiam):
         
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
+        self.hidden_dim = hidden_dim
         self.transform = transform
         self.image_size = image_size
         self.num_classes = len(data_temp.classes)
@@ -43,7 +44,7 @@ class SIMSIAM(SimSiam):
         #overriding pl_lightning encoder after original simsiam init
         self.encoder = encoder
         self.online_network = SiameseArm(
-            self.encoder, input_dim=self.encoder.embedding_size, hidden_size=self.hidden_mlp, output_dim=self.feat_dim
+            self.encoder, input_dim=self.encoder.embedding_size, hidden_size=self.hidden_dim, output_dim=self.feat_dim
         )
 
         self.save_hyperparameters()
