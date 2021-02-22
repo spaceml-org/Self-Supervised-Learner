@@ -50,12 +50,12 @@ class ClassifierWrapper(DALIGenericIterator):
         def include_label(self):
             out = super().__next__()
             out = out[0]
-            return torch.Tensor([out[k] for k in self.output_map[:-1]]), torch.squeeze(out[self.output_map[-1]])
+            return out[self.output_map[0]], torch.squeeze(out[self.output_map[-1]])
 
         def without_label(self):
             out = super().__next__()
             out = out[0]
-            return torch.Tensor([out[k] for k in self.output_map])
+            return out[self.output_map[0]]
         
         if with_label:
             return include_label
