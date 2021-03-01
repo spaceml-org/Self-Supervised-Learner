@@ -139,7 +139,7 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         return self.val_loader
 
     #give user permission to add extra arguments for SIMSIAM model particularly. This cannot share the name of any parameters from train.py
-    def add_model_specific_args(self, parent_parser):
+    def add_model_specific_args(parent_parser):
         parser = ArgumentParser(parents=[parent_parser], add_help=False)
 
         # training params
