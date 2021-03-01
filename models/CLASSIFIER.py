@@ -18,7 +18,7 @@ from pl_bolts.models.self_supervised.ssl_finetuner import SSLFineTuner
 from dali_utils.dali_transforms import SimCLRTransform #same transform as SimCLR, but only 1 copy
 from dali_utils.lightning_compat import ClassifierWrapper
 
-class CLASSIFIER(SSLFineTuner):
+class CLASSIFIER(pl.LightningModule): #SSLFineTuner
 
     def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, transform = SimCLRTransform, **classifier_hparams):
         
@@ -34,19 +34,29 @@ class CLASSIFIER(SSLFineTuner):
         self.batch_size = classifier_hparams['batch_size']
         self.classifier_hparams = classifier_hparams
         
-        super().__init__(backbone = encoder, 
-                         in_features = encoder.embedding_size, 
-                         num_classes = self.num_classes, 
-                         epochs = classifier_hparams['epochs'],
-                         hidden_dim = hidden_dim,
-                         dropout = classifier_hparams['dropout'],
-                         learning_rate = classifier_hparams['learning_rate'],
-                         nesterov = classifier_hparams['nesterov'],
-                         scheduler_type = classifier_hparams['scheduler_type'],
-                         decay_epochs = classifier_hparams['decay_epochs'],
-                         gamma = classifier_hparams['gamma'],
-                         final_lr = classifier_hparams['final_lr']  
-                        )
+        self.linear_layer = SSLEvaluator(
+            n_input=encoder.embedding_size,
+            n_classes=self.num_classes,
+            p=0.1,
+            n_hidden=hidden_dim
+        )
+        
+        self.train_acc = Accuracy()
+        self.val_acc = Accuracy(compute_on_step=False)
+        
+#         super().__init__(backbone = encoder, 
+#                          in_features = encoder.embedding_size, 
+#                          num_classes = self.num_classes, 
+#                          epochs = classifier_hparams['epochs'],
+#                          hidden_dim = hidden_dim,
+#                          dropout = classifier_hparams['dropout'],
+#                          learning_rate = classifier_hparams['learning_rate'],
+#                          nesterov = classifier_hparams['nesterov'],
+#                          scheduler_type = classifier_hparams['scheduler_type'],
+#                          decay_epochs = classifier_hparams['decay_epochs'],
+#                          gamma = classifier_hparams['gamma'],
+#                          final_lr = classifier_hparams['final_lr']  
+#                         )
         self.encoder = encoder
         
         self.save_hyperparameters()
@@ -54,34 +64,61 @@ class CLASSIFIER(SSLFineTuner):
         print(self.hparams)
   
     #override optimizer to allow modification of encoder learning rate
-    def configure_optimizers(self):
-        optimizer = SGD([
-                  {'params': self.encoder.parameters()},
-                  {'params': self.linear_layer.parameters(), 'lr': self.classifier_hparams['linear_lr']}
-              ], lr=self.classifier_hparams['learning_rate'], momentum=self.classifier_hparams['momentum'])
+#     def configure_optimizers(self):
+#         optimizer = SGD([
+#                   {'params': self.encoder.parameters()},
+#                   {'params': self.linear_layer.parameters(), 'lr': self.classifier_hparams['linear_lr']}
+#               ], lr=self.classifier_hparams['learning_rate'], momentum=self.classifier_hparams['momentum'])
               
-        if self.scheduler_type == "step":
-            scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, self.decay_epochs, gamma=self.gamma)
-        elif self.scheduler_type == "cosine":
-            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-                optimizer,
-                self.epochs,
-                eta_min=self.final_lr  # total epochs to run
-            )
+#         if self.scheduler_type == "step":
+#             scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, self.decay_epochs, gamma=self.gamma)
+#         elif self.scheduler_type == "cosine":
+#             scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+#                 optimizer,
+#                 self.epochs,
+#                 eta_min=self.final_lr  # total epochs to run
+#             )
 
         return [optimizer], [scheduler]
     
-    def shared_step(self, batch):
-        x, y = batch
+  def shared_step(self, batch):
+      x, y = batch
+      feats = self.encoder(x)[-1]
+      feats = feats.view(feats.size(0), -1)
+      logits = self.linear_layer(feats)
+      loss = self.loss_fn(logits, y)
+      return loss, logits, y
 
-        with torch.no_grad():
-            feats = self.backbone(x)[0]
+  def training_step(self, batch, batch_idx):
+      loss, logits, y = self.shared_step(batch)
+      acc = self.train_acc(logits, y)
+      self.log('tloss', loss, prog_bar=True)
+      self.log('tastep', acc, prog_bar=True)
+      self.log('ta_epoch', self.train_acc)
 
-        feats = feats.view(feats.size(0), -1)
-        logits = self.linear_layer(feats)
-        loss = F.cross_entropy(logits, y)
+      return loss
 
-        return loss, logits, y
+  def validation_step(self, batch, batch_idx):
+      with torch.no_grad():
+          loss, logits, y = self.shared_step(batch)
+          acc = self.val_acc(logits, y)
+          
+      acc = self.val_acc(logits, y)
+      self.log('val_loss', loss, prog_bar=True, sync_dist=True)
+      self.log('val_acc_epoch', self.val_acc, prog_bar=True)
+      self.log('val_acc_epoch', self.val_acc, prog_bar=True)
+      return loss
+
+  def loss_fn(self, logits, labels):
+      return F.cross_entropy(logits, labels)
+
+  def configure_optimizers(self):
+      opt = SGD([
+                {'params': self.encoder.parameters()},
+                {'params': self.linear_layer.parameters(), 'lr': 0.1}
+            ], lr=1e-4, momentum=0.9)
+      
+      return [opt]
     
 
     def setup(self, stage = 'inference'):
