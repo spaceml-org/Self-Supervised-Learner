@@ -22,7 +22,7 @@ from dali_utils.lightning_compat import ClassifierWrapper
 
 class CLASSIFIER(pl.LightningModule): #SSLFineTuner
 
-    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, epochs, transform = SimCLRTransform, **classifier_hparams):
+    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, transform = SimCLRTransform, **classifier_hparams):
         super().__init__()
         data_temp = ImageFolder(DATA_PATH)
         
