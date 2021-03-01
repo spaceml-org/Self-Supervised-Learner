@@ -79,46 +79,46 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
 #                 eta_min=self.final_lr  # total epochs to run
 #             )
 
-        return [optimizer], [scheduler]
+#         return [optimizer], [scheduler]
     
-  def shared_step(self, batch):
-      x, y = batch
-      feats = self.encoder(x)[-1]
-      feats = feats.view(feats.size(0), -1)
-      logits = self.linear_layer(feats)
-      loss = self.loss_fn(logits, y)
-      return loss, logits, y
+def shared_step(self, batch):
+    x, y = batch
+    feats = self.encoder(x)[-1]
+    feats = feats.view(feats.size(0), -1)
+    logits = self.linear_layer(feats)
+    loss = self.loss_fn(logits, y)
+    return loss, logits, y
 
-  def training_step(self, batch, batch_idx):
-      loss, logits, y = self.shared_step(batch)
-      acc = self.train_acc(logits, y)
-      self.log('tloss', loss, prog_bar=True)
-      self.log('tastep', acc, prog_bar=True)
-      self.log('ta_epoch', self.train_acc)
+def training_step(self, batch, batch_idx):
+    loss, logits, y = self.shared_step(batch)
+    acc = self.train_acc(logits, y)
+    self.log('tloss', loss, prog_bar=True)
+    self.log('tastep', acc, prog_bar=True)
+    self.log('ta_epoch', self.train_acc)
 
-      return loss
+    return loss
 
-  def validation_step(self, batch, batch_idx):
-      with torch.no_grad():
-          loss, logits, y = self.shared_step(batch)
-          acc = self.val_acc(logits, y)
-          
-      acc = self.val_acc(logits, y)
-      self.log('val_loss', loss, prog_bar=True, sync_dist=True)
-      self.log('val_acc_epoch', self.val_acc, prog_bar=True)
-      self.log('val_acc_epoch', self.val_acc, prog_bar=True)
-      return loss
+def validation_step(self, batch, batch_idx):
+    with torch.no_grad():
+        loss, logits, y = self.shared_step(batch)
+        acc = self.val_acc(logits, y)
 
-  def loss_fn(self, logits, labels):
-      return F.cross_entropy(logits, labels)
+    acc = self.val_acc(logits, y)
+    self.log('val_loss', loss, prog_bar=True, sync_dist=True)
+    self.log('val_acc_epoch', self.val_acc, prog_bar=True)
+    self.log('val_acc_epoch', self.val_acc, prog_bar=True)
+    return loss
 
-  def configure_optimizers(self):
-      opt = SGD([
-                {'params': self.encoder.parameters()},
-                {'params': self.linear_layer.parameters(), 'lr': 0.1}
-            ], lr=1e-4, momentum=0.9)
-      
-      return [opt]
+def loss_fn(self, logits, labels):
+    return F.cross_entropy(logits, labels)
+
+def configure_optimizers(self):
+    opt = SGD([
+            {'params': self.encoder.parameters()},
+            {'params': self.linear_layer.parameters(), 'lr': 0.1}
+        ], lr=1e-4, momentum=0.9)
+
+    return [opt]
     
 
     def setup(self, stage = 'inference'):
