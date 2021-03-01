@@ -13,6 +13,7 @@ from torch.optim import SGD
 
 import pytorch_lightning as pl
 from pl_bolts.models.self_supervised.ssl_finetuner import SSLFineTuner
+from pl_bolts.models.self_supervised.evaluator import SSLEvaluator
 
 #Internal Imports
 from dali_utils.dali_transforms import SimCLRTransform #same transform as SimCLR, but only 1 copy
