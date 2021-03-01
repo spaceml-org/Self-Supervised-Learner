@@ -115,15 +115,6 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
     def loss_fn(self, logits, labels):
         return F.cross_entropy(logits, labels)
 
-#     def configure_optimizers(self):
-#         opt = SGD([
-#                 {'params': self.encoder.parameters()},
-#                 {'params': self.linear_layer.parameters(), 'lr': 0.1}
-#             ], lr=1e-4, momentum=0.9)
-
-#         return [opt]
-
-
     def setup(self, stage = 'inference'):
         if stage == 'fit':
             train = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
