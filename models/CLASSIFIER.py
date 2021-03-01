@@ -121,35 +121,35 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         return [opt]
 
 
-        def setup(self, stage = 'inference'):
-            if stage == 'fit':
-                train = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
-                val = self.transform(self.VAL_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
-                self.train_loader = ClassifierWrapper(transform = train)
-                self.val_loader = ClassifierWrapper(transform = val)
+    def setup(self, stage = 'inference'):
+        if stage == 'fit':
+            train = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
+            val = self.transform(self.VAL_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
+            self.train_loader = ClassifierWrapper(transform = train)
+            self.val_loader = ClassifierWrapper(transform = val)
 
-            elif stage == 'inference':
-                self.test_dataloader = ClassifierWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
-                self.inference_dataloader = self.test_dataloader
+        elif stage == 'inference':
+            self.test_dataloader = ClassifierWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
+            self.inference_dataloader = self.test_dataloader
 
-        def train_dataloader(self):
-            return self.train_loader
+    def train_dataloader(self):
+        return self.train_loader
 
-        def val_dataloader(self):
-            return self.val_loader
+    def val_dataloader(self):
+        return self.val_loader
 
-        #give user permission to add extra arguments for SIMSIAM model particularly. This cannot share the name of any parameters from train.py
-        def add_model_specific_args(self, parent_parser):
-            parser = ArgumentParser(parents=[parent_parser], add_help=False)
+    #give user permission to add extra arguments for SIMSIAM model particularly. This cannot share the name of any parameters from train.py
+    def add_model_specific_args(self, parent_parser):
+        parser = ArgumentParser(parents=[parent_parser], add_help=False)
 
-            # training params
-            parser.add_argument("--linear_lr", default=1e-1, type=float, help="learning rate for classification head.")
-            parser.add_argument("--dropout", default=0.1, type=float, help="dropout of neurons during training [0-1].")
-            parser.add_argument("--nesterov", default=False, type=bool, help="Use nesterov during training.")
-            parser.add_argument("--scheduler_type", default='cosine', type=str, help="learning rate scheduler: ['cosine' or 'step']")
-            parser.add_argument("--gamma", default=0.1, type=float, help="gamma param for learning rate.")
-            parser.add_argument("--decay_epochs", default=[60, 80], type=list, help="epochs to do optimizer decay")
-            parser.add_argument("--weight_decay", default=1e-6, type=float, help="weight decay")
-            parser.add_argument("--final_lr", type=float, default=1e-6, help="final learning rate")
-            parser.add_argument("--momentum", type=float, default=0.9, help="momentum for learning rate")
-            return parser
+        # training params
+        parser.add_argument("--linear_lr", default=1e-1, type=float, help="learning rate for classification head.")
+        parser.add_argument("--dropout", default=0.1, type=float, help="dropout of neurons during training [0-1].")
+        parser.add_argument("--nesterov", default=False, type=bool, help="Use nesterov during training.")
+        parser.add_argument("--scheduler_type", default='cosine', type=str, help="learning rate scheduler: ['cosine' or 'step']")
+        parser.add_argument("--gamma", default=0.1, type=float, help="gamma param for learning rate.")
+        parser.add_argument("--decay_epochs", default=[60, 80], type=list, help="epochs to do optimizer decay")
+        parser.add_argument("--weight_decay", default=1e-6, type=float, help="weight decay")
+        parser.add_argument("--final_lr", type=float, default=1e-6, help="final learning rate")
+        parser.add_argument("--momentum", type=float, default=0.9, help="momentum for learning rate")
+        return parser
