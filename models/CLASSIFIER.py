@@ -72,13 +72,14 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
                   {'params': self.linear_layer.parameters(), 'lr': self.classifier_hparams['linear_lr']}
               ], lr=self.classifier_hparams['learning_rate'], momentum=self.classifier_hparams['momentum'])
               
-        if self.scheduler_type == "step":
-            scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, self.decay_epochs, gamma=self.gamma)
-        elif self.scheduler_type == "cosine":
+        if self.classifier_hparams['scheduler_type'] == "step":
+            scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, self.classifier_hparams['decay_epochs'], gamma=self.classifier_hparams['gamma'])
+        elif self.classifier_hparams['scheduler_type'] == "cosine":
+            
             scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
                 optimizer,
                 self.epochs,
-                eta_min=self.final_lr  # total epochs to run
+                eta_min=self.classifier_hparams['final_lr']  # total epochs to run
             )
 
         return [optimizer], [scheduler]
