@@ -66,22 +66,22 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         print(self.hparams)
   
     #override optimizer to allow modification of encoder learning rate
-#     def configure_optimizers(self):
-#         optimizer = SGD([
-#                   {'params': self.encoder.parameters()},
-#                   {'params': self.linear_layer.parameters(), 'lr': self.classifier_hparams['linear_lr']}
-#               ], lr=self.classifier_hparams['learning_rate'], momentum=self.classifier_hparams['momentum'])
+    def configure_optimizers(self):
+        optimizer = SGD([
+                  {'params': self.encoder.parameters()},
+                  {'params': self.linear_layer.parameters(), 'lr': self.classifier_hparams['linear_lr']}
+              ], lr=self.classifier_hparams['learning_rate'], momentum=self.classifier_hparams['momentum'])
               
-#         if self.scheduler_type == "step":
-#             scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, self.decay_epochs, gamma=self.gamma)
-#         elif self.scheduler_type == "cosine":
-#             scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-#                 optimizer,
-#                 self.epochs,
-#                 eta_min=self.final_lr  # total epochs to run
-#             )
+        if self.scheduler_type == "step":
+            scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, self.decay_epochs, gamma=self.gamma)
+        elif self.scheduler_type == "cosine":
+            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer,
+                self.epochs,
+                eta_min=self.final_lr  # total epochs to run
+            )
 
-#         return [optimizer], [scheduler]
+        return [optimizer], [scheduler]
     
     def shared_step(self, batch):
         x, y = batch
@@ -114,13 +114,13 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
     def loss_fn(self, logits, labels):
         return F.cross_entropy(logits, labels)
 
-    def configure_optimizers(self):
-        opt = SGD([
-                {'params': self.encoder.parameters()},
-                {'params': self.linear_layer.parameters(), 'lr': 0.1}
-            ], lr=1e-4, momentum=0.9)
+#     def configure_optimizers(self):
+#         opt = SGD([
+#                 {'params': self.encoder.parameters()},
+#                 {'params': self.linear_layer.parameters(), 'lr': 0.1}
+#             ], lr=1e-4, momentum=0.9)
 
-        return [opt]
+#         return [opt]
 
 
     def setup(self, stage = 'inference'):
