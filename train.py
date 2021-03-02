@@ -36,7 +36,8 @@ def load_model(args):
         
         try:
             return technique.load_from_checkpoint(**args.__dict__)
-        except:
+        except Exception as e: 
+            print(e)
             print('Trying to return model encoder only...')
             
             #there may be a more efficient way to find right technique to load
@@ -46,6 +47,7 @@ def load_model(args):
                 
                 try:
                     previous_model = load_model(args2)
+                    print(args2
                     print(colored(f'Successfully found previous model {previous_technique}', 'blue'))
                     args.encoder = previous_model.encoder
                     break
