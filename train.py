@@ -30,11 +30,9 @@ supported_techniques = {
 def load_model(args):
     technique = supported_techniques[args.technique]
     
-    
-        
     if '.ckpt' in args.model:
         args.checkpoint_path = args.model
-        args, _ = technique.add_model_specific_args(parser).parse_known_args()
+        
         try:
             return technique.load_from_checkpoint(**args.__dict__)
         except:
@@ -115,6 +113,8 @@ def cli_main():
 
     #add ability to parse unknown args
     args, _ = parser.parse_known_args()
+    technique = supported_techniques[args.technique]
+    args, _ = technique.add_model_specific_args(parser).parse_known_args()
     
     #logging
     wandb_logger = None
