@@ -42,7 +42,7 @@ def load_model(args):
             #there may be a more efficient way to find right technique to load
             for previous_technique in supported_techniques.keys():  
                 args2 = copy.deepcopy(args)
-                args2.model = previous_technique
+                args2.technique = previous_technique
                 
                 try:
                     previous_model = load_model(args2)
