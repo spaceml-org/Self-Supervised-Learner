@@ -62,8 +62,6 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         self.encoder = encoder
         
         self.save_hyperparameters()
-        print('saved hparams here')
-        print(self.hparams)
   
     #override optimizer to allow modification of encoder learning rate
     def configure_optimizers(self):
