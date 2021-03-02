@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 import splitfolders
 from termcolor import colored
+import copy
 
 import torch
 
@@ -40,7 +41,7 @@ def load_model(args):
             
             #there may be a more efficient way to find right technique to load
             for previous_technique in supported_techniques.keys():  
-                args2 = args.copy()
+                args2 = copy.deepcopy(args)
                 args2.model = previous_technique
                 
                 try:
