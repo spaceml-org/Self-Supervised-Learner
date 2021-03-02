@@ -19,11 +19,42 @@ from argparse import ArgumentParser
 #Internal Package Imports
 from models import SIMCLR, SIMSIAM, CLASSIFIER, encoders
 
-def load_model(args, technique):
-    #load model
+#Dictionary of supported Techniques
+supported_techniques = {
+    'SIMCLR': SIMCLR.SIMCLR,
+    'SIMSIAM': SIMSIAM.SIMSIAM,
+    'CLASSIFIER': CLASSIFIER.CLASSIFIER,
+}
+
+
+def load_model(args):
+    technique = supported_techniques[args.technique]
+    
+    
+        
     if '.ckpt' in args.model:
         args.checkpoint_path = args.model
-        return technique.load_from_checkpoint(**args.__dict__)
+        args, _ = technique.add_model_specific_args(parser).parse_known_args()
+        try:
+            return technique.load_from_checkpoint(**args.__dict__)
+        except:
+            print('Trying to return model encoder only...')
+            
+            #there may be a more efficient way to find right technique to load
+            for previous_technique in supported_techniques.keys():  
+                args2 = args.copy()
+                args2.model = previous_technique
+                
+                try:
+                    previous_model = load_model(args2)
+                    print(colored(f'Successfully found previous model {previous_technique}', 'blue'))
+                    args.encoder = previous_model.encoder
+                    break
+                except:
+                    continue
+                
+            
+            
         
 
     #encoder specified
@@ -60,11 +91,7 @@ def load_model(args, technique):
     
 
 def cli_main():
-    supported_techniques = {
-        'SIMCLR': SIMCLR.SIMCLR,
-        'SIMSIAM': SIMSIAM.SIMSIAM,
-        'CLASSIFIER': CLASSIFIER.CLASSIFIER,
-    }
+
     
     parser = ArgumentParser()
     parser.add_argument("--DATA_PATH", type=str, help="path to folders with images to train on.")
@@ -88,8 +115,6 @@ def cli_main():
 
     #add ability to parse unknown args
     args, _ = parser.parse_known_args()
-    technique = supported_techniques[args.technique]
-    args, _ = technique.add_model_specific_args(parser).parse_known_args()
     
     #logging
     wandb_logger = None
@@ -110,7 +135,7 @@ def cli_main():
         args.DATA_PATH = f'./split_data_{log_name[:-5]}/train'
         args.VAL_PATH = f'./split_data_{log_name[:-5]}/val'
     
-    model = load_model(args, technique)
+    model = load_model(args)
     print(colored("Model architecture successfully loaded", 'blue'))
     
 
