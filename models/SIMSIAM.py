@@ -48,8 +48,6 @@ class SIMSIAM(SimSiam):
         )
 
         self.save_hyperparameters()
-        print('saved hparams here')
-        print(self.hparams)
   
     #override pytorch SimSiam with our own encoder so we will overwrite the function plbolts calls to init the encoder
     def init_model(self):
