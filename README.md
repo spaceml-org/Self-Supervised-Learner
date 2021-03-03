@@ -67,6 +67,8 @@ __Requirements__: GPU with CUDA 10+ enabled, [requirements.txt](https://github.c
 Run [`sh example.sh`](https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/example.sh) to see the tool in action on the [UC Merced land use dataset](http://weegee.vision.ucmerced.edu/datasets/landuse.html).
 
 ## Arguments to train.py
+You use train.py to train an SSL model and classifier. There are multiple arguments available for you to use:
+__Mandatory Arguments__
 
 To run it with your own data, please put your data in the following folder structure:
 ```
