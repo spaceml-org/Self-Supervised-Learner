@@ -68,8 +68,8 @@ Run [`sh example.sh`](https://github.com/spaceml-org/Self-Supervised-Learner/blo
 
 ## Arguments to train.py
 You use train.py to train an SSL model and classifier. There are multiple arguments available for you to use: \
-\
-__Mandatory Arguments__\
+
+__Mandatory Arguments__
 
 ```--model```: The architecture of the encoder that is trained. All encoder options can be found in the models/encoders.py. Currently resnet18, imagenet_resnet18, resnet50, imagenet_resnet50 and minicnn are supported. You would call minicnn with a number to represent output embedding size, for example ```minicnn32``` 
 
