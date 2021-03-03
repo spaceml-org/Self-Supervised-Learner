@@ -34,6 +34,10 @@ Self-supervised learning is a subfield of machine learning focused on developing
 ### How Curator Works
 Step 1) **Self-Supervied Learning (SSL): Training an encoder without labels**
    - The first step is to train a self-supervised encoder. Self-supervised learning does not require labels and lets the model learn from purely unlabeled data to build an image encoder.
+```bash
+python train.py --DATA_PATH myDataFolder/Images --model imagenet_resnet18 --technique SIMCLR --epochs 100 --log_name ssl 
+```
+
 
 Step 2) **Fine tuning (FT): Training a classifier with labels**
    - With the self-supervised training done, the encoder is used to initialize a classifier (finetuning). Because the encoder learned from the entire unlabeled dataset previously, the classifier is able to achieve higher classification accuracy than training from scratch or pure transfer learning.
