@@ -67,11 +67,13 @@ __Requirements__: GPU with CUDA 10+ enabled, [requirements.txt](https://github.c
 Run [`sh example.sh`](https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/example.sh) to see the tool in action on the [UC Merced land use dataset](http://weegee.vision.ucmerced.edu/datasets/landuse.html).
 
 ## Arguments to train.py
-You use train.py to train an SSL model and classifier. There are multiple arguments available for you to use: \
+You use train.py to train an SSL model and classifier. There are multiple arguments available for you to use: 
 
 __Mandatory Arguments__
 
-```--model```: The architecture of the encoder that is trained. All encoder options can be found in the models/encoders.py. Currently resnet18, imagenet_resnet18, resnet50, imagenet_resnet50 and minicnn are supported. You would call minicnn with a number to represent output embedding size, for example ```minicnn32``` 
+```--model```: The architecture of the encoder that is trained. All encoder options can be found in the models/encoders.py. Currently resnet18, imagenet_resnet18, resnet50, imagenet_resnet50 and minicnn are supported. You would call minicnn with a number to represent output embedding size, for example ```minicnn32```
+
+```--hidden_dim```: hidden dimensions in projection head or classification layer for finetuning
 
 ```--log_name```: What to call the output model file (prepended with technique). File will be a .ckpt file, for example SIMCLR_mymodel2.ckpt
 
@@ -94,8 +96,13 @@ Your data must be in the following folder structure as per pytorch ImageFolder s
         Image2.png
 
 ```
-\
-__Optional Arguments__\
+
+__Optional Arguments__
+
+```--batch_size```: batch size to pass to model for training
+```--cpus```: how many cpus you have to use for data reading
+```--hidden_dim```: hidden dimensions in projection head or classification layer for finetuning, depending on the technique you're using
+
 
 __Optional:__ To optimize your environment for deep learning, run this repo on the pytorch nvidia docker:
 
@@ -113,7 +120,8 @@ Both self-supervised models and finetuned models can be accessed and used normal
 
 For example:
 ```python
-from models import SIMCLR, CLASSIFIER
+from models.SIMCLR import SIMCLR 
+from models.CLASSIFIER import CLASSIFIER
 simclr_model = SIMCLR.load_from_checkpoint('PATH_TO_SSL_MODEL.ckpt') #Used like a normal pytorch model
 classifier_model = CLASSIFIER.load_from_checkpoint('PATH_TO_CLASSIFIER_MODEL.ckpt') #Used like a normal pytorch model
 ```
