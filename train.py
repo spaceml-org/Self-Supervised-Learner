@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 import splitfolders
 from termcolor import colored
+from enum import Enum
 import copy
 
 import torch
@@ -56,23 +57,24 @@ def load_model(args):
             
             
         
-
+    model_options = Enum('Models_Implemented', 'resnet18 imagenet_resnet18 resnet50 imagenet_resnet50')
+    
     #encoder specified
     elif 'minicnn' in args.model:
         #special case to make minicnn output variable output embedding size depending on user arg
         output_size =  int(''.join(x for x in args.model if x.isdigit()))
         args.encoder = encoders.miniCNN(output_size)
         args.encoder.embedding_size = output_size  
-    elif args.model == 'resnet18':
+    elif args.model == model_options.resnet18.name:
         args.encoder = encoders.resnet18(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
         args.encoder.embedding_size = 512
-    elif args.model == 'imagenet_resnet18':
+    elif args.model == model_options.imagenet_resnet18.name:
         args.encoder = encoders.resnet18(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
         args.encoder.embedding_size = 512
-    elif args.model == 'resnet50':
+    elif args.model == model_options.resnet50.name:
         args.encoder = encoders.resnet50(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
         args.encoder.embedding_size = 2048
-    elif args.model == 'imagenet_resnet50':
+    elif args.model == model_options.imagenet_resnet50.name:
         args.encoder = encoders.resnet50(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
         args.encoder.embedding_size = 2048
 
