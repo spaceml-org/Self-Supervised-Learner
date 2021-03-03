@@ -4,6 +4,7 @@ import numpy as np
 import math
 from argparse import ArgumentParser
 from termcolor import colored
+from enum import Enum
 
 import torch
 from torch.nn import functional as F
@@ -46,19 +47,6 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         self.train_acc = Accuracy()
         self.val_acc = Accuracy(compute_on_step=False)
         
-#         super().__init__(backbone = encoder, 
-#                          in_features = encoder.embedding_size, 
-#                          num_classes = self.num_classes, 
-#                          epochs = classifier_hparams['epochs'],
-#                          hidden_dim = hidden_dim,
-#                          dropout = classifier_hparams['dropout'],
-#                          learning_rate = classifier_hparams['learning_rate'],
-#                          nesterov = classifier_hparams['nesterov'],
-#                          scheduler_type = classifier_hparams['scheduler_type'],
-#                          decay_epochs = classifier_hparams['decay_epochs'],
-#                          gamma = classifier_hparams['gamma'],
-#                          final_lr = classifier_hparams['final_lr']  
-#                         )
         self.encoder = encoder
         
         self.save_hyperparameters()
@@ -114,13 +102,14 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         return F.cross_entropy(logits, labels)
 
     def setup(self, stage = 'inference'):
-        if stage == 'fit':
+        Options = Enum('Loader', 'fit test inference')
+        if stage == Options.fit.name:
             train = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
             val = self.transform(self.VAL_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
             self.train_loader = ClassifierWrapper(transform = train)
             self.val_loader = ClassifierWrapper(transform = val)
 
-        elif stage == 'inference':
+        elif stage == Options.inference.name:
             self.test_dataloader = ClassifierWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
             self.inference_dataloader = self.test_dataloader
 
