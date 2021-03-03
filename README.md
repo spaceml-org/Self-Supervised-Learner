@@ -69,11 +69,12 @@ Run [`sh example.sh`](https://github.com/spaceml-org/Self-Supervised-Learner/blo
 ## Arguments to train.py
 You use train.py to train an SSL model and classifier. There are multiple arguments available for you to use: \
 \
-__Mandatory Arguments__
-```--model```: The architecture of the encoder that is trained
+__Mandatory Arguments__\
+```--model```: The architecture of the encoder that is trained. All encoder options can be found in the models/encoders.py. Currently resnet18, imagenet_resnet18, resnet50, imagenet_resnet50 and minicnn are supported. You would call minicnn with a number to represent output embedding size, for example ```minicnn32```
+```--log_name```: What to call the output model file (prepended with technique). File will be a .ckpt file, for example SIMCLR_mymodel2.ckpt
+```--DATA_PATH```: The path to your data. If your data does not contain a train and val folder, a copy will automatically be created with train & val splits
 
-
-To run it with your own data, please put your data in the following folder structure:
+Your data must be in the following folder structure as per pytorch ImageFolder specifications:
 ```
 /Dataset
     /Class 1
@@ -90,6 +91,8 @@ To run it with your own data, please put your data in the following folder struc
         Image2.png
 
 ```
+\
+__Optional Arguments__\
 
 __Optional:__ To optimize your environment for deep learning, run this repo on the pytorch nvidia docker:
 
