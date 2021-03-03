@@ -4,6 +4,7 @@ import numpy as np
 import math
 from argparse import ArgumentParser
 from termcolor import colored
+from enum import Enum  
 
 import torch
 from torch.nn import functional as F
@@ -49,13 +50,14 @@ class SIMCLR(SimCLR):
         return None
 
     def setup(self, stage = 'inference'):
-        if stage == 'fit':
+        Options = Enum('Loader', 'fit test inference')
+        if stage == Options.fit.name:
             train = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
             val = self.transform(self.VAL_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
             self.train_loader = SimCLRWrapper(transform = train)
             self.val_loader = SimCLRWrapper(transform = val)
             
-        elif stage == 'inference':
+        elif stage == Options.inference.name:
             self.test_dataloader = SimCLRWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
             self.inference_dataloader = self.test_dataloader
      
