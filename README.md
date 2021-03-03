@@ -35,12 +35,15 @@ Self-supervised learning is a subfield of machine learning focused on developing
 Step 1) **Self-Supervied Learning (SSL): Training an encoder without labels**
    - The first step is to train a self-supervised encoder. Self-supervised learning does not require labels and lets the model learn from purely unlabeled data to build an image encoder.
 ```bash
-python train.py --DATA_PATH myDataFolder/Images --model imagenet_resnet18 --technique SIMCLR --epochs 100 --log_name ssl 
+python train.py --technique SIMCLR --model imagenet_resnet18 --DATA_PATH myDataFolder/AllImages  --epochs 100 --log_name ssl 
 ```
 
-
-Step 2) **Fine tuning (FT): Training a classifier with labels**
+Step 2) **Fine tuning: Training a classifier with labels**
    - With the self-supervised training done, the encoder is used to initialize a classifier (finetuning). Because the encoder learned from the entire unlabeled dataset previously, the classifier is able to achieve higher classification accuracy than training from scratch or pure transfer learning.
+
+```bash
+python train.py --technique CLASSIFIER --model ./models/SIMCLR_ssl.ckpt --DATA_PATH myDataFolder/LabeledImages  --epochs 100 --log_name finetune 
+```
 
 __Requirements__: GPU with CUDA 10+ enabled, [requirements.txt](https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/requirements.txt)
 
@@ -53,9 +56,9 @@ __Requirements__: GPU with CUDA 10+ enabled, [requirements.txt](https://github.c
     <td><b style="font-size:30px">Processing Speed</b></td>
  </tr>
  <tr>
-    <td>:heavy_check_mark: 1.0.2</td>
-    <td>Package Speed Improvements</td>
-    <td>Support for SIMCLR</td>
+    <td>:heavy_check_mark: 1.0.3</td>
+    <td>Package Documentation Improved</td>
+    <td>Support for SIMSIAM</td>
     <td>Multi-GPU Training Supported</td>
  </tr>
 </table>
@@ -63,7 +66,7 @@ __Requirements__: GPU with CUDA 10+ enabled, [requirements.txt](https://github.c
 ## TL;DR Quick example
 Run [`sh example.sh`](https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/example.sh) to see the tool in action on the [UC Merced land use dataset](http://weegee.vision.ucmerced.edu/datasets/landuse.html).
 
-## Using Your Own Data Set
+## Arguments to train.py
 ```bash
 SSL: python ssl_dali_distrib.py --ARGUMENTS
 FT: python finetuner_dali_distrib.py --ARGUMENTS
