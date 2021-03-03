@@ -10,7 +10,7 @@
 <p align="center">
   Published by <a href="http://spaceml.org/">SpaceML</a> •
   <a href="https://arxiv.org/abs/2012.10610">About SpaceML</a> •
-  <a href="https://colab.research.google.com/github/RudyVenguswamy/SpaceForceDataSearch/blob/main/PythonColabTutorial_Merced.ipynb">Quick Colab Example</a> 
+  <a href="https://github.com/spaceml-org/Self-Supervised-Learner/blob/simsiam/tutorials/PythonColabTutorial_Merced.ipynb">Quick Colab Example</a> 
 </p>
 
 
@@ -19,10 +19,8 @@
 [![Pip Package](https://img.shields.io/badge/Pip%20Package-Coming%20Soon-0073b7.svg)](https://pypi.org/project/pip/)
 [![Docker](https://img.shields.io/badge/Docker%20Image-Coming%20Soon-34a0ef.svg)](https://www.docker.com/)
 
-[![Google Colab Notebook Example](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/RudyVenguswamy/SpaceForceDataSearch/blob/main/PythonColabTutorial_Merced.ipynb)
-<!--
-[![CodeFactor](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning/badge)](https://www.codefactor.io/repository/github/pytorchlightning/pytorch-lightning)
--->
+[![Google Colab Notebook Example](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/spaceml-org/Self-Supervised-Learner/blob/simsiam/tutorials/PythonColabTutorial_Merced.ipynb)
+
 </div>
 
 # Curator :earth_americas:
