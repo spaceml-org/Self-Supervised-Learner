@@ -100,7 +100,9 @@ Your data must be in the following folder structure as per pytorch ImageFolder s
 __Optional Arguments__
 
 ```--batch_size```: batch size to pass to model for training
+
 ```--cpus```: how many cpus you have to use for data reading
+
 ```--hidden_dim```: hidden dimensions in projection head or classification layer for finetuning, depending on the technique you're using
 
 
