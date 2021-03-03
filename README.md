@@ -28,7 +28,7 @@
 Curator can be used to train a classifier with fewer labeled examples needed using self-supervised learning. This repo is for you if you have a lot of unlabeled images and a small fraction (if any) of them labeled.
 
 
-<ins> What is Self-Supervised Learning? </ins>
+<ins> What is Self-Supervised Learning? </ins> \
 Self-supervised learning is a subfield of machine learning focused on developing representations of images without any labels, which is useful for reverse image searching, categorization and filtering of images, especially so when it would be infeasible to have a human manually inspect each individual image. It also has downstream benefits for classification tasks. For instance, training SSL on 100% of your data and finetuning the encoder on the 5% of data that has been labeled significantly outperforms training a model from scratch on 5% of data or transfer learning based approaches typically.
 
 ### How Curator Works
