@@ -31,6 +31,7 @@ supported_techniques = {
 
 def load_model(args):
     technique = supported_techniques[args.technique]
+    model_options = Enum('Models_Implemented', 'resnet18 imagenet_resnet18 resnet50 imagenet_resnet50')
     
     if '.ckpt' in args.model:
         args.checkpoint_path = args.model
@@ -53,11 +54,6 @@ def load_model(args):
                     break
                 except:
                     continue
-                
-            
-            
-        
-    model_options = Enum('Models_Implemented', 'resnet18 imagenet_resnet18 resnet50 imagenet_resnet50')
     
     #encoder specified
     elif 'minicnn' in args.model:
