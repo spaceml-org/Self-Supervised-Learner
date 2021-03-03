@@ -31,7 +31,7 @@ Curator can be used to train a classifier with fewer labeled examples needed usi
 <ins> **What is Self-Supervised Learning?** </ins> \
 Self-supervised learning is a subfield of machine learning focused on developing representations of images without any labels, which is useful for reverse image searching, categorization and filtering of images, especially so when it would be infeasible to have a human manually inspect each individual image. It also has downstream benefits for classification tasks. For instance, training SSL on 100% of your data and finetuning the encoder on the 5% of data that has been labeled significantly outperforms training a model from scratch on 5% of data or transfer learning based approaches typically.
 
-### How Curator Works
+### How To Use SSL Curator
 Step 1) **Self-Supervied Learning (SSL): Training an encoder without labels**
    - The first step is to train a self-supervised encoder. Self-supervised learning does not require labels and lets the model learn from purely unlabeled data to build an image encoder.
 ```bash
@@ -67,10 +67,7 @@ __Requirements__: GPU with CUDA 10+ enabled, [requirements.txt](https://github.c
 Run [`sh example.sh`](https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/example.sh) to see the tool in action on the [UC Merced land use dataset](http://weegee.vision.ucmerced.edu/datasets/landuse.html).
 
 ## Arguments to train.py
-```bash
-SSL: python ssl_dali_distrib.py --ARGUMENTS
-FT: python finetuner_dali_distrib.py --ARGUMENTS
-```
+
 To run it with your own data, please put your data in the following folder structure:
 ```
 /Dataset
