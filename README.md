@@ -73,7 +73,7 @@ __Mandatory Arguments__
 
 ```--model```: The architecture of the encoder that is trained. All encoder options can be found in the models/encoders.py. Currently resnet18, imagenet_resnet18, resnet50, imagenet_resnet50 and minicnn are supported. You would call minicnn with a number to represent output embedding size, for example ```minicnn32```
 
-```--hidden_dim```: hidden dimensions in projection head or classification layer for finetuning
+```--technique```: What type of SSL or classification to do. Options as of 1.0.4 are SIMCLR, SIMSIAM or CLASSIFIER
 
 ```--log_name```: What to call the output model file (prepended with technique). File will be a .ckpt file, for example SIMCLR_mymodel2.ckpt
 
