@@ -105,29 +105,13 @@ Both self-supervised models and finetuned models can be accessed and used normal
 
 For example:
 ```python
-from SpaceForceDataSearch.ssl_dali_distrib import SIMCLR 
-from SpaceForceDataSearch.finetuner_dali_distrib import finetuner
-
-simclr_model = SIMCLR.load_from_checkpoint('PATH_TO_SSL_MODEL.ckpt')
-finetuned_model = finetuner.load_from_checkpoint('PATH_TO_SSL_MODEL.ckpt')
-
-print(simclr_model.encoder)
-print(finetuned_model.encoder)
-
-datapoint = my_load_and_transform_function('example.jpg')
-
-embedding = simclr_model(datapoint)
-prediction = finetuned_model(datapoint)
+from models import SIMCLR, CLASSIFIER
+simclr_model = SIMCLR.load_from_checkpoint('PATH_TO_SSL_MODEL.ckpt') #Used like a normal pytorch model
+classifier_model = CLASSIFIER.load_from_checkpoint('PATH_TO_CLASSIFIER_MODEL.ckpt') #Used like a normal pytorch model
 ```
 
 ## Using Your Own Encoder
-If you don't want to use the predefined encoders in encoders_dali.py, it's very easy to modify the code. To add your own model:
-1) Modify encoders_dali.py and add your custom model, which needs to be of type torch.nn.Module.
-2) Modify the load_encoder method of encoders_dali.py to have your model as an option. You will need to specify the output size (vector length - int) of the embedding generated for a single datapoint as well. Add another elif statement like so to do so:
-```
- elif encoder_name == 'my_custom_encoder':
-        model, embedding_size = my_custom_encoder(my_init_params), my_model_output_embedding_size: int
-```
+If you don't want to use the predefined encoders in models/encoders.py, you can pass your own encoder as a .pt file to the --model argument and specify the --embedding_size arg to tell the tool the output shape from the model.
 
 ## Releases
 - :heavy_check_mark: (0.7.0) Dali Transforms Added
@@ -137,7 +121,8 @@ If you don't want to use the predefined encoders in encoders_dali.py, it's very 
 - :heavy_check_mark: (1.0.1) GPU Memory Issues Fixed
 - :heavy_check_mark: (1.0.1) Multi-GPU Training Enabled
 - :heavy_check_mark: (1.0.2) Package Speed Improvements
-- :ticket: (1.0.3) Cluster Visualizations for Embeddings 
+- :heavy_check_mark: (1.0.3) Support for SimSiam and Code Restructuring
+- :ticket: (1.0.4) Cluster Visualizations for Embeddings 
 - :ticket: (1.1.0) Supporting numpy, TFDS datasets
 - :ticket: (1.2.0) Saliency Maps for Embeddings
 
