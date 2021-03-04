@@ -70,11 +70,15 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
 
         return [optimizer], [scheduler]
     
-    def shared_step(self, batch):
-        x, y = batch
+    def forward(self, x):
         feats = self.encoder(x)[-1]
         feats = feats.view(feats.size(0), -1)
         logits = self.linear_layer(feats)
+        return logits
+    
+    def shared_step(self, batch):
+        x, y = batch
+        logits = self.forward(x)
         loss = self.loss_fn(logits, y)
         return loss, logits, y
 
