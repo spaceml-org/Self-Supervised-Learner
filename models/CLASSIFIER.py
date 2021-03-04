@@ -36,8 +36,6 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         self.batch_size = classifier_hparams['batch_size']
         self.classifier_hparams = classifier_hparams
         
-        print(classifier_hparams)
-        
         self.linear_layer = SSLEvaluator(
             n_input=encoder.embedding_size,
             n_classes=self.classifier_hparams['num_classes'],
