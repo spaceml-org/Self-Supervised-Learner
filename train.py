@@ -31,6 +31,12 @@ supported_techniques = {
 
 
 def load_model(args):
+    '''
+    A method to load models via command line. Accepts args, a Namespace python object. 
+    In the method, we first check if the model is a ckpt file. If it is, try loading the checkpoint. If the checkpoint doesn't load, we will attempt to get only the encoder to load via the specified technique
+    If the model is not a .ckpt file, we will load it as an encoder from our list of supported encoders.
+    Finally, if it is none of the above, it could be a user specified .pt file to represent the encoder.
+    '''
     technique = supported_techniques[args.technique]
     model_options = Enum('Models_Implemented', 'resnet18 imagenet_resnet18 resnet50 imagenet_resnet50')
     
