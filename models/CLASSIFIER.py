@@ -70,7 +70,8 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
 
         return [optimizer], [scheduler]
     
-    def forward(self, x):
+    def forward(self, *input, **kwargs):
+        x = input[0]
         feats = self.encoder(x)[-1]
         feats = feats.view(feats.size(0), -1)
         logits = self.linear_layer(feats)
