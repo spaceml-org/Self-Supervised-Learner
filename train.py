@@ -105,7 +105,6 @@ def cli_main():
     parser.add_argument("--withhold_split", default=0, type=float, help="decimal from 0-1 representing how much of the training data to withold from either training or validation. Used for experimenting with labels neeeded")
     parser.add_argument("--gpus", default=1, type=int, help="number of gpus to use for training")
     parser.add_argument("--log_name", type=str, default=None, help="name of model to log on wandb and locally")
-    parser.add_argument("--online_eval", default=False, type=bool, help="Finetune as a sanity check with an SSL checkpoint when testing SSL. Will be ignored if classifier technique is selected.")
     parser.add_argument("--image_size", default=256, type=int, help="height of square image")
     parser.add_argument("--resize", default=False, type=bool, help="Pre-Resize data to right shape to reduce cuda memory requirements of reading large images")
     parser.add_argument("--technique", default=None, type=str, help="SIMCLR, SIMSIAM or CLASSIFIER")
@@ -154,9 +153,10 @@ def cli_main():
     if args.patience > 0:
         cb = EarlyStopping('val_loss', patience = args.patience)
         cbs.append(cb)
-    
-    if args.online_eval and args.technique.lower() is not 'classifier':
-        cbs.append(online_evaluator)
+        
+# Not supported yet    
+#     if args.online_eval and args.technique.lower() is not 'classifier':
+#         cbs.append(online_evaluator)
         
     trainer = pl.Trainer(gpus=args.gpus, max_epochs = args.epochs, progress_bar_refresh_rate=20, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, sync_batchnorm=True if args.gpus > 1 else False, logger = wandb_logger, enable_pl_optimizer = True)
     trainer.fit(model)
