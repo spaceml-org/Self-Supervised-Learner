@@ -10,6 +10,7 @@ from enum import Enum
 import copy
 
 import torch
+from torchvision.datasets import ImageFolder
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
