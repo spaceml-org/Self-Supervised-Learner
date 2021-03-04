@@ -38,18 +38,13 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         
         print(classifier_hparams)
         
-        if 'linear_layer' not in classifier_hparams.keys():
-            data_temp = ImageFolder(DATA_PATH)
-            self.num_classes = len(data_temp.classes)
-            self.linear_layer = SSLEvaluator(
-                n_input=encoder.embedding_size,
-                n_classes=self.num_classes,
-                p=self.classifier_hparams['dropout'],
-                n_hidden=hidden_dim
-            )
-        else:
-            self.linear_layer = classifier_hparams['linear_layer']
-            self.num_classes = classifier_hparams['num_classes']
+        self.linear_layer = SSLEvaluator(
+            n_input=encoder.embedding_size,
+            n_classes=self.classifier_hparams['num_classes'],
+            p=self.classifier_hparams['dropout'],
+            n_hidden=hidden_dim
+        )
+
           
         self.train_acc = Accuracy()
         self.val_acc = Accuracy(compute_on_step=False)
@@ -144,4 +139,5 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         parser.add_argument("--weight_decay", default=1e-6, type=float, help="weight decay")
         parser.add_argument("--final_lr", type=float, default=1e-6, help="final learning rate")
         parser.add_argument("--momentum", type=float, default=0.9, help="momentum for learning rate")
+        parser.add_argument("--num_classes", type=int, default=None, help="how many classes to output. will be found automatically if not specified")
         return parser
