@@ -25,7 +25,6 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
 
     def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, transform = SimCLRTransform, **classifier_hparams):
         super().__init__()
-        data_temp = ImageFolder(DATA_PATH)
         
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
@@ -33,17 +32,25 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         self.image_size = image_size
         self.cpus = cpus
         self.seed = seed
-        self.num_classes = len(data_temp.classes)
+        
         self.batch_size = classifier_hparams['batch_size']
         self.classifier_hparams = classifier_hparams
         
-        self.linear_layer = SSLEvaluator(
-            n_input=encoder.embedding_size,
-            n_classes=self.num_classes,
-            p=0.1,
-            n_hidden=hidden_dim
-        )
+        print(classifier_hparams)
         
+        if 'linear_layer' not in classifier_hparams.keys():
+            data_temp = ImageFolder(DATA_PATH)
+            self.num_classes = len(data_temp.classes)
+            self.linear_layer = SSLEvaluator(
+                n_input=encoder.embedding_size,
+                n_classes=self.num_classes,
+                p=self.classifier_hparams['dropout'],
+                n_hidden=hidden_dim
+            )
+        else:
+            self.linear_layer = classifier_hparams['linear_layer']
+            self.num_classes = classifier_hparams['num_classes']
+          
         self.train_acc = Accuracy()
         self.val_acc = Accuracy(compute_on_step=False)
         
