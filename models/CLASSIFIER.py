@@ -71,6 +71,7 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         return [optimizer], [scheduler]
     
     def forward(self, x):
+        print('GOT HERE FIRST')
         feats = self.encoder(x)[-1]
         print('GOT HERE')
         feats = feats.view(feats.size(0), -1)
