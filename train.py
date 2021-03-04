@@ -85,6 +85,9 @@ def load_model(args):
           embedding_size = encoder.embedding_size
         except:
           raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
+    
+    #We are initing from scratch so we need to find out how many classes are in this dataset. This is relevant info for the CLASSIFIER
+    args.num_classes = len(ImageFolder(args.DATA_PATH).classes)
     return technique(**args.__dict__)
     
 
