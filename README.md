@@ -101,9 +101,24 @@ __Optional Arguments__
 
 ```--batch_size```: batch size to pass to model for training
 
+```--epochs```: how many epochs to train
+
+```--learning_rate```: learning rate for the encoder when training
+
 ```--cpus```: how many cpus you have to use for data reading
 
+```--gpus```: how many gpus you have to use for training
+
+```--seed```: random seed for reproducibility
+
+```-patience```: early stopping if validation loss does not go down for (patience) number of epochs
+
+```--image_size```: 3 x image_size x image_size input fed into encoder
+
 ```--hidden_dim```: hidden dimensions in projection head or classification layer for finetuning, depending on the technique you're using
+
+```--OTHER ARGS```: each ssl model and classifier have unique arguments specific to that model. For instance, the classifier lets you select a ```linear_lr``` argument to specify a different learning rate for the classification layer and the encoder. These optional params can be found by looking at the ```add_model_specific_args``` method in each model contained in the models folder.
+
 
 
 __Optional:__ To optimize your environment for deep learning, run this repo on the pytorch nvidia docker:
