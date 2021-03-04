@@ -139,5 +139,4 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         parser.add_argument("--weight_decay", default=1e-6, type=float, help="weight decay")
         parser.add_argument("--final_lr", type=float, default=1e-6, help="final learning rate")
         parser.add_argument("--momentum", type=float, default=0.9, help="momentum for learning rate")
-        parser.add_argument("--num_classes", type=int, default=None, help="how many classes to output. will be found automatically if not specified")
         return parser
