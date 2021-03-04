@@ -35,7 +35,6 @@ class SIMSIAM(SimSiam):
         self.hidden_dim = hidden_dim
         self.transform = transform
         self.image_size = image_size
-        self.num_classes = len(data_temp.classes)
         self.cpus = cpus
         self.seed = seed
         
@@ -43,10 +42,11 @@ class SIMSIAM(SimSiam):
         super().__init__(**simsiam_hparams)
         
         #overriding pl_lightning encoder after original simsiam init
-        self.encoder = encoder
+        
         self.online_network = SiameseArm(
-            self.encoder, input_dim=self.encoder.embedding_size, hidden_size=self.hidden_dim, output_dim=self.feat_dim
+            encoder, input_dim=self.encoder.embedding_size, hidden_size=self.hidden_dim, output_dim=self.feat_dim
         )
+        self.encoder = self.online_network.encoder
 
         self.save_hyperparameters()
   
