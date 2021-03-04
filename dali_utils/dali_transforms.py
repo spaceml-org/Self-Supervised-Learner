@@ -21,7 +21,7 @@ class SimCLRTransform(Pipeline):
         self.to_int32_cpu = ops.Cast(dtype=types.INT32, device="cpu")
         
         self.coin = ops.random.CoinFlip(probability=0.5)
-        self.uniform = ops.random.Uniform(range = [0.7,1.3])
+        self.uniform = ops.random.Uniform(range = [0.5,1.5])
         self.blur_amt = ops.random.Uniform(values = [float(i) for i in range(1, int(0.1*self.input_height), 2)])
 
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
