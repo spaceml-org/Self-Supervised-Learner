@@ -34,7 +34,6 @@ class SIMCLR(SimCLR):
         self.hidden_dim = hidden_dim
         self.transform = transform
         self.image_size = image_size
-        self.num_classes = len(data_temp.classes)
         self.cpus = cpus
         self.seed = seed
         
