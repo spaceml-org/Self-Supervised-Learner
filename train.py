@@ -140,16 +140,7 @@ def cli_main():
     
     model = load_model(args)
     print(colored("Model architecture successfully loaded", 'blue'))
-    
-
-   
-    online_evaluator = SSLOnlineEvaluator(
-      drop_p=0.,
-      hidden_dim=None,
-      z_dim=model.encoder.embedding_size,
-      num_classes=model.num_classes,
-      dataset='None'
-    )
+  
     
     cbs = []
     backend = 'ddp'
@@ -158,9 +149,6 @@ def cli_main():
         cb = EarlyStopping('val_loss', patience = args.patience)
         cbs.append(cb)
         
-# Not supported yet    
-#     if args.online_eval and args.technique.lower() is not 'classifier':
-#         cbs.append(online_evaluator)
         
     trainer = pl.Trainer(gpus=args.gpus, max_epochs = args.epochs, progress_bar_refresh_rate=20, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, sync_batchnorm=True if args.gpus > 1 else False, logger = wandb_logger, enable_pl_optimizer = True)
     trainer.fit(model)
