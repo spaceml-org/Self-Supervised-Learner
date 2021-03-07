@@ -32,7 +32,7 @@ class SimCLRTransform(Pipeline):
         self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu") 
 
     def train_transform(self, image):
-        image = self.decode(image)
+        
         image = self.crop(image)
         image = self.flip(image)
         image = self.colorjit_gray(image)
@@ -41,13 +41,13 @@ class SimCLRTransform(Pipeline):
         return image
     
     def val_transform(self, image):
-        image = self.decode(image)
         image = self.crop(image)
         image = self.swapaxes(image)
         return image
 
     def define_graph(self):
         jpegs, label = self.input()
+        jpegs = self.decode(jpegs)
         
         if self.stage == 'train':
             self.transform = self.train_transform
