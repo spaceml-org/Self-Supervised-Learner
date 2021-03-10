@@ -29,6 +29,7 @@ class SIMSIAM(SimSiam):
         #derived values (not passed in) need to be added to model hparams
         simsiam_hparams['num_samples'] = len(data_temp)
         simsiam_hparams['dataset'] = None
+        simsiam_hparams['max_epochs'] = simsiam_hparams['epochs']
         
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
@@ -86,7 +87,7 @@ class SIMSIAM(SimSiam):
         parser.add_argument("--optimizer", default="adam", type=str, help="choose between adam/sgd")
         parser.add_argument("--lars_wrapper", action="store_true", help="apple lars wrapper over optimizer used")
         parser.add_argument("--exclude_bn_bias", action="store_true", help="exclude bn/bias from weight decay")
-        parser.add_argument("--warmup_epochs", default=10, type=int, help="number of warmup epochs")
+        parser.add_argument("--warmup_epochs", default=1, type=int, help="number of warmup epochs")
 
         parser.add_argument("--temperature", default=0.1, type=float, help="temperature parameter in training loss")
         parser.add_argument("--weight_decay", default=1e-6, type=float, help="weight decay")
