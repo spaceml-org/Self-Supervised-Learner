@@ -44,7 +44,7 @@ class SIMSIAM(SimSiam):
         #overriding pl_lightning encoder after original simsiam init
         
         self.online_network = SiameseArm(
-            encoder, input_dim=self.encoder.embedding_size, hidden_size=self.hidden_dim, output_dim=self.feat_dim
+            encoder, input_dim=encoder.embedding_size, hidden_size=self.hidden_dim, output_dim=self.feat_dim
         )
         self.encoder = self.online_network.encoder
 
