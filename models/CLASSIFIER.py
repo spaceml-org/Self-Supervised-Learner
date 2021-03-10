@@ -67,7 +67,8 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
                 self.classifier_hparams['epochs'],
                 eta_min=self.classifier_hparams['final_lr']  # total epochs to run
             )
-        self.scheduler = scheduler
+        self.scheduler = list(scheduler)
+        print(self.scheduler)
         return [optimizer], [scheduler]
     
     def forward(self, x):
