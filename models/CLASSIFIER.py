@@ -67,7 +67,7 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
                 self.classifier_hparams['epochs'],
                 eta_min=self.classifier_hparams['final_lr']  # total epochs to run
             )
-
+        self.scheduler = scheduler
         return [optimizer], [scheduler]
     
     def forward(self, x):
@@ -83,6 +83,8 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         return loss, logits, y
 
     def training_step(self, batch, batch_idx):
+        self.log('learning_rate', self.scheduler[self.trainer.global_step], on_step=True, on_epoch=False)
+        
         loss, logits, y = self.shared_step(batch)
         acc = self.train_acc(logits, y)
         self.log('tloss', loss, prog_bar=True)
