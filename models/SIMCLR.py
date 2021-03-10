@@ -28,6 +28,7 @@ class SIMCLR(SimCLR):
         #derived values (not passed in) need to be added to model hparams
         simclr_hparams['num_samples'] = len(data_temp)
         simclr_hparams['dataset'] = None
+        simclr_hparams['max_epochs'] = simclr_hparams['epochs']
         
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
@@ -59,6 +60,8 @@ class SIMCLR(SimCLR):
         elif stage == Options.inference.name:
             self.test_dataloader = SimCLRWrapper(transform = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 1, stage = 'inference', num_threads = 2*self.cpus, device_id = self.local_rank, seed = self.seed))
             self.inference_dataloader = self.test_dataloader
+        
+
      
     def train_dataloader(self):
         return self.train_loader
