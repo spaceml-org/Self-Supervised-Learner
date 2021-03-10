@@ -44,6 +44,8 @@ class SIMCLR(SimCLR):
         self.projection = Projection(input_dim = self.encoder.embedding_size, hidden_dim = self.hidden_dim)
 
         self.save_hyperparameters()
+        print('warmup')
+        
   
     #override pytorch SIMCLR with our own encoder so we will overwrite the function plbolts calls to init the encoder
     def init_model(self):
@@ -79,8 +81,6 @@ class SIMCLR(SimCLR):
         parser.add_argument("--optimizer", default="adam", type=str, help="choose between adam/sgd")
         parser.add_argument("--lars_wrapper", action='store_true', help="apple lars wrapper over optimizer used")
         parser.add_argument('--exclude_bn_bias', action='store_true', help="exclude bn/bias from weight decay")
-        parser.add_argument("--max_epochs", default=1000, type=int, help="number of total epochs to run")
-        parser.add_argument("--max_steps", default=-1, type=int, help="max steps")
         parser.add_argument("--warmup_epochs", default=10, type=int, help="number of warmup epochs")
         
 
