@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/RudyVenguswamy/SpaceForceDataSearch/blob/main/readme/curator_logo_wide.PNG" >
+<img src="https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/readme_icons/curator_logo_wide.PNG" >
 
 
 <!--**Rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.** -->
