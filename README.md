@@ -159,17 +159,14 @@ If you don't want to use the predefined encoders in models/encoders.py, you can 
 - :ticket: (1.2.0) Saliency Maps for Embeddings
 
 ## Citation
-If you find Curator useful in your research, please consider citing it
+If you find Curator useful in your research, please consider citing the tool:
 
-<!--
-```
-@article{,
-  title={},
+@article{lisboa2020democratizing,
+  title={Curator: A No-Code, Self-Supervised Learning and Active Labeling Tool to Create Labeled Image Datasets from Petabyte-Scale Imagery
+},
   author={},
-  journal={},
-  year={}
+  journal={European Geosciences Union 2021},
+  year={2021}
 }
-```
--->
 </div>
 
