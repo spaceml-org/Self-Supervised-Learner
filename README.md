@@ -161,7 +161,7 @@ If you don't want to use the predefined encoders in models/encoders.py, you can 
 ## Citation
 If you find Curator useful in your research, please consider citing the tool:
 
-@article{lisboa2020democratizing,
+@article{
   title={Curator: A No-Code, Self-Supervised Learning and Active Labeling Tool to Create Labeled Image Datasets from Petabyte-Scale Imagery
 },
   author={},
