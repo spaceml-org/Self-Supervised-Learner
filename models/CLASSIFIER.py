@@ -46,8 +46,15 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
           
         self.train_acc = Accuracy()
         self.val_acc = Accuracy(compute_on_step=False)
-        
         self.encoder = encoder
+        
+        self.weights = None
+        
+        if classifier_hparams['weights'] is not None:
+            print('Not None!!!!')
+            self.weights = [int(item) for item in classifier_hparams['weights'].split(',')]
+            
+        print(self.weights)
         
         self.save_hyperparameters()
   
@@ -104,7 +111,8 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         return loss
 
     def loss_fn(self, logits, labels):
-        return F.cross_entropy(logits, labels)
+        return F.cross_entropy(logits, labels, weight = self.weights)
+    
 
     def setup(self, stage = 'inference'):
         Options = Enum('Loader', 'fit test inference')
@@ -138,4 +146,5 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         parser.add_argument("--weight_decay", default=1e-6, type=float, help="weight decay")
         parser.add_argument("--final_lr", type=float, default=1e-6, help="final learning rate")
         parser.add_argument("--momentum", type=float, default=0.9, help="momentum for learning rate")
+        parser.add_argument('--weights', type=str, help='delimited list of weights for penalty during classification')
         return parser
