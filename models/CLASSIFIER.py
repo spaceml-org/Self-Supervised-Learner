@@ -50,6 +50,7 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         
         self.weights = None
         
+        print(classifier_hparams)
         if classifier_hparams['weights'] is not None:
             print('Not None!!!!')
             self.weights = [int(item) for item in classifier_hparams['weights'].split(',')]
