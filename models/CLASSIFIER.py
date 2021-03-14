@@ -53,7 +53,7 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         print(classifier_hparams)
         if classifier_hparams['weights'] is not None:
             self.weights = torch.tensor([float(item) for item in classifier_hparams['weights'].split(',')])
-            self.weights.cuda()
+            self.weights = self.weights.cuda()
         
         self.save_hyperparameters()
   
