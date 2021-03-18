@@ -92,8 +92,8 @@ class SIMSIAM(SimSiam):
         self.online_network = SiameseArm(
             encoder, input_dim=encoder.embedding_size, hidden_size=self.hidden_dim, output_dim=self.feat_dim
         )
-        self.online_network.emedding_size = encoder.embedding_size
-        self.encoder = self.online_network
+        
+        self.encoder = self.online_network.encoder
         
         self.save_hyperparameters()
         
