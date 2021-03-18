@@ -51,6 +51,8 @@ def load_model(args):
             #there may be a more efficient way to find right technique to load
             for previous_technique in supported_techniques.keys():  
                 try:
+                    print(previous_technique)
+                    print(args)
                     args.encoder = previous_technique.load_from_checkpoint(**args.__dict__).encoder
                     print(colored(f'Successfully found previous model {previous_technique}', 'blue'))
                     break
