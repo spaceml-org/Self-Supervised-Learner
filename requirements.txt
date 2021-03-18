@@ -1,7 +1,7 @@
 #python3.6+ verified
 
 split-folders==0.4.3
-pytorch-lightning-bolts==0.3.0
+pytorch-lightning-bolts
 pytorch-lightning==1.1.8
 scikit-learn==0.23.2
 wandb==0.10.12
