@@ -50,7 +50,7 @@ class SIMSIAM(SimSiam):
         
         self.save_hyperparameters()
         
-        self.encoder = self.online_network.encoder
+        self.encoder = self.online_network
   
     #override pytorch SimSiam with our own encoder so we will overwrite the function plbolts calls to init the encoder
     def init_model(self):
