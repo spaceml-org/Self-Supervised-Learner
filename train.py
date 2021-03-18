@@ -49,7 +49,7 @@ def load_model(args):
             print('Trying to return model encoder only...')
    
             #there may be a more efficient way to find right technique to load
-            for previous_technique in supported_techniques.keys():  
+            for previous_technique in supported_techniques.values():  
                 try:
                     print(previous_technique)
                     print(args)
