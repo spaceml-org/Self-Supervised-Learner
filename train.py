@@ -54,8 +54,9 @@ def load_model(args):
                 args2.technique = previous_technique
                 
                 try:
-                    previous_model = load_model(args2)
                     print(args2)
+                    previous_model = load_model(args2)
+                    
                     print(colored(f'Successfully found previous model {previous_technique}', 'blue'))
                     args.encoder = previous_model.encoder
                     break
