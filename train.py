@@ -47,18 +47,12 @@ def load_model(args):
             return technique.load_from_checkpoint(**args.__dict__)
         except: 
             print('Trying to return model encoder only...')
-            
+   
             #there may be a more efficient way to find right technique to load
             for previous_technique in supported_techniques.keys():  
-                args2 = copy.deepcopy(args)
-                args2.technique = previous_technique
-                
                 try:
-                    print(args2)
-                    previous_model = load_model(args2)
-                    
+                    args.encoder = previous_technique.load_from_checkpoint(**args.__dict__).encoder
                     print(colored(f'Successfully found previous model {previous_technique}', 'blue'))
-                    args.encoder = previous_model.encoder
                     break
                 except:
                     continue
