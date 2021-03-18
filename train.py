@@ -90,7 +90,6 @@ def load_model(args):
     
     #We are initing from scratch so we need to find out how many classes are in this dataset. This is relevant info for the CLASSIFIER
     args.num_classes = len(ImageFolder(args.DATA_PATH).classes)
-    print(args)
     return technique(**args.__dict__)
     
 
