@@ -51,8 +51,6 @@ def load_model(args):
             #there may be a more efficient way to find right technique to load
             for previous_technique in supported_techniques.values():  
                 try:
-                    print(previous_technique)
-                    print(args)
                     args.encoder = previous_technique.load_from_checkpoint(**args.__dict__).encoder
                     print(colored(f'Successfully found previous model {previous_technique}', 'blue'))
                     break
@@ -92,6 +90,7 @@ def load_model(args):
     
     #We are initing from scratch so we need to find out how many classes are in this dataset. This is relevant info for the CLASSIFIER
     args.num_classes = len(ImageFolder(args.DATA_PATH).classes)
+    print(args)
     return technique(**args.__dict__)
     
 
