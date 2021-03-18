@@ -47,10 +47,11 @@ class SIMSIAM(SimSiam):
         self.online_network = SiameseArm(
             encoder, input_dim=encoder.embedding_size, hidden_size=self.hidden_dim, output_dim=self.feat_dim
         )
-        
+        self.online_network.emedding_size = encoder.embedding_size
         self.save_hyperparameters()
         
         self.encoder = self.online_network
+        
   
     #override pytorch SimSiam with our own encoder so we will overwrite the function plbolts calls to init the encoder
     def init_model(self):
