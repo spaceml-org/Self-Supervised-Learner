@@ -164,7 +164,7 @@ If you find Curator useful in your research, please consider citing the tool:
 @article{
   title={Curator: A No-Code, Self-Supervised Learning and Active Labeling Tool to Create Labeled Image Datasets from Petabyte-Scale Imagery
 },
-  author={Rudy Venguswamy},
+  author={Forthcoming},
   journal={European Geosciences Union 2021},
   year={2021}
 }
