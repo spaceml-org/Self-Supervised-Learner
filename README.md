@@ -33,7 +33,7 @@ Self-supervised learning is a subfield of machine learning focused on developing
 
 ### How To Use SSL Curator
 Step 1) **Self-Supervied Learning (SSL): Training an encoder without labels**
-   - The first step is to train a self-supervised encoder. Self-supervised learning does not require labels and lets the model learn from purely unlabeled data to build an image encoder.
+   - The first step is to train a self-supervised encoder. Self-supervised learning does not require labels and lets the model learn from purely unlabeled data to build an image encoder. If you want your model to be color invariant, use grey scale images when possible.
 ```bash
 python train.py --technique SIMCLR --model imagenet_resnet18 --DATA_PATH myDataFolder/AllImages  --epochs 100 --log_name ssl 
 ```
