@@ -16,6 +16,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.callbacks import ModelCheckpoint
 
 from argparse import ArgumentParser
 
@@ -149,7 +150,10 @@ def cli_main():
     if args.patience > 0:
         cb = EarlyStopping('val_loss', patience = args.patience)
         cbs.append(cb)
-        
+     
+    ckpt_callback = ModelCheckpoint(monitor='train_loss',dirpath='/content',save_top_k=-1,period=1,
+                                    filename='model-epoch{epoch:02d}-loss{train_loss:.2f}')
+    cbs.append(ckpt_callback)
         
     trainer = pl.Trainer(gpus=args.gpus, max_epochs = args.epochs, progress_bar_refresh_rate=20, callbacks = cbs, distributed_backend=f'{backend}' if args.gpus > 1 else None, sync_batchnorm=True if args.gpus > 1 else False, logger = wandb_logger, enable_pl_optimizer = True)
     trainer.fit(model)
