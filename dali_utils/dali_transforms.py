@@ -25,6 +25,7 @@ class SimCLRTransform(Pipeline):
         self.blur_amt = ops.random.Uniform(values = [float(i) for i in range(1, int(0.1*self.input_height), 2)])
 
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
+        self.resize = ops.Resize(resize_x = self.input_height, resize_y = self.input_height, device = "gpu")
         self.crop =  ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, random_area=[0.5,1.0], device = "gpu", dtype = types.FLOAT)
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
@@ -42,7 +43,7 @@ class SimCLRTransform(Pipeline):
         return image
     
     def val_transform(self, image):
-        image = self.crop(image)
+        image = self.resize(image)
         image = self.swapaxes(image)
         return image
 
