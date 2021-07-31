@@ -23,6 +23,7 @@ class SimCLRTransform(Pipeline):
         self.coin = ops.random.CoinFlip(probability=0.5)
         self.uniform = ops.random.Uniform(range = [0.4,1.5])
         self.blur_amt = ops.random.Uniform(values = [float(i) for i in range(1, int(0.1*self.input_height), 2)])
+        self.angles = ops.random.Uniform(range = [0,360])
 
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
         self.resize = ops.Resize(resize_x = self.input_height, resize_y = self.input_height, device = "gpu")
