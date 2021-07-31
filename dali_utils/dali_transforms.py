@@ -49,7 +49,7 @@ class SimCLRTransform(Pipeline):
     def define_graph(self):
         jpegs, label = self.input()
         jpegs = self.decode(jpegs)
-        jpegs = jpegs/255.
+
         if self.stage == 'train':
             self.transform = self.train_transform
         else:
