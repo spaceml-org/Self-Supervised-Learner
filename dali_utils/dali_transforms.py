@@ -1,4 +1,3 @@
-
 import nvidia.dali.ops as ops
 import nvidia.dali.types as types
 from nvidia.dali.pipeline import Pipeline
@@ -21,16 +20,17 @@ class SimCLRTransform(Pipeline):
         self.to_int32_cpu = ops.Cast(dtype=types.INT32, device="cpu")
         
         self.coin = ops.random.CoinFlip(probability=0.5)
-        self.uniform = ops.random.Uniform(range = [0.4,1.5])
+        self.uniform = ops.random.Uniform(range = [0.6,0.9])
         self.blur_amt = ops.random.Uniform(values = [float(i) for i in range(1, int(0.1*self.input_height), 2)])
         self.angles = ops.random.Uniform(range = [0,360])
-
+        self.cast = ops.Cast(dtype = types.FLOAT, device='gpu')
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
+        
+        self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, random_area=[0.75,1.0], device = "gpu")
         self.resize = ops.Resize(resize_x = self.input_height, resize_y = self.input_height, device = "gpu")
-        self.crop =  ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, random_area=[0.5,1.0], device = "gpu", dtype = types.FLOAT)
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
-        self.blur = ops.GaussianBlur(window_size = self.to_int32_cpu(self.blur_amt()), device = "gpu", dtype = types.FLOAT)
+        self.blur = ops.GaussianBlur(window_size = self.to_int32_cpu(self.blur_amt()), device = "gpu")
         self.rotate = ops.Rotate(angle = self.angles(), keep_size = True, interp_type= types.DALIInterpType.INTERP_LINEAR, device = "gpu")
         self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu") 
 
@@ -40,18 +40,20 @@ class SimCLRTransform(Pipeline):
         image = self.colorjit_gray(image)
         # image = self.blur(image)
         image = self.crop(image)
+        image = self.cast(image)
         image = self.swapaxes(image)
         return image
     
     def val_transform(self, image):
         image = self.resize(image)
+        image = self.cast(image)
         image = self.swapaxes(image)
         return image
 
     def define_graph(self):
         jpegs, label = self.input()
         jpegs = self.decode(jpegs)
-
+        
         if self.stage == 'train':
             self.transform = self.train_transform
         else:
