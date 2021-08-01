@@ -151,7 +151,7 @@ def cli_main():
         cb = EarlyStopping('val_loss', patience = args.patience)
         cbs.append(cb)
      
-    ckpt_callback = ModelCheckpoint(monitor='train_loss',dirpath='/content',save_top_k=-1,period=1,
+    ckpt_callback = ModelCheckpoint(monitor='train_loss',dirpath='/content/Checkpoints',save_top_k=-1,period=1,
                                     filename='model-epoch{epoch:02d}-loss{train_loss:.2f}')
     cbs.append(ckpt_callback)
         
