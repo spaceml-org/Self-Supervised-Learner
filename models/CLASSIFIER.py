@@ -92,7 +92,7 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         
         loss, logits, y = self.shared_step(batch)
         acc = self.train_acc(logits, y)
-        self.log('tloss', loss, prog_bar=True)
+        self.log('train_loss', loss, prog_bar=True)
         self.log('tastep', acc, prog_bar=True)
         self.log('ta_epoch', self.train_acc)
 
