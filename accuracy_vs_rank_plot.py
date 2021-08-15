@@ -17,10 +17,10 @@ def transform(im: PIL.Image.Image):
 # Make sure to load the model in with the data before you call this function. Also make sure you have the right size for the model embeddings!
 
 def rank_vs_accuracy_plot(path,model,embedding_size,upper_bound):
-  dataset = ImageFolder('/content/UCMerced_LandUse/Images', transform = transform)
+  dataset = ImageFolder(path, transform = transform)
   dataloaded = DataLoader(dataset, shuffle = False, batch_size = 1)
   
-  embeddings =  torch.empty(size = (0,512))
+  embeddings =  torch.empty(size = (0,embedding_size))
 
   with torch.no_grad():
     for image, y in tqdm(dataloaded):
