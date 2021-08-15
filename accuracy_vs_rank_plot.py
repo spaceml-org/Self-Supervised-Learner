@@ -44,7 +44,7 @@ def rank_vs_accuracy_plot(path,model,embedding_size,upper_bound):
   class_sim = np.vectorize(class_lookup.get)(nearest)
   
   reference_class_labels = class_sim[:, -1]
-  k_correct =[]
+  n_correct =[]
 
   for n in tqdm(range(1, upper_bound+1)):
     top_n_closest = class_sim[:, :n]
