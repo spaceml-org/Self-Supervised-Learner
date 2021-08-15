@@ -56,12 +56,12 @@ def rank_vs_accuracy_plot(path,model,embedding_size,upper_bound):
       correct += sum(np.equal(row, reference_class_labels[index]))
       index += 1
 
-    avg_correct = correct/(index*n)
+    avg_correct = 100*(correct/(index*n))
     n_correct.append(avg_correct)
   
   plt.figure(figsize=(15,15))
   plt.plot(np.arange(1,upper_bound+1),n_correct,'-')
-  plt.title('Top-N in Same Class')
+  plt.title('Top-N in Same Class',fontsize=30)
   plt.xlabel('N',fontsize=24)
   plt.ylabel('% of Same Class',fontsize=24)
   plt.ylim(0,100)
