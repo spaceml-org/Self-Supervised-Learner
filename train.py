@@ -116,6 +116,14 @@ def cli_main():
     parser.add_argument("--technique", default=None, type=str, help="SIMCLR, SIMSIAM or CLASSIFIER")
     parser.add_argument("--seed", default=1729, type=int, help="random seed for run for reproducibility")
 
+    parser.add_argument("--coinflip", default=0.5, type=float)
+    parser.add_argument("--uniform_min", default=0.5, type=float)
+    parser.add_argument("--uniform_max", default=1.5, type=float)
+    parser.add_argument("--angles_min", default=0, type=float)
+    parser.add_argument("--angles_max", default=360, type=float)
+    parser.add_argument("--crop_min", default=0.5, type=float)
+    parser.add_argument("--crop_max", default=1.0, type=float)
+
     #add ability to parse unknown args
     args, _ = parser.parse_known_args()
     technique = supported_techniques[args.technique]
