@@ -27,7 +27,7 @@ class SimCLRTransform(Pipeline):
         self.cast = ops.Cast(dtype = types.FLOAT, device='gpu')
         self.decode = ops.ImageDecoder(device = 'mixed', output_type = types.RGB)
 
-        self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, random_area=[crpo_min,crop_max], device = "gpu")
+        self.crop = ops.RandomResizedCrop(size = self.input_height, minibatch_size = batch_size, random_area=[crop_min,crop_max], device = "gpu")
         self.resize = ops.Resize(resize_x = self.input_height, resize_y = self.input_height, device = "gpu")
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
