@@ -23,9 +23,9 @@
 
 </div>
 
-# Curator :earth_americas:
+# Self-Supervised Learner (Curator) :earth_americas:
 
-Curator can be used to train a classifier with fewer labeled examples needed using self-supervised learning. This repo is for you if you have a lot of unlabeled images and a small fraction (if any) of them labeled.
+The Self-Supervised Learner can be used to train a classifier with fewer labeled examples needed using self-supervised learning. This repo is for you if you have a lot of unlabeled images and a small fraction (if any) of them labeled.
 
 
 <ins> **What is Self-Supervised Learning?** </ins> \
