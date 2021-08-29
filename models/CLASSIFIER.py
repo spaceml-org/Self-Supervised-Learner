@@ -2,6 +2,7 @@ import os
 from termcolor import colored
 import numpy as np
 import math
+import logging
 from argparse import ArgumentParser
 from termcolor import colored
 from enum import Enum
@@ -50,7 +51,7 @@ class CLASSIFIER(pl.LightningModule): #SSLFineTuner
         
         self.weights = None
         
-        print(classifier_hparams)
+        logging.info(classifier_hparams)
         if classifier_hparams['weights'] is not None:
             self.weights = torch.tensor([float(item) for item in classifier_hparams['weights'].split(',')])
             self.weights = self.weights.cuda()
