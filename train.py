@@ -121,6 +121,7 @@ def cli_main():
     parser.add_argument("--resize", default=False, type=bool,
                         help="Pre-Resize data to right shape to reduce cuda memory requirements of reading large images")
     parser.add_argument("--technique", default=None, type=str, help="SIMCLR, SIMSIAM or CLASSIFIER")
+    parser.add_argument("--save_freq", default=-1, type=int, help="Number of epochs between checkpoints")
     parser.add_argument("--seed", default=1729, type=int, help="random seed for run for reproducibility")
 
     # add ability to parse unknown args
@@ -160,7 +161,8 @@ def cli_main():
     if args.patience > 0:
         cb = EarlyStopping('val_loss', patience=args.patience)
         cbs.append(cb)
-    ckpt_callback = ModelCheckpoint(monitor='train_loss', dirpath=os.path.join(os.getcwd(), 'models'), period=2,
+    ckpt_callback = ModelCheckpoint(monitor='train_loss', dirpath=os.path.join(os.getcwd(), 'models'),
+                                    period=args.save_freq,
                                     filename='model-{epoch:02d}-{train_loss:.2f}')
     cbs.append(ckpt_callback)
 
