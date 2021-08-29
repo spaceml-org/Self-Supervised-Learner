@@ -1,4 +1,3 @@
-
 import os
 import math
 import numpy as np
@@ -8,6 +7,7 @@ import splitfolders
 from termcolor import colored
 from enum import Enum
 import copy
+import logging
 
 import torch
 from torchvision.datasets import ImageFolder
@@ -47,13 +47,13 @@ def load_model(args):
         try:
             return technique.load_from_checkpoint(**args.__dict__)
         except: 
-            print('Trying to return model encoder only...')
+            logging.info('Trying to return model encoder only...')
    
             #there may be a more efficient way to find right technique to load
             for previous_technique in supported_techniques.values():  
                 try:
                     args.encoder = previous_technique.load_from_checkpoint(**args.__dict__).encoder
-                    print(colored(f'Successfully found previous model {previous_technique}', 'blue'))
+                    logging.info(colored(f'Successfully found previous model {previous_technique}', 'blue'))
                     break
                 except:
                     continue
@@ -79,7 +79,7 @@ def load_model(args):
 
     #try loading just the encoder
     else:
-        print('Trying to initialize just the encoder from a pytorch model file (.pt)')
+        logging.info('Trying to initialize just the encoder from a pytorch model file (.pt)')
         try:
           args.encoder = torch.load(args.model)
         except:
@@ -87,7 +87,7 @@ def load_model(args):
         try:
           embedding_size = encoder.embedding_size
         except:
-          raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
+          raise logging.exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
     
     #We are initing from scratch so we need to find out how many classes are in this dataset. This is relevant info for the CLASSIFIER
     args.num_classes = len(ImageFolder(args.DATA_PATH).classes)
@@ -124,6 +124,7 @@ def cli_main():
     #logging
     wandb_logger = None
     log_name = args.technique + '_' + args.log_name + '.ckpt'
+    logging.basicConfig(filename='{log_name}.log', encoding='utf-8', level=logging.INFO)
     if log_name is not None:
         wandb_logger = WandbLogger(name=log_name,project='Curator')
     
@@ -134,14 +135,14 @@ def cli_main():
     
     #Splitting Data into train and validation
     if not (os.path.isdir(f"{args.DATA_PATH}/train") and os.path.isdir(f"{args.DATA_PATH}/val")) and args.val_split != 0 and args.VAL_PATH is None: 
-        print(colored(f'Automatically splitting data into train and validation data...', 'blue'))
+        logging.info('Automatically splitting data into train and validation data...')
         shutil.rmtree(f'./split_data_{log_name[:-5]}', ignore_errors=True)
         splitfolders.ratio(args.DATA_PATH, output=f'./split_data_{log_name[:-5]}', ratio=(1-args.val_split-args.withhold_split, args.val_split, args.withhold_split), seed = args.seed)
         args.DATA_PATH = f'./split_data_{log_name[:-5]}/train'
         args.VAL_PATH = f'./split_data_{log_name[:-5]}/val'
     
     model = load_model(args)
-    print(colored("Model architecture successfully loaded", 'blue'))
+    logging.info("Model architecture successfully loaded")
   
     
     cbs = []
@@ -160,7 +161,7 @@ def cli_main():
 
     Path(f"./models/").mkdir(parents=True, exist_ok=True)
     trainer.save_checkpoint(f"./models/{log_name}")
-    print(colored("YOUR MODEL CAN BE ACCESSED AT: ", 'blue'), f"./models/{log_name}")
+    logging.info("YOUR MODEL CAN BE ACCESSED AT: ", f"./models/{log_name}")
 
 if __name__ == '__main__':
     cli_main()
