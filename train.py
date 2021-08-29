@@ -17,7 +17,7 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 # from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
-
+from pytorch_lightning import loggers as pl_loggers
 from argparse import ArgumentParser
 
 # Internal Package Imports
@@ -33,7 +33,7 @@ supported_techniques = {
 
 def load_model(args):
     '''
-    A method to load models via command line. Accepts args, a Namespace python object. 
+    A method to load models via command line. Accepts args, a Namespace python object.
     In the method, we first check if the model is a ckpt file. If it is, try loading the checkpoint. If the checkpoint doesn't load, we will attempt to get only the encoder to load via the specified technique
     If the model is not a .ckpt file, we will load it as an encoder from our list of supported encoders.
     Finally, if it is none of the above, it could be a user specified .pt file to represent the encoder.
@@ -53,7 +53,7 @@ def load_model(args):
             for previous_technique in supported_techniques.values():
                 try:
                     args.encoder = previous_technique.load_from_checkpoint(**args.__dict__).encoder
-                    logging.info(f'Successfully found previous model {previous_technique}')
+                    logging.info(colored(f'Successfully found previous model {previous_technique}', 'blue'))
                     break
                 except:
                     continue
@@ -160,10 +160,8 @@ def cli_main():
     if args.patience > 0:
         cb = EarlyStopping('val_loss', patience=args.patience)
         cbs.append(cb)
-
-    ckpt_callback = ModelCheckpoint(monitor='train_loss', dirpath='/workspace/content/Checkpoints', save_top_k=-1,
-                                    period=1,
-                                    filename='model-epoch{epoch:02d}-loss{train_loss:.2f}')
+    ckpt_callback = ModelCheckpoint(monitor='train_loss', dirpath=os.path.join(os.getcwd(), 'models'), period=2,
+                                    filename='model-{epoch:02d}-{train_loss:.2f}')
     cbs.append(ckpt_callback)
 
     trainer = pl.Trainer(gpus=args.gpus, max_epochs=args.epochs, progress_bar_refresh_rate=20, callbacks=cbs,
