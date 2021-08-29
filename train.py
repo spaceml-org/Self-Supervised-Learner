@@ -53,7 +53,7 @@ def load_model(args):
             for previous_technique in supported_techniques.values():
                 try:
                     args.encoder = previous_technique.load_from_checkpoint(**args.__dict__).encoder
-                    logging.info(colored(f'Successfully found previous model {previous_technique}', 'blue'))
+                    logging.info(f'Successfully found previous model {previous_technique}')
                     break
                 except:
                     continue
