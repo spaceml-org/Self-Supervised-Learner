@@ -23,7 +23,7 @@
 
 </div>
 
-# Self-Supervised Learner (Curator) :earth_americas:
+# Self-Supervised Learner
 
 The Self-Supervised Learner can be used to train a classifier with fewer labeled examples needed using self-supervised learning. This repo is for you if you have a lot of unlabeled images and a small fraction (if any) of them labeled.
 
@@ -159,10 +159,10 @@ If you don't want to use the predefined encoders in models/encoders.py, you can 
 - :ticket: (1.2.0) Saliency Maps for Embeddings
 
 ## Citation
-If you find Curator useful in your research, please consider citing the github code for this tool:
+If you find Self-Supervised Learner useful in your research, please consider citing the github code for this tool:
 ```
 @code{
-  title={Curator: A No-Code, Self-Supervised Learning and Active Labeling Tool to Create Labeled Image Datasets from Petabyte-Scale Imagery
+  title={Self-Supervised Learner,
 },
   url={https://github.com/spaceml-org/Self-Supervised-Learner},
   year={2021}
