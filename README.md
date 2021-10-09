@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/readme_icons/self-sup-learner-simple-header.jpg" >
+<img src="https://github.com/spaceml-org/Self-Supervised-Learner/blob/main/readme_icons/ssl-head.jpg" >
 
 
 <!--**Rapidly curate a dataset for scientific studies without the need for machine learning, self supervised ML coding expertise.** -->
