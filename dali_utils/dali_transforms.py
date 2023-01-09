@@ -97,7 +97,7 @@ class SimCLRTransform(Pipeline):
         for i in range(self.copies):
             batch += (self.transform(jpegs),)
 
-        if self.stage is not "inference":
+        if self.stage != "inference":
             label = label.gpu()
             label = self.to_int64(label)
             batch += (label,)
