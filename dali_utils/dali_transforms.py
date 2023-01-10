@@ -89,7 +89,7 @@ class SimCLRTransform(Pipeline):
         jpegs = self.decode(jpegs)
 
         self.transform = self.train_transform if self.stage == "train" else self.val_transform
-        batch = [self.transform(jpegs) for i in range(self.copies)]
+        batch = list(map(self.transform, jpegs)) * self.copies
 
         if self.stage != "inference":
             label = label.gpu()
