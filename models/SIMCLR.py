@@ -3,7 +3,6 @@ from termcolor import colored
 import numpy as np
 import math
 from argparse import ArgumentParser
-from termcolor import colored
 from enum import Enum
 
 import torch

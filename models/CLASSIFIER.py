@@ -4,7 +4,6 @@ import numpy as np
 import math
 import logging
 from argparse import ArgumentParser
-from termcolor import colored
 from enum import Enum
 
 import torch
